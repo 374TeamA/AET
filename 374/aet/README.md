@@ -1,27 +1,25 @@
-# React + TypeScript + Vite
+# Initilization
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+After you have pulled the repository, you need to install the dependencies. You can do this by running the following command in the root directory of the project:
 
-Currently, two official plugins are available:
+- npm i
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Running the project
 
-## Expanding the ESLint configuration
+To run the project, you need to run the following command in the root directory of the project:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- npm run dev
 
-- Configure the top-level `parserOptions` property like this:
+# Structure
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+The project is structured as follows:
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- **main.tsx**: This is the main entry point of the application and shoud not need any changes.
+- **app.tsx**: This is the main component of the application, routes and main layout are configured here.
+
+- **src**: This folder contains all the source code of the project.
+- **src/assets**: This folder contains all the assets of the project, these should be assets that are used in multiple places in the project (images, fonts, etc.).
+- **src/components**: This folder contains all the components of the project, these should be reusuable components that use generics and props to be able to be used in different places.
+- **src/pages**: This folder contains all the pages of the project, these should be pages that are used in the routing of the project.
+- **src/styles**: This folder contains all the styles of the project, these should be styles that are used in multiple places in the project (CSS styling).
+- **src/types**: This folder contains all the types of the project, these should be types that are used in multiple places in the project.
