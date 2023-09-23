@@ -1,7 +1,11 @@
+export type Import = {
+    id:string
+    importDate:Date
+    transactions:Transaction[]
+}
 
-export type Transaction  = {
+export type Transaction = {
     date:Date
     merchant:string
-    amount:number
-    category:string
+    details:[{amount:number, category:string, hidden:boolean}]
 }

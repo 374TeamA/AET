@@ -1,0 +1,42 @@
+body{
+    background-color: #04428e28;   
+}
+
+.header{
+    height: 4rem;
+    background-color: #ffffff;
+    color: rgb(69, 143, 255);
+    display: flex;
+    margin:0.2rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px #00000031;
+    border:1px solid lightgrey;
+    display: flex;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+    padding-left: 1rem;
+}
+
+.sidebar{
+    width: 15rem;
+    height: 90vh;
+    background-color: #ffffff;
+    color: rgb(69, 143, 255);
+    display: flex;
+    margin:0.2rem;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px #00000031;
+
+}
+
+.content{
+    position:absolute;
+    top:4.8rem;
+    left: 16rem;
+    width: 103.5rem;
+    height: 52.5rem;
+    background-color: white;
+    box-shadow: 0 0 10px 0px #00000031;
+    border-radius: 5px;
+}
