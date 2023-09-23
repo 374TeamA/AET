@@ -1,13 +1,12 @@
 body{
-    background-color: #04428e28;   
+    background-color: #04428e18;   
 }
 
 .header{
-    height: 6vh;
+    height: 8vh;
     background-color: #ffffff;
     color: rgb(69, 143, 255);
     display: flex;
-    margin:0.2vw;
     margin-bottom: 1vh;
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #00000031;
@@ -16,26 +15,17 @@ body{
     align-items: center;
     font-family: 'Roboto', sans-serif;
     padding-left: 1vh;
-}
-
-.sidebar{
-    width: 10vw;
-    height: 91vh;
-    background-color: #ffffff;
-    color: rgb(69, 143, 255);
-    display: flex;
-    margin:0.2vw;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px 0px #00000031;
-
+    font-family: 'Inconsolata', monospace;
+font-family: 'Inter', sans-serif;
+font-family: 'Istok Web', sans-serif;
 }
 
 .content{
     position:absolute;
-    top:7.5vh;
+    top:9vh;
     left: 11vw;
     width: 88.5vw;
-    height: 91vh;
+    height: 90vh;
     background-color: white;
     box-shadow: 0 0 10px 0px #00000031;
     border-radius: 5px;
