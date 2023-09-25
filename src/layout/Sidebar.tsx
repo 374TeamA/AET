@@ -1,24 +1,25 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
 import "../styles/nav.css";
+import { Link } from 'react-router-dom';  
 export default function Sidebar() {
   return (
     <div className="sidebar">
       <ul className="navbar">
         <li>
-          <a href="/">Dashboard</a>
+          <Link to="/">Dashboard</Link>
         </li>
         <li>
-          <a href="/accounts">Accounts</a>
+          <Link to="accounts">Accounts</Link>
         </li>
       </ul>
       <div className="bottom-links">
         <ul>
           <li>
-            <a href="/reports">Reports</a>
+            <Link to="/reports">Reports</Link>
           </li>
           <li>
-            <a href="/settings">Settings</a>
+            <Link to="/settings">Settings</Link>
           </li>
           {/* Add more links for other routes */}
         </ul>
