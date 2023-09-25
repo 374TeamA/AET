@@ -8,14 +8,12 @@ import Dashboard from "./pages/Dashboard";
 // TODO: Setup routes to allow for dynamic accounts routing based on accounts added by the user
 const Routers: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} /> {/* Creates a route for the root path to lead to dashboards (IE index is dashboard component) */}
-        <Route path="/accounts" element={<Accounts />} /> {/* Creates a route for accounts */}
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Dashboard />} /> {/* Creates a route for the root path to lead to dashboards (IE index is dashboard component) */}
+      <Route path="/accounts" element={<Accounts />} /> {/* Creates a route for accounts */}
+      <Route path="/reports" element={<Reports />} />
+      <Route path="/settings" element={<Settings />} />
+    </Routes>
   );
 };
 
