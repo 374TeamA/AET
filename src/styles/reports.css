@@ -1,0 +1,9 @@
+canvas {
+  text-align: center;
+  width: auto;
+  height: 200px;
+  border: 2px #092834 solid;
+  background-color: #ffffff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
