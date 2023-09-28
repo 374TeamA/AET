@@ -12,7 +12,16 @@ export default function Reports() {
       graph.destroy();
     }
 
-    const recieved = generateGraph();
+    // Get a reference to the select element
+    const selectElement: HTMLSelectElement = document.getElementById("typeSelection") as HTMLSelectElement;
+
+    // Get the selected option
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+    // Get the value of the selected option
+    const type: string = selectedOption.value;
+
+    const recieved = generateGraph(type);
 
     graph = new Chart(
       document.getElementById("testGraph") as HTMLCanvasElement,
@@ -24,11 +33,17 @@ export default function Reports() {
     <div>
       <p>Reports</p>
 
+      <select id="typeSelection">
+        <option value="pie">Pie</option>
+        <option value="bar">Bar</option>
+      </select>
+
+      <button onClick={createGraph}>Generate</button>
+
     <div className="canvasContainer">
       <canvas id="testGraph"></canvas>
     </div>
 
-      <button onClick={createGraph}>Generate</button>
     </div>
   );
 }

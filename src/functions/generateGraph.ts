@@ -12,11 +12,161 @@ let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
 );
 
 */
-import { ChartConfiguration } from "chart.js";
+import { ChartConfiguration, ChartData, ChartType } from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
-export function generateGraph(/*transactions: Transaction[], type: string*/) {
+export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
+  const transactions: Transaction[] = getTestData();
+
+  // test data finished
+
+  const rawData: FlattenedTransaction[] = getData(transactions);
+  const data: ChartData = getDataByCategory(rawData);
+  const chartType: ChartType = type as ChartType;
+  const options = getOptions(type);
+  // Config
+  // TODO: set this to be dynamic for different graph types
+  const config: ChartConfiguration = {
+    type: chartType,
+    data: data,
+    options: options
+};
+
+
+  console.log(config);
+  return config;
+}
+
+// Flatten each transaction into one single one
+function getData(transactions: Transaction[]): FlattenedTransaction[] {
+  const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
+    (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
+  );
+
+  return flattendTransactions;
+}
+
+/**
+ * Takes an array of FlattenedTransaction objects and converts them into a ChartData object.
+ * Transactions are separated into categories, with each category totalling the amount from each relevant transaction.
+ *
+ * @param {FlattenedTransaction[]} rawData
+ * @return {ChartData} formatted ChartData object for ChartJS
+ */
+function getDataByCategory(rawData: FlattenedTransaction[]) {
+  const labels: string[] = [];
+  const values: number[] = [];
+
+  for (let i = 0; i < rawData.length; i++) {
+    const category: string = rawData[i].category;
+
+    if (!labels.includes(category)) {
+      labels.push(category);
+      values.push(0);
+    }
+
+    const index: number = labels.indexOf(category);
+    values[index] += rawData[i].amount;
+  }
+
+  const data: ChartData = {
+    labels: labels,
+    datasets: [
+      {
+        data: values
+      }
+    ]
+  };
+
+  console.log(data);
+  console.log(labels);
+  console.log(values);
+  
+  
+
+  return data;
+}
+
+function getOptions(type){
+
+
+  const barOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            if (parseInt(value) >= 1000) {
+              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+          }
+      }        
+     }
+    }
+  };
+
+  const pieOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              
+              if (context.parsed !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+              }
+              return label;
+          }
+      }        
+     }
+    }
+  }
+
+  if (type == "bar"){
+    return barOptions;
+  } else {
+    return pieOptions;
+  }
+
+}
+
+function getTestData(){
   const transactions: Transaction[] = [
     {
       id: "01", // uuid
@@ -50,88 +200,5 @@ export function generateGraph(/*transactions: Transaction[], type: string*/) {
     }
   ];
 
-  // test data finished
-
-  const rawData: FlattenedTransaction[] = getData(transactions);
-  const type = "bar";
-  const data = getDataByCategory(rawData);
-
-  const config: ChartConfiguration = {
-    type: type,
-    data: data,
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  };
-
-  // const data = {
-  //   labels: ["Label 1", "Label 2", "Label 3", "Label 4", "Label 5"],
-  //   datasets: [
-  //     {
-  //       label: "Sample Data",
-  //       data: [10, 20, 30, 40, 50],
-  //       backgroundColor: "rgba(75, 192, 192, 0.2)", // Bar color
-  //       borderColor: "rgba(75, 192, 192, 1)", // Border color
-  //       borderWidth: 1 // Border width
-  //     }
-  //   ]
-  // };
-
-  // // Define the chart configuration
-  // const config = {
-  //   type: "bar",
-  //   data: data,
-  //   options: {}
-  // };
-  console.log(config);
-  return config;
-}
-
-// Flatten each transaction into one single one
-function getData(transactions: Transaction[]): FlattenedTransaction[] {
-  const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
-    (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-  );
-
-  return flattendTransactions;
-}
-
-// Returns a dataset of data
-function getDataByCategory(rawData: FlattenedTransaction[]) {
-  const labels: string[] = [];
-  const values: number[] = [];
-
-  for (let i = 0; i < rawData.length; i++) {
-    const category: string = rawData[i].category;
-
-    if (!labels.includes(category)) {
-      labels.push(category);
-      values.push(0);
-    }
-
-    const index: number = labels.indexOf(category);
-    values[index] += rawData[i].amount;
-  }
-
-  const data = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Sample Data",
-        data: values
-      }
-    ]
-  };
-
-  console.log(data);
-  console.log(labels);
-  console.log(values);
-  
-  
-
-  return data;
+  return transactions;
 }
