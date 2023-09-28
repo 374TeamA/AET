@@ -5,7 +5,8 @@ import {
   defaultCategories
 } from "../context/CategoryContext";
 import { useState } from "react";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Paper, Box, Typography, List,ListItem, IconButton, TextField } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 export default function Settings() {
   // state to store the list of categories
   const [categoryList, setCategoryList] =
@@ -33,37 +34,37 @@ export default function Settings() {
   };
   // TODO: Categories need unique ids for if they're changed
   return (
-    <>
-      <div>Settings</div>
+    <Box sx={{ width: "100%", height: "94%",p:3 }}>
+      <Typography variant="h4">Settings</Typography>
+      
       {/* CategoryContext Provider sets the CategoryContext to whatever categoryList is (and react handles updating it in the background)*/}
+      
+      <Grid container direction="row" spacing={2}>
+      <Grid item xs={4} md={6} sm={12}>
       <CategoryContext.Provider value={categoryList}>
+        <Paper elevation={4} sx={{padding:5}}>
+        <Typography variant="h5">Category List</Typography>
+        <Button variant="contained" onClick={addCategory}>Add Category</Button>
         {/* Display an array of categories */}
+        <List>
         {categoryList.map((categoryName, index) => (
-          <Grid container direction="row" key={index}>
-            <Grid item xs={6}>
-              <div>
-                <input
-                  type="text"
-                  value={categoryName}
-                  onChange={() => {
-                    updateCategory(index, categoryName);
-                  }}
-                />
-              </div>
-            </Grid>
-            <Grid item xs={6}>
-              <div>
-                <Button
-                  variant="contained"
-                  onClick={() => removeCategory(index)}
-                >
-                  Add
-                </Button>
-              </div>
-            </Grid>
-          </Grid>
+          <ListItem key={index} secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => removeCategory(index)}>
+              <DeleteIcon />
+            </IconButton>
+          }>
+            <TextField variant="outlined" sx={{width:"100%"}} defaultValue={categoryName}
+              /*onChange={() => {
+                updateCategory(index, categoryName);
+              }}*/ />
+          </ListItem>
         ))}
+        </List>
+        </Paper>
       </CategoryContext.Provider>
-    </>
+      </Grid>
+      </Grid>
+      
+    </Box>
   );
 }
