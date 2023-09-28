@@ -22,7 +22,13 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // test data finished
 
   const rawData: FlattenedTransaction[] = getData(transactions);
-  const data: ChartData = getDataByCategory(rawData);
+  let data: ChartData; 
+  if (type == "pie" || type == "bar"){
+    data = getDataByCategory(rawData);
+  } else {
+    data = getDataByDate(rawData);
+  }
+  
   const chartType: ChartType = type as ChartType;
   const options = getOptions(type);
   // Config
@@ -88,7 +94,41 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   return data;
 }
 
-function getOptions(type){
+function getDataByDate(rawData: FlattenedTransaction[]){
+  const labels: string[] = [];
+  const values: number[] = [];
+
+  for (let i = 0; i < rawData.length; i++) {
+    const date: string = rawData[i].date.toDateString();
+
+    if (!labels.includes(date)) {
+      labels.push(date);
+      values.push(0);
+    }
+
+    const index: number = labels.indexOf(date);
+    values[index] += rawData[i].amount;
+  }
+
+  const data: ChartData = {
+    labels: labels,
+    datasets: [
+      {
+        data: values
+      }
+    ]
+  };
+
+  console.log(data);
+  console.log(labels);
+  console.log(values);
+  
+  
+
+  return data;
+}
+
+function getOptions(type: string){
 
 
   const barOptions = {
@@ -96,7 +136,7 @@ function getOptions(type){
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value) {
+          callback: function(value: string) {
             if (parseInt(value) >= 1000) {
               return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             } else {
@@ -158,10 +198,42 @@ function getOptions(type){
     }
   }
 
+  const lineOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              console.log(context.parsed);
+              
+              
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+          }
+        }
+      }    
+      }
+  }
+
   if (type == "bar"){
     return barOptions;
-  } else {
+  } else if (type == "pie") {
     return pieOptions;
+  } else {
+    return lineOptions;
   }
 
 }
@@ -182,7 +254,7 @@ function getTestData(){
     },
     {
       id: "03", // uuid
-      date: new Date("2021-01-01"),
+      date: new Date("2021-01-02"),
       merchant: "The Warehouse",
       details: [
         { amount: 27, category: "Food" },
@@ -191,7 +263,7 @@ function getTestData(){
     },
     {
       id: "04", // uuid
-      date: new Date("2021-01-01"),
+      date: new Date("2021-01-03"),
       merchant: "The Warehouse",
       details: [
         { amount: 27, category: "Entertainment" },

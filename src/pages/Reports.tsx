@@ -36,13 +36,14 @@ export default function Reports() {
       <select id="typeSelection">
         <option value="pie">Pie</option>
         <option value="bar">Bar</option>
+        <option value="line">Line</option>
       </select>
 
       <button onClick={createGraph}>Generate</button>
 
-    <div className="canvasContainer">
-      <canvas id="testGraph"></canvas>
-    </div>
+      <div className="canvasContainer">
+        <canvas id="testGraph"></canvas>
+      </div>
 
     </div>
   );
