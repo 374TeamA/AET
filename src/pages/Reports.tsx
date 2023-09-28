@@ -5,42 +5,28 @@ import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 
 export default function Reports() {
+  let graph:Chart;
+
   const createGraph = () => {
+    if(graph){
+      graph.destroy();
+    }
+
     const recieved = generateGraph();
 
-    new Chart(
+    graph = new Chart(
       document.getElementById("testGraph") as HTMLCanvasElement,
       recieved
     );
-
-    new Chart(document.getElementById("testGraph2") as HTMLCanvasElement, {
-      type: "bar",
-      data: {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-        datasets: [
-          {
-            label: "# of Votes",
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  };
+  }
 
   return (
     <div>
       <p>Reports</p>
 
+    <div className="canvasContainer">
       <canvas id="testGraph"></canvas>
-      <canvas id="testGraph2"></canvas>
+    </div>
 
       <button onClick={createGraph}>Generate</button>
     </div>

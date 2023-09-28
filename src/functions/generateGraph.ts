@@ -38,8 +38,19 @@ export function generateGraph(/*transactions: Transaction[], type: string*/) {
         { amount: 27, category: "Food" },
         { amount: 150, category: "Clothes" }
       ]
+    },
+    {
+      id: "04", // uuid
+      date: new Date("2021-01-01"),
+      merchant: "The Warehouse",
+      details: [
+        { amount: 27, category: "Entertainment" },
+        { amount: 30, category: "Clothes" }
+      ]
     }
   ];
+
+  // test data finished
 
   const rawData: FlattenedTransaction[] = getData(transactions);
   const type = "bar";
@@ -107,7 +118,7 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   }
 
   const data = {
-    label: labels,
+    labels: labels,
     datasets: [
       {
         label: "Sample Data",
@@ -117,6 +128,10 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   };
 
   console.log(data);
+  console.log(labels);
+  console.log(values);
+  
+  
 
   return data;
 }

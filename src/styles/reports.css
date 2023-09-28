@@ -4,6 +4,10 @@ canvas {
   height: 200px;
   border: 2px #092834 solid;
   background-color: #ffffff;
-  padding-bottom: 10px;
+  padding: 10px;
   margin-bottom: 20px;
+}
+
+.canvasContainer {
+    width: 50%;
 }
