@@ -199,6 +199,20 @@ function getOptions(type: string){
   }
 
   const lineOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: string) {
+            if (parseInt(value) >= 1000) {
+              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    },
     plugins: {
       title: {
         display: true,
@@ -215,8 +229,6 @@ function getOptions(type: string){
               if (label) {
                   label += ': ';
               }
-              console.log(context.parsed);
-              
               
               if (context.parsed.y !== null) {
                   label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
