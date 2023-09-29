@@ -14,17 +14,28 @@ export function getTransactions(
 
 }
 
-export function saveTransaction(transaction: Transaction) {
-  const db = connectToDatabase();
-  if (db instanceof IDBDatabase) {
-    const dbt = db.transaction("transactions", "readwrite");
-    const ts = dbt.objectStore("transactions");
-    const req = ts.add(transaction);
-    req.onsuccess = () => {
-      console.log("Transaction added", req.result);
-    }
-    req.onerror = () => {
-      console.error("Error", req.error)
-    }
+export async function saveTransaction(t: Transaction) {
+  const db = await connectToDatabase();
+  const dbt = db.transaction("transactions", "readwrite");
+  const ts = dbt.objectStore("transactions");
+  const req = ts.put(t);
+  req.onsuccess = () => {
+    console.log("Transaction added", req.result);
+  }
+  req.onerror = () => {
+    console.error("Error", req.error);
+  }
+}
+
+export async function deleteTransaction(id: string) {
+  const db = await connectToDatabase();
+  const dbt = db.transaction("transactions", "readwrite");
+  const ts = dbt.objectStore("transactions");
+  const req = ts.delete(id);
+  req.onsuccess = () => {
+    console.log("Transaction deleted", req.result);
+  }
+  req.onerror = () => {
+    console.error("Error", req.error);
   }
 }
