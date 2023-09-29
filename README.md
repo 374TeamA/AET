@@ -1,8 +1,8 @@
-# Initilization
+# Initialisation
 
 After you have pulled the repository, you need to install the dependencies. You can do this by running the following command in the root directory of the project:
 
-- npm i
+- npm ci
 
 # Running the project
 
