@@ -23,7 +23,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
 
   const rawData: FlattenedTransaction[] = getData(transactions);
   let data: ChartData; 
-  if (type == "pie" || type == "bar"){
+  if (type == "pie" || type == "bar" || type == "polarArea"){
     data = getDataByCategory(rawData);
   } else {
     data = getDataByDate(rawData);
@@ -187,7 +187,6 @@ function getOptions(type: string){
               if (label) {
                   label += ': ';
               }
-              
               if (context.parsed !== null) {
                   label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
               }
@@ -197,6 +196,32 @@ function getOptions(type: string){
      }
     }
   }
+
+  const polarOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              if (context.parsed.r !== null) {
+                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.r);
+              }
+            
+              return label;
+          }
+      }        
+     }
+    }
+  }
+
 
   const lineOptions = {
     scales: {
@@ -244,6 +269,8 @@ function getOptions(type: string){
     return barOptions;
   } else if (type == "pie") {
     return pieOptions;
+  } else if ( type == "polarArea"){
+    return polarOptions;
   } else {
     return lineOptions;
   }

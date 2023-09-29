@@ -37,6 +37,7 @@ export default function Reports() {
         <option value="pie">Pie</option>
         <option value="bar">Bar</option>
         <option value="line">Line</option>
+        <option value="polarArea">Polar Area</option>
       </select>
 
       <button onClick={createGraph}>Generate</button>
