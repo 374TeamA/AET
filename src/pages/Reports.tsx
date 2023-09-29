@@ -5,12 +5,8 @@ import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 
 export default function Reports() {
-  let graph:Chart;
 
   const createGraph = () => {
-    if(graph){
-      graph.destroy();
-    }
 
     // Get a reference to the select element
     const selectElement: HTMLSelectElement = document.getElementById("typeSelection") as HTMLSelectElement;
@@ -23,10 +19,16 @@ export default function Reports() {
 
     const recieved = generateGraph(type);
 
-    graph = new Chart(
-      document.getElementById("testGraph") as HTMLCanvasElement,
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    const canvasContainer: HTMLDivElement = document.getElementById("canvasContainer") as HTMLDivElement;
+    canvasContainer.appendChild(canvas);
+
+    new Chart(
+      canvas,
       recieved
     );
+
+    
   }
 
   return (
@@ -42,8 +44,7 @@ export default function Reports() {
 
       <button onClick={createGraph}>Generate</button>
 
-      <div className="canvasContainer">
-        <canvas id="testGraph"></canvas>
+      <div className="canvasContainer" id="canvasContainer">
       </div>
 
     </div>
