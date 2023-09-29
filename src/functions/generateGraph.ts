@@ -12,70 +12,34 @@ let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
 );
 
 */
-import { ChartConfiguration } from "chart.js";
+import { ChartConfiguration, ChartData, ChartType } from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
-export function generateGraph(/*transactions: Transaction[], type: string*/) {
+export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
-  const transactions: Transaction[] = [
-    {
-      id: "01", // uuid
-      date: new Date("2021-01-01"),
-      merchant: "Countdown",
-      details: [{ amount: 7, category: "Food" }]
-    },
-    {
-      id: "02", // uuid
-      date: new Date("2021-01-01"),
-      merchant: "New World",
-      details: [{ amount: 10, category: "Food" }]
-    },
-    {
-      id: "03", // uuid
-      date: new Date("2021-01-01"),
-      merchant: "The Warehouse",
-      details: [
-        { amount: 27, category: "Food" },
-        { amount: 150, category: "Clothes" }
-      ]
-    }
-  ];
+  const transactions: Transaction[] = getTestData();
+
+  // test data finished
 
   const rawData: FlattenedTransaction[] = getData(transactions);
-  const type = "bar";
-  const data = getDataByCategory(rawData);
-
+  let data: ChartData; 
+  if (type == "pie" || type == "bar" || type == "polarArea"){
+    data = getDataByCategory(rawData);
+  } else {
+    data = getDataByDate(rawData);
+  }
+  
+  const chartType: ChartType = type as ChartType;
+  const options = getOptions(type);
+  // Config
+  // TODO: set this to be dynamic for different graph types
   const config: ChartConfiguration = {
-    type: type,
+    type: chartType,
     data: data,
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  };
+    options: options
+};
 
-  // const data = {
-  //   labels: ["Label 1", "Label 2", "Label 3", "Label 4", "Label 5"],
-  //   datasets: [
-  //     {
-  //       label: "Sample Data",
-  //       data: [10, 20, 30, 40, 50],
-  //       backgroundColor: "rgba(75, 192, 192, 0.2)", // Bar color
-  //       borderColor: "rgba(75, 192, 192, 1)", // Border color
-  //       borderWidth: 1 // Border width
-  //     }
-  //   ]
-  // };
 
-  // // Define the chart configuration
-  // const config = {
-  //   type: "bar",
-  //   data: data,
-  //   options: {}
-  // };
   console.log(config);
   return config;
 }
@@ -89,7 +53,13 @@ function getData(transactions: Transaction[]): FlattenedTransaction[] {
   return flattendTransactions;
 }
 
-// Returns a dataset of data
+/**
+ * Takes an array of FlattenedTransaction objects and converts them into a ChartData object.
+ * Transactions are separated into categories, with each category totalling the amount from each relevant transaction.
+ *
+ * @param {FlattenedTransaction[]} rawData
+ * @return {ChartData} formatted ChartData object for ChartJS
+ */
 function getDataByCategory(rawData: FlattenedTransaction[]) {
   const labels: string[] = [];
   const values: number[] = [];
@@ -106,17 +76,240 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     values[index] += rawData[i].amount;
   }
 
-  const data = {
-    label: labels,
+  const data: ChartData = {
+    labels: labels,
     datasets: [
       {
-        label: "Sample Data",
         data: values
       }
     ]
   };
 
   console.log(data);
+  console.log(labels);
+  console.log(values);
+  
+  
 
   return data;
+}
+
+function getDataByDate(rawData: FlattenedTransaction[]){
+  const labels: string[] = [];
+  const values: number[] = [];
+
+  for (let i = 0; i < rawData.length; i++) {
+    const date: string = rawData[i].date.toDateString();
+
+    if (!labels.includes(date)) {
+      labels.push(date);
+      values.push(0);
+    }
+
+    const index: number = labels.indexOf(date);
+    values[index] += rawData[i].amount;
+  }
+
+  const data: ChartData = {
+    labels: labels,
+    datasets: [
+      {
+        data: values
+      }
+    ]
+  };
+
+  console.log(data);
+  console.log(labels);
+  console.log(values);
+  
+  
+
+  return data;
+}
+
+function getOptions(type: string){
+
+
+  const barOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: string) {
+            if (parseInt(value) >= 1000) {
+              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+          }
+      }        
+     }
+    }
+  };
+
+  const pieOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              if (context.parsed !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+              }
+              return label;
+          }
+      }        
+     }
+    }
+  }
+
+  const polarOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              if (context.parsed.r !== null) {
+                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.r);
+              }
+            
+              return label;
+          }
+      }        
+     }
+    }
+  }
+
+
+  const lineOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: string) {
+            if (parseInt(value) >= 1000) {
+              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Test' 
+      },
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+          }
+        }
+      }    
+      }
+  }
+
+  if (type == "bar"){
+    return barOptions;
+  } else if (type == "pie") {
+    return pieOptions;
+  } else if ( type == "polarArea"){
+    return polarOptions;
+  } else {
+    return lineOptions;
+  }
+
+}
+
+function getTestData(){
+  const transactions: Transaction[] = [
+    {
+      id: "01", // uuid
+      date: new Date("2021-01-01"),
+      merchant: "Countdown",
+      details: [{ amount: 7, category: "Food" }]
+    },
+    {
+      id: "02", // uuid
+      date: new Date("2021-01-01"),
+      merchant: "New World",
+      details: [{ amount: 10, category: "Food" }]
+    },
+    {
+      id: "03", // uuid
+      date: new Date("2021-01-02"),
+      merchant: "The Warehouse",
+      details: [
+        { amount: 27, category: "Food" },
+        { amount: 150, category: "Clothes" }
+      ]
+    },
+    {
+      id: "04", // uuid
+      date: new Date("2021-01-03"),
+      merchant: "The Warehouse",
+      details: [
+        { amount: 27, category: "Entertainment" },
+        { amount: 30, category: "Clothes" }
+      ]
+    }
+  ];
+
+  return transactions;
 }

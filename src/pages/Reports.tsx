@@ -5,44 +5,48 @@ import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 
 export default function Reports() {
+
   const createGraph = () => {
-    const recieved = generateGraph();
+
+    // Get a reference to the select element
+    const selectElement: HTMLSelectElement = document.getElementById("typeSelection") as HTMLSelectElement;
+
+    // Get the selected option
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+    // Get the value of the selected option
+    const type: string = selectedOption.value;
+
+    const recieved = generateGraph(type);
+
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    const canvasContainer: HTMLDivElement = document.getElementById("canvasContainer") as HTMLDivElement;
+    canvasContainer.appendChild(canvas);
 
     new Chart(
-      document.getElementById("testGraph") as HTMLCanvasElement,
+      canvas,
       recieved
     );
 
-    new Chart(document.getElementById("testGraph2") as HTMLCanvasElement, {
-      type: "bar",
-      data: {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-        datasets: [
-          {
-            label: "# of Votes",
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  };
+    
+  }
 
   return (
     <div>
       <p>Reports</p>
 
-      <canvas id="testGraph"></canvas>
-      <canvas id="testGraph2"></canvas>
+      <select id="typeSelection">
+        <option value="pie">Pie</option>
+        <option value="bar">Bar</option>
+        <option value="line">Line</option>
+        <option value="polarArea">Polar Area</option>
+      </select>
 
       <button onClick={createGraph}>Generate</button>
+
+      <div className="canvasContainer" id="canvasContainer">
+      </div>
+
     </div>
   );
 }
