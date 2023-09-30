@@ -31,3 +31,55 @@ body {
   box-shadow: 0 0 10px 0px #00000031;
   border-radius: 5px;
 }
+
+.padding-1 {
+  padding: 1vh;
+}
+
+.padding-2 {
+  padding: 2vh;
+}
+
+/* Style for the container of the checkbox */
+.custom-checkbox {
+  display: inline-block;
+  position: relative;
+  padding-left: 30px; /* Adjust this value as needed for your design */
+  margin-right: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Style for the checkbox input */
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Style for the checkmark */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1rem;
+  width: 1rem;
+  background-color: grey; /* Default color when unchecked */
+  border-radius: 3px; /* Rounded corners for the checkbox */
+}
+
+/* Style for the checkmark when the checkbox is checked */
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: green; /* Green color when checked */
+}
+
+input {
+  border: 1px solid lightgrey;
+  padding: 0.5rem;
+  margin: 2px;
+  border-radius: 5px;
+}
+
+input:hover {
+  background-color: #e4e4e431;
+}

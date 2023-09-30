@@ -1,0 +1,23 @@
+.group-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+  padding: 1rem;
+}
+
+.group-label {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #ffffff; /* Background color (e.g., black) */
+  padding: 3px; /* Adjust padding to control border width */
+  color: rgb(0, 0, 0);
+  position: absolute;
+  transform: translateX(+50%);
+  transform: translateY(-2.25rem);
+}

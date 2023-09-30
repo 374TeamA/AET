@@ -1,5 +1,5 @@
 import { Transaction } from "../types/transaction";
-import { parse } from "csv-parse";
+import { parse } from "csv-parse/browser/esm";
 
 // const fs = require("fs");
 // Notes to consider:
