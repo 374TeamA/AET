@@ -3,31 +3,58 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-.header {
-  height: 8vh;
-  background-color: #ffffff;
-  color: rgb(69, 143, 255);
-  display: flex;
-  margin-bottom: 1vh;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px 0px #00000031;
-  border: 1px solid lightgrey;
-  display: flex;
-  align-items: center;
-  font-family: "Roboto", sans-serif;
-  padding-left: 1vh;
-  font-family: "Inconsolata", monospace;
-  font-family: "Inter", sans-serif;
-  font-family: "Istok Web", sans-serif;
+
+
+
+
+.padding-1 {
+  padding: 1vh;
 }
 
-.content {
+.padding-2 {
+  padding: 2vh;
+}
+
+/* Style for the container of the checkbox */
+.custom-checkbox {
+  display: inline-block;
+  position: relative;
+  padding-left: 30px; /* Adjust this value as needed for your design */
+  margin-right: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Style for the checkbox input */
+.custom-checkbox input {
   position: absolute;
-  top: 9vh;
-  left: 11vw;
-  width: 88.5vw;
-  height: 90vh;
-  background-color: white;
-  box-shadow: 0 0 10px 0px #00000031;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Style for the checkmark */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1rem;
+  width: 1rem;
+  background-color: grey; /* Default color when unchecked */
+  border-radius: 3px; /* Rounded corners for the checkbox */
+}
+
+/* Style for the checkmark when the checkbox is checked */
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: green; /* Green color when checked */
+}
+
+input {
+  border: 1px solid lightgrey;
+  padding: 0.5rem;
+  margin: 2px;
   border-radius: 5px;
+}
+
+input:hover {
+  background-color: #e4e4e431;
 }

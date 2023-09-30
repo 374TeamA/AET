@@ -6,7 +6,10 @@ import {
 } from "../context/CategoryContext";
 import { useState } from "react";
 import { Button, Grid } from "@mui/material";
+import { useTitle } from "../hooks/UseTitle";
 export default function Settings() {
+  useTitle('Settings')
+
   // state to store the list of categories
   const [categoryList, setCategoryList] =
     useState<CategoryList>(defaultCategories);

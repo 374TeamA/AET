@@ -1,0 +1,22 @@
+.upload-input {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+  color: #a7a7a78a;
+}
+
+.file-upload-button {
+  width: 100%;
+  height: 3rem;
+  border: 1px solid #00000010;
+  background-color: #d9d9d96e;
+  color: #a7a7a7;
+  font-size: 1.5rem;
+  font-weight: 100;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+  /* box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.322); */
+}
