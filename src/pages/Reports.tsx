@@ -5,8 +5,12 @@ import { useState, ChangeEvent } from "react";
 import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
+import { useTitle } from "../hooks/UseTitle";
 
 export default function Reports() {
+
+  useTitle('Reports')
+
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -60,8 +64,7 @@ export default function Reports() {
   };
 
   return (
-    <div className="padding-2">
-      <p>Reports</p>
+    <div>
       <Group label="Export">
         <div>
           <label htmlFor="startDate">Start Date:</label>

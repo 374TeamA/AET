@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Transactions from "./Accounts/Transactions";
 import Import from "./Accounts/Import";
 import History from "./Accounts/History";
+import { useTitle } from "../hooks/UseTitle";
 //Accounts page is the default layout for each account and will need to load the specifics of the account based on a given account id
 
 interface TabPanelProps {
@@ -43,7 +44,7 @@ function a11yProps(index: number) {
 }
 export default function Accounts() {
   const [value, setValue] = React.useState(0);
-
+  useTitle("Accounts");
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
