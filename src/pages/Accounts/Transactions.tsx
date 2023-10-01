@@ -11,7 +11,7 @@ const columns: GridColDef[] = [
 
 export default function Transactions() {
   return (
-    <Box style={{ height: "80vh" }}>
+    <Box style={{ height: "77vh" }}>
       <DataGrid
         columns={columns}
         rows={[
