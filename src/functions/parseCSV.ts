@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { Transaction, Import, ColumnInfo } from "../types/transaction";
-import { parse } from "csv-parse";
+import { parse } from "csv-parse/browser/esm";
 
 /*eslint-disable*/
 
