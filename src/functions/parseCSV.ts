@@ -55,7 +55,7 @@ export function loadImportFromFile(csvFile: File): Promise<Import> {
 
 async function parseStringToCsvData(rawData: string): Promise<string[][]> {
   return new Promise<string[][]>((resolve, reject) => {
-    parse(csvString, { delimiter: "," }, (err, records: string[][]) => {
+    parse(rawData, { delimiter: "," }, (err, records: string[][]) => {
       if (err) {
         console.error(err);
         reject(err);
