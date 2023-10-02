@@ -1,52 +1,79 @@
+import * as csvParser from "csv-parser";
+import { Readable } from "stream";
+
 import { v4 as uuidv4 } from "uuid";
 import { Transaction, Import, ColumnInfo } from "../types/transaction";
-import { parse } from "csv-parse";
 
 /*eslint-disable*/
-
-// https://stackoverflow.com/questions/4950567/reading-client-side-text-file-using-javascript
-// https://www.npmjs.com/package/csv-parse
 
 /**
  * Function to read a text file line by line and return lines as an array
  *
  * @export
- * @param {File} csv
+ * @param {File} csvFile
  * @return {*}  {Transaction[]}
  */
-export function parseCSV(csv: File): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
+export function loadImportFromFile(csvFile: File): Promise<Import> {
+  // Create and return a new promise of a transaction import
+  return new Promise<Import>((resolve, reject) => {
+    // Create a new file reader to read the file
     const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const csvString: string | ArrayBuffer | null | undefined =
+    // Upon load of the file
+    reader.onload = async (e) => {
+      // Get the contents of the file
+      const fileContents: string | ArrayBuffer | null | undefined =
         e.target?.result;
-      if (csvString && typeof csvString === "string") {
-        const lines = parseCSVString(csvString);
-        resolve(lines);
-      } else {
+
+      // If the contents is a string
+      if (fileContents && typeof fileContents === "string") {
+        // Parse the file contents to an array of string arrays
+        let csvData: string[][] = await parseStringToCsvData(fileContents);
+
+        // Parse to an import
+        let newImport: Import = createImportFromCsvData(csvData);
+
+        // Resolve to the newly created import
+        resolve(newImport);
+      }
+
+      // Otherwise, reject with a new error
+      else {
         reject(new Error("Invalid CSV data."));
       }
     };
+
+    // Upon error of the reader, reject with the error
     reader.onerror = (err) => {
       reject(err);
     };
-    reader.readAsText(csv);
+
+    // Attempt to read the CSV file, as text
+    reader.readAsText(csvFile);
   });
 }
 
-function parseCSVString(csvString: string): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    parse(csvString, { delimiter: "," }, (err, records) => {
-      if (err) {
-        console.error(err);
+async function parseStringToCsvData(rawData: string): Promise<string[][]> {
+  return new Promise((resolve, reject) => {
+    const csvData: string[][] = [];
+
+    // Create a readable stream from the CSV string
+    const stream = Readable.from(rawData);
+
+    // Pipe the stream through the csv-parser
+    stream
+      .pipe(csvParser())
+      .on("data", (row: Record<string, string>) => {
+        // Convert the row object to an array of values
+        const rowValues = Object.values(row);
+        csvData.push(rowValues);
+      })
+      .on("end", () => {
+        resolve(csvData);
+      })
+      .on("error", (err) => {
         reject(err);
-      } else {
-        // Flatten the array of arrays into a single array of strings
-        const lines = records.flat();
-        resolve(lines);
-      }
-    });
+      });
   });
 }
 
@@ -64,7 +91,7 @@ const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
  * @param csvData A csv split into an array of string arrays
  * @returns A populated transaction import
  */
-function parseStringArrayArrayToImport(csvData: string[][]): Import {
+function createImportFromCsvData(csvData: string[][]): Import {
   // Clean the data
   csvData = cleanData(csvData);
 
