@@ -1,4 +1,4 @@
-import * as csvParser from "csv-parser";
+import { parse } from "csv-parse/browser/esm";
 import { Readable } from "stream";
 
 import { v4 as uuidv4 } from "uuid";
@@ -54,26 +54,15 @@ export function loadImportFromFile(csvFile: File): Promise<Import> {
 }
 
 async function parseStringToCsvData(rawData: string): Promise<string[][]> {
-  return new Promise((resolve, reject) => {
-    const csvData: string[][] = [];
-
-    // Create a readable stream from the CSV string
-    const stream = Readable.from(rawData);
-
-    // Pipe the stream through the csv-parser
-    stream
-      .pipe(csvParser())
-      .on("data", (row: Record<string, string>) => {
-        // Convert the row object to an array of values
-        const rowValues = Object.values(row);
-        csvData.push(rowValues);
-      })
-      .on("end", () => {
-        resolve(csvData);
-      })
-      .on("error", (err) => {
+  return new Promise<string[][]>((resolve, reject) => {
+    parse(csvString, { delimiter: "," }, (err, records: string[][]) => {
+      if (err) {
+        console.error(err);
         reject(err);
-      });
+      } else {
+        resolve(records);
+      }
+    });
   });
 }
 
