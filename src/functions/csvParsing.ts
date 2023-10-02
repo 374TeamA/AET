@@ -1,17 +1,32 @@
 import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse } from "csv-parse/browser/esm";
+import { parse as dateParse } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 
 /*eslint-disable*/
 
-// This is a list of valid merchant column names from the main five banks:
-// ANZ: Details
-// ASB: Payee
-// BNZ: Payee
-// Kiwibank: OP name
-// Westpac: Other Party
+/*
+ * This is a list of valid merchant column names from the main five banks:
+ *
+ * ANZ: Details
+ * ASB: Payee
+ * BNZ: Payee
+ * Kiwibank: OP name
+ * Westpac: Other Party
+ */
 const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
+
+/*
+ * This is a list of valid date formats from the main five banks:
+ *
+ * ANZ: dd/MM/yyyy
+ * ASB: yyyy/MM/dd
+ * BNZ: dd/MM/yyyy
+ * Kiwibank: dd-MM-yyyy
+ * Westpac: dd/MM/yyyy
+ */
+const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
 
 /**
  * Reads a csv bank statement line by line and generates an import of valid expense transactions
@@ -219,7 +234,7 @@ function getTransactionFromLine(
   amount = Math.abs(amount);
 
   // Get the date
-  let date: Date = new Date(line[columnIndexes.dateIndex]);
+  let date: Date = parseDate(line[columnIndexes.dateIndex]);
 
   // Get the merchant
   let merchant: string = line[columnIndexes.merchantIndex];
@@ -231,6 +246,27 @@ function getTransactionFromLine(
     merchant: merchant,
     details: [{ amount: amount, category: "Default" }]
   };
+}
+
+/**
+ * Attempts to parse a date string into a date object using the list of available date formats
+ *
+ * @param dateString The string to be parsed into a date object
+ * @returns A parsed date object
+ */
+function parseDate(dateString: string): Date {
+  // Try to parse the date using one of the available formats
+  let date: Date | undefined = dateFormats
+    .map((format) => dateParse(dateString, format, new Date()))
+    .find((parsedDate) => !isNaN(parsedDate.getTime()));
+
+  // If the parse worked, return the parsed date
+  if (date) {
+    return date;
+  }
+
+  // Otherwise, throw an error
+  throw new Error("Date format not recognised.");
 }
 
 /**
