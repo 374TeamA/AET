@@ -161,7 +161,7 @@ function getColumnInfo(csvData: string[][]): ColumnInfo {
 }
 
 /**
- * Splits csv data into a list of transactions
+ * Splits csv data into a list of transactions. (Assumes the csv data has headers.)
  *
  * @param csvData The csv data to split into transactions
  * @param columnInfo The column indices of the csv data
@@ -178,21 +178,19 @@ function getTransactions(
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
     let line: string[] = csvData[i];
-    console.log(line);
 
-    // If the amount is positive, skip this transaction
-    if (parseFloat(line[columnInfo.amountIndex]) > 0) {
-      continue;
+    // Try to create a new transaction from the current line and push it to the list of transactions
+    try {
+      transactions.push(getTransactionFromLine(line, columnInfo));
+    } catch (error) {
+      console.error(`Error parsing line ${i}: ${(error as Error).message}`);
     }
-
-    // Create a new transaction from the current line, and push it to the list of transactions
-    transactions.push(getTransactionFromLine(line, columnInfo));
   }
 
   // If no valid "expense" transactions were made, throw an error
   if (transactions.length == 0) {
     throw new Error(
-      "No expense transactions were found in this bank statement."
+      "No valid expense transactions were found in this bank statement."
     );
   }
 
@@ -214,15 +212,19 @@ function getTransactionFromLine(
   // Get the amount
   let amount: number = parseFloat(line[columnInfo.amountIndex]);
 
+  // If the amount is positive, throw an error
+  if (amount > 0) throw new Error("Amount was positive; Not a valid expense.");
+
   // Make the amount positive
   amount = Math.abs(amount);
 
   // Get the date
   let date: Date = new Date(line[columnInfo.dateIndex]);
 
+  // Get the merchant
   let merchant: string = line[columnInfo.merchantIndex];
 
-  // Populate and return
+  // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
     date: date,
