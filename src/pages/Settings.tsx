@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Button, Grid } from "@mui/material";
 import { useTitle } from "../hooks/UseTitle";
 export default function Settings() {
-  useTitle('Settings')
+  useTitle("Settings");
 
   // state to store the list of categories
   const [categoryList, setCategoryList] =
@@ -21,6 +21,7 @@ export default function Settings() {
     setCategoryList(newCategoryList);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addCategory = () => {
     // adds a category to the list
     const newCategoryList = [...categoryList];

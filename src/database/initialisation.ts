@@ -1,4 +1,4 @@
-import { Transaction } from "../types/transaction";
+// import { Transaction } from "../types/transaction";
 
 export function connectToDatabase(acc: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

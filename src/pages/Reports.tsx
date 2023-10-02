@@ -1,7 +1,7 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
@@ -35,6 +35,8 @@ export default function Reports() {
 
     new Chart(canvas, recieved);
   };
+
+  useEffect(() => {}, [startDate, endDate]);
 
   const handleExportTransactions = () => {
     throw new Error("Function not implemented.");
