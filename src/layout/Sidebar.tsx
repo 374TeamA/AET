@@ -1,44 +1,48 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import "../styles/nav.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
+  const location = useLocation();
+  useEffect(() => {
+    console.log("sidebar " + window.location.href);
+  }, []);
+  useEffect(() => {
+    console.log("sidebar " + location.pathname);
+  }, [location]);
   return (
     <div className="sidebar">
       <ul className="navbar">
-        <li>
-          <NavLink
-          style={{width:'100%', display:'block'}}
-            to="/"
-            className={
-              window.location.href.includes("Dashboard") ? "active" : ""
-            }
-          >
+        <li className={location.pathname === "/" ? "selected" : ""}>
+          <NavLink style={{ width: "100%", display: "block" }} to="/">
             Dashboard
           </NavLink>
         </li>
-        <li>
-          <NavLink
-          style={{width:'100%', display:'block'}}
-            to="accounts"
-            className={
-              window.location.href.includes("Accounts") ? "active" : ""
-            }
-          >
+        <li
+          className={location.pathname.includes("accounts") ? "selected" : ""}
+        >
+          <NavLink style={{ width: "100%", display: "block" }} to="accounts">
             Accounts
           </NavLink>
         </li>
       </ul>
       <div className="bottom-links">
         <ul>
-          <li>
-            <NavLink 
-          style={{width:'100%', display:'block'}} to="/reports">Reports</NavLink>
+          <li
+            className={location.pathname.includes("reports") ? "selected" : ""}
+          >
+            <NavLink style={{ width: "100%", display: "block" }} to="/reports">
+              Reports
+            </NavLink>
           </li>
-          <li>
-            <NavLink 
-          style={{width:'100%', display:'block'}} to="/settings">Settings</NavLink>
+          <li
+            className={location.pathname.includes("settings") ? "selected" : ""}
+          >
+            <NavLink style={{ width: "100%", display: "block" }} to="/settings">
+              Settings
+            </NavLink>
           </li>
           {/* Add more links for other routes */}
         </ul>

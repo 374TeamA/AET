@@ -14,7 +14,8 @@ ul.navbar {
   font-weight: 550;
 }
 li {
-  padding: 10px;
+  margin: 0 2px 2px 0px;
+  padding: 5px;
   width: 100%;
   border-radius: 5px;
 }
@@ -23,9 +24,10 @@ li:hover {
   background-color: #4295ff;
   color: white !important;
   cursor: pointer;
+  transition: 0.3s ease-in-out;
 }
 li.selected {
-  background-color: #4295ff;
+  background-color: #2063bb;
   color: white !important;
 }
 
