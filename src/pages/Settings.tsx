@@ -5,7 +5,7 @@ import {
   defaultCategories
 } from "../context/CategoryContext";
 import { useState } from "react";
-import { Button, Grid, Paper, Box, Typography, List,ListItem, IconButton, TextField } from "@mui/material";
+import { Button, Grid, Paper, Box, Typography, List,ListItem, IconButton, TextField,Dialog } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTitle } from "../hooks/UseTitle";
@@ -19,7 +19,7 @@ export default function Settings() {
   // state for the editDialog
   const [selectedCategory,setSelectedCategory] = useState<number>(0);
   const [newCategoryName,setNewCategoryName] = useState<string>("");
-  const [openDialog,setOpenDialog] = useState<Boolean>(false);
+  const [openDialog,setOpenDialog] = useState<boolean>(false);
 
   const removeCategory = (index: number) => {
     // removes a category from the list
@@ -88,11 +88,11 @@ export default function Settings() {
         </List>
         </Paper>
         <Dialog open={openDialog}>
-          <Typography variant="p">Edit category name:</Typography>
+          <Typography variant="body1">Edit category name:</Typography>
           <TextField variant="outlined" sx={{width:"100%"}} value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e?.target.value)} />
           <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
-          <Button onClick={updateSelectedCategory()}>Save</Button>
+          <Button onClick={updateSelectedCategory}>Save</Button>
         </Dialog>
         
 
