@@ -120,7 +120,7 @@ function getColumnInfo(csvData: string[][]): ColumnInfo {
 
   // Get the column indices from the header
   let columnInfo: ColumnInfo = {
-    amountIndex: csvData[0].indexOf("Amount"),
+    amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
     merchantIndex: header.findIndex((item) => merchantTitles.includes(item))
   };
