@@ -20,10 +20,3 @@ export type FlattenedTransaction = {
   amount: number;
   category: string;
 };
-
-/* Used for parsing a csv file to an import object */
-export type ColumnInfo = {
-  dateIndex: number;
-  merchantIndex: number;
-  amountIndex: number;
-};
