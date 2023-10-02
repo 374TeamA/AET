@@ -31,12 +31,18 @@ export default function Item() {
         <div>
           <Button
             variant="contained"
-            style={{ width: "10rem", fontSize: "0.9rem", margin: "2px" }}
+            style={{
+              width: "10rem",
+              fontSize: "0.9rem",
+              margin: "2px",
+              backgroundColor: "#3f51b5",
+              color: "white"
+            }}
           >
             Category
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             style={{ width: "5rem", fontSize: "0.9rem" }}
           >
             Split

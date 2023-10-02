@@ -1,16 +1,9 @@
-#reports-container canvas {
-  text-align: center;
-  width: auto;
-  height: 200px;
-  border: 2px #092834 solid;
-  background-color: #ffffff;
-  padding: 10px;
-  margin-bottom: 20px;
+#reports-container .canvasContainer {
+  display: flex !important;
+  flex-wrap: wrap !important;
 }
 
-#reports-container .canvasContainer {
-  width: 25%;
-  display: flex;
+#reports-container {
 }
 
 .canvasContainer > canvas {
@@ -18,12 +11,14 @@
   border-radius: 5px;
   border-width: 1px !important;
   border-color: lightgrey !important;
+  max-height: 25vw;
+  max-width: 25vw;
   box-shadow: 0 1px 1px 1px rgb(0, 0, 0, 0.3);
-  transition: cubic-bezier(0.895, 0.03, 0.685, 0.22) 0.2s;
+  /* transition: cubic-bezier(0.895, 0.03, 0.685, 0.22) 0.2s; */
 }
 
 .canvasContainer > canvas:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 /* Style the select box */
