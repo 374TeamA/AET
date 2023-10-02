@@ -11,7 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useTitle } from "../hooks/UseTitle";
 import { Category } from "../types/category";
 export default function Settings() {
-  useTitle('Settings')
+  useTitle("Settings");
 
   // state to store the list of categories
   const [categoryList, setCategoryList] =
@@ -39,6 +39,7 @@ export default function Settings() {
     setOpenDialog(false);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addCategory = () => {
     // adds a category to the list
     const newCategoryList = [...categoryList];

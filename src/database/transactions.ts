@@ -1,4 +1,4 @@
-import { stat } from "fs";
+// import { stat } from "fs";
 import { Transaction } from "../types/transaction";
 import { connectToDatabase } from "./initialisation";
 

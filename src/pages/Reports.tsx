@@ -1,15 +1,14 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
 
 export default function Reports() {
-
-  useTitle('Reports')
+  useTitle("Reports");
 
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -36,6 +35,8 @@ export default function Reports() {
 
     new Chart(canvas, recieved);
   };
+
+  useEffect(() => {}, [startDate, endDate]);
 
   const handleExportTransactions = () => {
     throw new Error("Function not implemented.");
@@ -64,15 +65,25 @@ export default function Reports() {
   };
 
   return (
-    <div>
+    <div id="reports-container">
       <Group label="Export">
         <div>
           <label htmlFor="startDate">Start Date:</label>
-          <input type="date" id="startDate" onChange={handleStartDateChange} />
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
         </div>
         <div>
           <label htmlFor="endDate">End Date:</label>
-          <input type="date" id="endDate" onChange={handleEndDateChange} />
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={handleEndDateChange}
+          />
         </div>
         <button
           onClick={() => {

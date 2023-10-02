@@ -1,66 +1,74 @@
-canvas {
-  text-align: center;
-  width: auto;
-  height: 200px;
-  border: 2px #092834 solid;
-  background-color: #ffffff;
-  padding: 10px;
-  margin-bottom: 20px;
+#reports-container .canvasContainer {
+  display: flex !important;
+  flex-wrap: wrap !important;
 }
 
-.canvasContainer {
-    width: 25%;
+#reports-container {
+}
+
+.canvasContainer > canvas {
+  margin: 0.5rem;
+  border-radius: 5px;
+  border-width: 1px !important;
+  border-color: lightgrey !important;
+  max-height: 25vw;
+  max-width: 25vw;
+  box-shadow: 0 1px 1px 1px rgb(0, 0, 0, 0.3);
+  /* transition: cubic-bezier(0.895, 0.03, 0.685, 0.22) 0.2s; */
+}
+
+.canvasContainer > canvas:hover {
+  transform: scale(1.05);
 }
 
 /* Style the select box */
-select {
-    width: 200px; /* Adjust the width as needed */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: #fff;
-    color: #333;
-    cursor: pointer;
-  }
-  
-  /* Style the options within the select box */
-  select option {
-    padding: 5px;
-    font-size: 16px;
-  }
-  
-  /* Style the select box when it's hovered over */
-  select:hover {
-    border-color: #555;
-  }
-  
-  /* Style the select box when it's focused */
-  select:focus {
-    outline: none;
-    border-color: #007bff; /* Change this color to your preference */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
-  }
+#reports-container select {
+  width: 200px; /* Adjust the width as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
 
-  /* Style the button */
-button {
-    padding: 10px 20px; /* Adjust the padding as needed */
-    background-color: #007bff; /* Change this color to your preference */
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  /* Style the button when it's hovered over */
-  button:hover {
-    background-color: #0056b3; /* Change this color to your preference */
-  }
-  
-  /* Style the button when it's focused */
-  button:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
-  }
-  
+/* Style the options within the select box */
+#reports-container select option {
+  padding: 5px;
+  font-size: 16px;
+}
+
+/* Style the select box when it's hovered over */
+#reports-container select:hover {
+  border-color: #555;
+}
+
+/* Style the select box when it's focused */
+#reports-container select:focus {
+  outline: none;
+  border-color: #007bff; /* Change this color to your preference */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
+}
+
+/* Style the button */
+#reports-container button {
+  padding: 10px 20px; /* Adjust the padding as needed */
+  background-color: #007bff; /* Change this color to your preference */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Style the button when it's hovered over */
+#reports-container button:hover {
+  background-color: #0056b3; /* Change this color to your preference */
+}
+
+/* Style the button when it's focused */
+#reports-container button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
+}

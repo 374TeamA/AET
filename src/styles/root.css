@@ -1,11 +1,8 @@
 body {
   background-color: #04428e18;
   font-family: "Roboto", sans-serif;
+  overflow: hidden;
 }
-
-
-
-
 
 .padding-1 {
   padding: 1vh;
@@ -57,4 +54,25 @@ input {
 
 input:hover {
   background-color: #e4e4e431;
+}
+
+/* Style the scrollbar track */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+/* Style the scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the thumb */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Style the scrollbar track when the mouse is over it */
+::-webkit-scrollbar-track:hover {
+  background-color: #aaa;
+}
+
+/* Style the scrollbar thumb when the mouse is over it */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }

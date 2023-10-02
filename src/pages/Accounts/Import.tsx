@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import CSVUploader from "../../components/CSVUploader";
-import { parseCSV } from "../../functions/parseCSV";
+import { generateImportFromFile } from "../../functions/csvParsing";
+import Table from "../../components/Transaction/Table";
 export default function Import() {
   const [file, setFile] = React.useState<File>();
 
@@ -8,7 +9,7 @@ export default function Import() {
     const processCSV = async () => {
       if (file) {
         //TODO: properly format the csv parser and its returns
-        const transactions = await parseCSV(file);
+        const transactions = await generateImportFromFile(file);
         console.log(transactions);
       }
     };
@@ -18,6 +19,7 @@ export default function Import() {
   return (
     <div>
       <CSVUploader setFile={setFile} />
+      <Table />
     </div>
   );
 }

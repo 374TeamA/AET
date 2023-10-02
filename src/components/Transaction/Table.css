@@ -1,0 +1,15 @@
+.display-flex {
+  display: flex;
+  height: 100%;
+}
+
+.column {
+  flex: 1;
+  margin: 0.5rem;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #f2f5f9;
+  border: 1px solid lightgrey;
+  max-height: 72vh;
+  overflow: auto;
+}
