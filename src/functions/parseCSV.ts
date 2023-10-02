@@ -1,8 +1,6 @@
-import { parse } from "csv-parse/browser/esm";
-import { Readable } from "stream";
-
-import { v4 as uuidv4 } from "uuid";
 import { Transaction, Import, ColumnInfo } from "../types/transaction";
+import { parse } from "csv-parse/browser/esm";
+import { v4 as uuidv4 } from "uuid";
 
 /*eslint-disable*/
 
@@ -55,14 +53,22 @@ export function loadImportFromFile(csvFile: File): Promise<Import> {
 
 async function parseStringToCsvData(rawData: string): Promise<string[][]> {
   return new Promise<string[][]>((resolve, reject) => {
-    parse(rawData, { delimiter: "," }, (err, records: string[][]) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        resolve(records);
+    parse(
+      rawData,
+      { delimiter: ",", relax_column_count: true },
+      (err, records: string[][]) => {
+        // If error, then error
+        if (err) {
+          console.error(err);
+          reject(err);
+        }
+
+        // Else, resolve records
+        else {
+          resolve(records);
+        }
       }
-    });
+    );
   });
 }
 
@@ -172,6 +178,7 @@ function getTransactions(
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
     let line: string[] = csvData[i];
+    console.log(line);
 
     // If the amount is positive, skip this transaction
     if (parseFloat(line[columnInfo.amountIndex]) > 0) {
@@ -180,6 +187,13 @@ function getTransactions(
 
     // Create a new transaction from the current line, and push it to the list of transactions
     transactions.push(getTransactionFromLine(line, columnInfo));
+  }
+
+  // If no valid "expense" transactions were made, throw an error
+  if (transactions.length == 0) {
+    throw new Error(
+      "No expense transactions were found in this bank statement."
+    );
   }
 
   // Return the list of transactions
