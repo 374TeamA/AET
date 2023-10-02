@@ -2,7 +2,6 @@
 // import { Link } from "react-router-dom";
 import "../styles/nav.css";
 import { NavLink } from "react-router-dom";
-import "../styles/nav.css";
 
 export default function Sidebar() {
   return (
@@ -10,6 +9,7 @@ export default function Sidebar() {
       <ul className="navbar">
         <li>
           <NavLink
+          style={{width:'100%', display:'block'}}
             to="/"
             className={
               window.location.href.includes("Dashboard") ? "active" : ""
@@ -20,6 +20,7 @@ export default function Sidebar() {
         </li>
         <li>
           <NavLink
+          style={{width:'100%', display:'block'}}
             to="accounts"
             className={
               window.location.href.includes("Accounts") ? "active" : ""
@@ -32,10 +33,12 @@ export default function Sidebar() {
       <div className="bottom-links">
         <ul>
           <li>
-            <NavLink to="/reports">Reports</NavLink>
+            <NavLink 
+          style={{width:'100%', display:'block'}} to="/reports">Reports</NavLink>
           </li>
           <li>
-            <NavLink to="/settings">Settings</NavLink>
+            <NavLink 
+          style={{width:'100%', display:'block'}} to="/settings">Settings</NavLink>
           </li>
           {/* Add more links for other routes */}
         </ul>

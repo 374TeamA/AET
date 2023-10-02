@@ -7,7 +7,10 @@ import {
 import { useState } from "react";
 import { Button, Grid, Paper, Box, Typography, List,ListItem, IconButton, TextField } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTitle } from "../hooks/UseTitle";
 export default function Settings() {
+  useTitle('Settings')
+
   // state to store the list of categories
   const [categoryList, setCategoryList] =
     useState<CategoryList>(defaultCategories);
