@@ -14,8 +14,8 @@ import { parse } from "csv-parse/browser/esm";
  * @param {File} csv
  * @return {*}  {Transaction[]}
  */
-export function parseCSV(csv: File): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
+export function parseCSV(csv: File): Promise<string[][]> {
+  return new Promise<string[][]>((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -35,16 +35,14 @@ export function parseCSV(csv: File): Promise<string[]> {
   });
 }
 
-function parseCSVString(csvString: string): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    parse(csvString, { delimiter: "," }, (err, records) => {
+function parseCSVString(csvString: string): Promise<string[][]> {
+  return new Promise<string[][]>((resolve, reject) => {
+    parse(csvString, { delimiter: "," }, (err, records: string[][]) => {
       if (err) {
         console.error(err);
         reject(err);
       } else {
-        // Flatten the array of arrays into a single array of strings
-        const lines = records.flat();
-        resolve(lines);
+        resolve(records);
       }
     });
   });
