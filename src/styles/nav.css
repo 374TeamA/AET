@@ -29,7 +29,7 @@ li.selected {
   color: white !important;
 }
 
-.sidebar-layout{
+.sidebar-layout {
   display: flex;
   min-width: 100%;
   height: 90vh; /* Adjust as needed */
@@ -57,17 +57,17 @@ li.selected {
   font-weight: 550;
 }
 
-
 .content {
   flex-grow: 1;
-  height: 88vh;
+  max-height: 88vh;
   background-color: white;
   box-shadow: 0 0 10px 0px #00000031;
   border-radius: 5px;
-  margin:0.5rem;
-  padding:1rem;
+  margin: 0.5rem;
+  padding: 1rem;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
-
 
 .header {
   height: 5rem;

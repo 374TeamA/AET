@@ -8,8 +8,7 @@ import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
 
 export default function Reports() {
-
-  useTitle('Reports')
+  useTitle("Reports");
 
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -64,15 +63,25 @@ export default function Reports() {
   };
 
   return (
-    <div>
+    <div id="reports-container">
       <Group label="Export">
         <div>
           <label htmlFor="startDate">Start Date:</label>
-          <input type="date" id="startDate" onChange={handleStartDateChange} />
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
         </div>
         <div>
           <label htmlFor="endDate">End Date:</label>
-          <input type="date" id="endDate" onChange={handleEndDateChange} />
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={handleEndDateChange}
+          />
         </div>
         <button
           onClick={() => {
