@@ -1,6 +1,7 @@
 body {
   background-color: #04428e18;
   font-family: "Roboto", sans-serif;
+  overflow: hidden;
 }
 
 .padding-1 {
