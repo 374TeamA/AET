@@ -22,13 +22,13 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // test data finished
 
   const rawData: FlattenedTransaction[] = getData(transactions);
-  let data: ChartData; 
-  if (type == "pie" || type == "bar" || type == "polarArea"){
+  let data: ChartData;
+  if (type == "pie" || type == "bar" || type == "polarArea") {
     data = getDataByCategory(rawData);
   } else {
     data = getDataByDate(rawData);
   }
-  
+
   const chartType: ChartType = type as ChartType;
   const options = getOptions(type);
   // Config
@@ -37,8 +37,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
     type: chartType,
     data: data,
     options: options
-};
-
+  };
 
   console.log(config);
   return config;
@@ -88,13 +87,11 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   console.log(data);
   console.log(labels);
   console.log(values);
-  
-  
 
   return data;
 }
 
-function getDataByDate(rawData: FlattenedTransaction[]){
+function getDataByDate(rawData: FlattenedTransaction[]) {
   const labels: string[] = [];
   const values: number[] = [];
 
@@ -122,25 +119,23 @@ function getDataByDate(rawData: FlattenedTransaction[]){
   console.log(data);
   console.log(labels);
   console.log(values);
-  
-  
 
   return data;
 }
 
-function getOptions(type: string){
-
-
+function getOptions(type: string) {
   const barOptions = {
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: string) {
+          callback: function (value: string) {
             if (parseInt(value) >= 1000) {
-              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              return (
+                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              );
             } else {
-              return '$' + value;
+              return "$" + value;
             }
           }
         }
@@ -149,27 +144,30 @@ function getOptions(type: string){
     plugins: {
       title: {
         display: true,
-        text: 'Test' 
+        text: "Test"
       },
       legend: {
         display: false
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-              let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
 
-              if (label) {
-                  label += ': ';
-              }
-              
-              if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-              }
-              return label;
+            if (label) {
+              label += ": ";
+            }
+
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD"
+              }).format(context.parsed.y);
+            }
+            return label;
           }
-      }        
-     }
+        }
+      }
     }
   };
 
@@ -177,62 +175,69 @@ function getOptions(type: string){
     plugins: {
       title: {
         display: true,
-        text: 'Test' 
+        text: "Test"
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-              let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
 
-              if (label) {
-                  label += ': ';
-              }
-              if (context.parsed !== null) {
-                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
-              }
-              return label;
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed !== null) {
+              label += new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD"
+              }).format(context.parsed);
+            }
+            return label;
           }
-      }        
-     }
+        }
+      }
     }
-  }
+  };
 
   const polarOptions = {
     plugins: {
       title: {
         display: true,
-        text: 'Test' 
+        text: "Test"
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-              let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
 
-              if (label) {
-                  label += ': ';
-              }
-              if (context.parsed.r !== null) {
-                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.r);
-              }
-            
-              return label;
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed.r !== null) {
+              label += new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD"
+              }).format(context.parsed.r);
+            }
+
+            return label;
           }
-      }        
-     }
+        }
+      }
     }
-  }
-
+  };
 
   const lineOptions = {
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: string) {
+          callback: function (value: string) {
             if (parseInt(value) >= 1000) {
-              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              return (
+                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              );
             } else {
-              return '$' + value;
+              return "$" + value;
             }
           }
         }
@@ -241,43 +246,45 @@ function getOptions(type: string){
     plugins: {
       title: {
         display: true,
-        text: 'Test' 
+        text: "Test"
       },
       legend: {
         display: false
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-              let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
 
-              if (label) {
-                  label += ': ';
-              }
-              
-              if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-              }
-              return label;
+            if (label) {
+              label += ": ";
+            }
+
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD"
+              }).format(context.parsed.y);
+            }
+            return label;
           }
         }
-      }    
       }
-  }
+    }
+  };
 
-  if (type == "bar"){
+  if (type == "bar") {
     return barOptions;
   } else if (type == "pie") {
     return pieOptions;
-  } else if ( type == "polarArea"){
+  } else if (type == "polarArea") {
     return polarOptions;
   } else {
     return lineOptions;
   }
-
 }
 
-function getTestData(){
+function getTestData() {
   const transactions: Transaction[] = [
     {
       id: "01", // uuid
