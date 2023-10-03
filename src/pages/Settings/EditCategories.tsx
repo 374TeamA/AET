@@ -27,14 +27,14 @@ export default function EditCategories() {
     setCategoryList(newCategoryList);
   };
   const editItem = (index:number) =>{
-    setNewCategoryName(categoryList[index].displayName)// initialise textbox to old category name
+    setNewCategoryName(categoryList[index].name)// initialise textbox to old category name
     setSelectedCategory(index)
     setOpenDialog(true)
   }
   const updateSelectedCategory = ()=>{
     // update the category name for the selected category
     const newCategoryList = [...categoryList];
-    newCategoryList[selectedCategory].displayName = newCategoryName;
+    newCategoryList[selectedCategory].name = newCategoryName;
     setCategoryList(newCategoryList);
     setOpenDialog(false);
   }
@@ -42,7 +42,7 @@ export default function EditCategories() {
   const addCategory = () => {
     // adds a category to the list
     const newCategoryList = [...categoryList];
-    newCategoryList.push({ displayName: "", id: Math.random().toString()});
+    newCategoryList.push({ name: "", id: Math.random().toString()});
     setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);
@@ -66,7 +66,7 @@ export default function EditCategories() {
             <IconButton edge="start" aria-label="edit" onClick={() => editItem(index)}>
               <EditIcon />
             </IconButton>
-            <Typography variant="body1" > {category.displayName}</Typography>
+            <Typography variant="body1" > {category.name}</Typography>
           </ListItem>
         ))}
         </List>

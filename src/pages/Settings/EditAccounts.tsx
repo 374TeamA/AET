@@ -24,16 +24,16 @@ export default function EditAccounts() {
     newAccountList.splice(selectedAccount, 1);
     setAccountList(newAccountList);
   };
-  
+
   const editItem = (index:number) =>{
-    setNewAccountName(accountList[index].displayName)// initialise textbox to old account name
+    setNewAccountName(accountList[index].name)// initialise textbox to old account name
     setSelectedAccount(index)
     setEditDialogOpen(true)
   }
   const updateSelectedAccount = ()=>{
     // update the account name for the selected account
     const newAccountList = [...accountList];
-    newAccountList[selectedAccount].displayName = newAccountName;
+    newAccountList[selectedAccount].name = newAccountName;
     setAccountList(newAccountList);
     setEditDialogOpen(false);
   }
@@ -41,7 +41,7 @@ export default function EditAccounts() {
   const addAccount = () => {
     // adds a account to the list
     const newAccountList = [...accountList];
-    newAccountList.push({ displayName: "", id: Math.random().toString()});
+    newAccountList.push({ name: "", id: Math.random().toString()});
     setAccountList(newAccountList);
     // allow the user to enter a name for the account:
     setEditDialogOpen(true);
@@ -65,7 +65,7 @@ export default function EditAccounts() {
             <IconButton edge="start" aria-label="edit" onClick={() => editItem(index)}>
               <EditIcon />
             </IconButton>
-            <Typography variant="body1" > {account.displayName}</Typography>
+            <Typography variant="body1" > {account.name}</Typography>
           </ListItem>
         ))}
         </List>
