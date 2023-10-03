@@ -5,7 +5,7 @@ import "./Table.css";
 import Column from "./Column";
 
 export default function Table() {
-  const [cagegorised, setCategorised] = useState<Transaction[]>([]);
+  const [categorised, setCategorised] = useState<Transaction[]>([]);
   const [uncategorised, setUncategorised] = useState<Transaction[]>([]);
   return (
     <div className="display-flex">
