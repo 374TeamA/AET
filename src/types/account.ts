@@ -1,4 +1,5 @@
+/* Used to store account information */
 export type Account = {
-    id:string,
-    displayName:string,
-}
+  id: string;
+  name: string;
+};

@@ -5,14 +5,14 @@ import "./Table.css";
 import Column from "./Column";
 
 export default function Table() {
-  const [cagegorized, setCategorized] = useState<Transaction[]>([]);
-  const [uncategorized, setUncategorized] = useState<Transaction[]>([]);
+  const [categorised, setCategorised] = useState<Transaction[]>([]);
+  const [uncategorised, setUncategorised] = useState<Transaction[]>([]);
   return (
     <div className="display-flex">
-      <Column title="Categorized" />
-      {/* Categorized transactions list */}
-      <Column title="Un-categorized" />
-      {/* Un-Categorized transactions list */}
+      <Column title="Categorised" />
+      {/* Categorised transactions list */}
+      <Column title="Un-categorised" />
+      {/* Un-Categorised transactions list */}
     </div>
   );
 }
