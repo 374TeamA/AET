@@ -7,6 +7,7 @@ import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Di
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Account } from "../../types/account";
+import { deleteAccount, saveAccount } from "../../database/accounts";
 export default function EditAccounts() {
 
   // state to store the list of categories
@@ -23,6 +24,8 @@ export default function EditAccounts() {
     const newAccountList = [...accountList];
     newAccountList.splice(selectedAccount, 1);
     setAccountList(newAccountList);
+    // remove the account from local storage
+    deleteAccount(accountList[selectedAccount].id);
   };
 
   const editItem = (index:number) =>{
@@ -36,6 +39,7 @@ export default function EditAccounts() {
     newAccountList[selectedAccount].name = newAccountName;
     setAccountList(newAccountList);
     setEditDialogOpen(false);
+    saveAccount(accountList[selectedAccount]);
   }
 
   const addAccount = () => {
@@ -45,6 +49,7 @@ export default function EditAccounts() {
     setAccountList(newAccountList);
     // allow the user to enter a name for the account:
     setEditDialogOpen(true);
+    setNewAccountName("");
     setSelectedAccount(newAccountList.length-1);
   };
 

@@ -9,6 +9,7 @@ import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Di
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Category } from "../../types/category";
+import { deleteCategory, saveCategory } from "../../database/categories";
 export default function EditCategories() {
 
   // state to store the list of categories
@@ -25,18 +26,24 @@ export default function EditCategories() {
     const newCategoryList = [...categoryList];
     newCategoryList.splice(selectedCategory, 1);
     setCategoryList(newCategoryList);
+    // remove the category from local storage
+    deleteCategory(categoryList[selectedCategory].id);
   };
-  const editItem = (index:number) =>{
+
+  const displayEditDialog = (index:number) =>{
     setNewCategoryName(categoryList[index].name)// initialise textbox to old category name
     setSelectedCategory(index)
     setOpenDialog(true)
   }
+
   const updateSelectedCategory = ()=>{
     // update the category name for the selected category
     const newCategoryList = [...categoryList];
     newCategoryList[selectedCategory].name = newCategoryName;
     setCategoryList(newCategoryList);
     setOpenDialog(false);
+    // Store the updated category list in local storage
+    saveCategory(categoryList[selectedCategory]);
   }
 
   const addCategory = () => {
@@ -46,6 +53,7 @@ export default function EditCategories() {
     setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);
+    setNewCategoryName("");
     setSelectedCategory(newCategoryList.length-1);
   };
 
@@ -63,7 +71,7 @@ export default function EditCategories() {
               <DeleteIcon />
             </IconButton>
           }>
-            <IconButton edge="start" aria-label="edit" onClick={() => editItem(index)}>
+            <IconButton edge="start" aria-label="edit" onClick={() => displayEditDialog(index)}>
               <EditIcon />
             </IconButton>
             <Typography variant="body1" > {category.name}</Typography>
