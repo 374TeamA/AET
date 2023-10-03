@@ -16,10 +16,10 @@ export async function getTransactions(
 ): Promise<Transaction[]> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction(acc, "readonly");
-    const tos = dbt.objectStore(acc);
-    const ind = tos.index("date");
-    const req = ind.getAll(IDBKeyRange.bound(startDate, endDate));
+    const dbt = db.transaction("Transactions", "readonly");
+    const tos = dbt.objectStore("Transactions");
+    const ind = tos.index("accdate");
+    const req = ind.getAll(IDBKeyRange.bound([acc, startDate], [acc, endDate]));
 
     req.onsuccess = function () {
       if (req.result !== undefined) {
@@ -37,10 +37,10 @@ export async function getTransactions(
  * @param t The transaction to be saved
  * @param acc The account to save the transaction to
  */
-export async function saveTransaction(t: Transaction, acc: string) {
+export async function saveTransaction(t: Transaction) {
   const db = await connectToDatabase();
-  const dbt = db.transaction(acc, "readwrite");
-  const tos = dbt.objectStore(acc);
+  const dbt = db.transaction("Transactions", "readwrite");
+  const tos = dbt.objectStore("Transactions");
   const req = tos.put(t);
   req.onsuccess = () => {
     console.log("Transaction added", req.result);

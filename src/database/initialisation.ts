@@ -20,6 +20,14 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       console.log("DB Created/updated");
       const db = req.result;
 
+      if (!db.objectStoreNames.contains("Transactions")) {
+        const tOS = db.createObjectStore("Transactions", { keyPath: "id" });
+        tOS.createIndex("account", "account", { unique: false });
+        tOS.createIndex("date", "date", { unique: false });
+        tOS.createIndex("merchant", "merchant", { unique: false });
+        tOS.createIndex("accdate", ["account", "date"], { unique: false });
+      }
+
       if (!db.objectStoreNames.contains("Categories")) {
         db.createObjectStore("Categories", { keyPath: "id" });
       }
@@ -29,10 +37,8 @@ export function connectToDatabase(): Promise<IDBDatabase> {
         tOS.createIndex("category", "category", { unique: false });
       }
 
-      if (!db.objectStoreNames.contains("Test")) {
-        const tOS = db.createObjectStore("Test", { keyPath: "id" });
-        tOS.createIndex("date", "date", { unique: false });
-        tOS.createIndex("merchant", "merchant", { unique: false });
+      if (!db.objectStoreNames.contains("Accounts")) {
+        db.createObjectStore("Accounts", { keyPath: "id" });
       }
     };
 
