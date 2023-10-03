@@ -16,7 +16,7 @@ export async function getAccounts(): Promise<Account[]> {
       if (req.result !== undefined) {
         resolve(req.result);
       } else {
-        reject("No categories");
+        reject("No accounts");
       }
     };
   });
