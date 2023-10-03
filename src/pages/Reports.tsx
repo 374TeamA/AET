@@ -12,12 +12,15 @@ import {
   defaultPieGraph,
   defaultPolarGraph
 } from "../functions/defaultGraph";
+import CustomPopup from "../components/Popup";
+import ConfigureGraph from "../components/GraphConfiguration";
 
 export default function Reports() {
   useTitle("Reports");
 
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [type, setType] = useState<string>("");
 
   const createGraph = () => {
     // Get a reference to the select element
@@ -70,50 +73,64 @@ export default function Reports() {
     setEndDate(today.toISOString().split("T")[0]);
   };
 
-  let barGraphChart: Chart;
-  let lineGraphChart: Chart;
-  let pieGraphChart: Chart;
-  let polarGraphChart: Chart;
+  // Handle default Graph Generation
+  // let barGraphChart: Chart;
+  // let lineGraphChart: Chart;
+  // let pieGraphChart: Chart;
+  // let polarGraphChart: Chart;
 
-  const barGraph = () => {
-    if (barGraphChart) barGraphChart.destroy();
+  // const barGraph = () => {
+  //   if (barGraphChart) barGraphChart.destroy();
 
-    barGraphChart = new Chart(
-      document.getElementById("barGraph") as HTMLCanvasElement,
-      defaultBarGrpah()
-    );
+  //   barGraphChart = new Chart(
+  //     document.getElementById("barGraph") as HTMLCanvasElement,
+  //     defaultBarGrpah()
+  //   );
+  // };
+
+  // const lineGraph = () => {
+  //   if (lineGraphChart) lineGraphChart.destroy();
+
+  //   lineGraphChart = new Chart(
+  //     document.getElementById("lineGraph") as HTMLCanvasElement,
+  //     defaultLineGraph()
+  //   );
+  // };
+
+  // const pieGraph = () => {
+  //   if (pieGraphChart) pieGraphChart.destroy();
+
+  //   pieGraphChart = new Chart(
+  //     document.getElementById("pieGraph") as HTMLCanvasElement,
+  //     defaultPieGraph()
+  //   );
+  // };
+
+  // const polarGraph = () => {
+  //   if (polarGraphChart) polarGraphChart.destroy();
+
+  //   polarGraphChart = new Chart(
+  //     document.getElementById("polarGraph") as HTMLCanvasElement,
+  //     defaultPolarGraph()
+  //   );
+  // };
+
+  // TODO: Jake this is throwing errors when the popup loads
+  // useEffect(() => {
+  //   barGraph(), lineGraph(), pieGraph(), polarGraph();
+  // });
+
+  //Handle Popup
+  const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
+
+  const handleOpenPopup = (e) => {
+    setPopupOpen(true);
+    setType(e.target.id);
   };
 
-  const lineGraph = () => {
-    if (lineGraphChart) lineGraphChart.destroy();
-
-    lineGraphChart = new Chart(
-      document.getElementById("lineGraph") as HTMLCanvasElement,
-      defaultLineGraph()
-    );
+  const handleClosePopup = () => {
+    setPopupOpen(false);
   };
-
-  const pieGraph = () => {
-    if (pieGraphChart) pieGraphChart.destroy();
-
-    pieGraphChart = new Chart(
-      document.getElementById("pieGraph") as HTMLCanvasElement,
-      defaultPieGraph()
-    );
-  };
-
-  const polarGraph = () => {
-    if (polarGraphChart) polarGraphChart.destroy();
-
-    polarGraphChart = new Chart(
-      document.getElementById("polarGraph") as HTMLCanvasElement,
-      defaultPolarGraph()
-    );
-  };
-
-  useEffect(() => {
-    barGraph(), lineGraph(), pieGraph(), polarGraph();
-  });
 
   return (
     <div id="reports-container">
@@ -166,14 +183,22 @@ export default function Reports() {
         <button onClick={handleExportGraph}>Export Graph</button>
       </Group>
 
+      {/*TODO: Jake to fix UI*/}
       <Group label="New Graph">
         <div className="canvasContainer">
-          <canvas id="barGraph"></canvas>
-          <canvas id="lineGraph"></canvas>
+          <canvas onClick={handleOpenPopup} id="bar"></canvas>
+          <canvas onClick={handleOpenPopup} id="line"></canvas>
           <canvas id="pieGraph"></canvas>
           <canvas id="polarGraph"></canvas>
         </div>
       </Group>
+
+      <div>
+        <button onClick={handleOpenPopup}>Open Popup</button>
+        <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
+          <ConfigureGraph type={type} />
+        </CustomPopup>
+      </div>
 
       <select id="typeSelection">
         <option value="pie">Pie</option>
