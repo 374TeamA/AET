@@ -12,7 +12,13 @@ let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
 );
 
 */
-import { ChartConfiguration, ChartData, ChartOptions, ChartType, TooltipItem } from "chart.js";
+import {
+  ChartConfiguration,
+  ChartData,
+  ChartOptions,
+  ChartType,
+  TooltipItem
+} from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {

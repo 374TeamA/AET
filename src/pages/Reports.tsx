@@ -6,6 +6,12 @@ import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
+import {
+  defaultBarGrpah,
+  defaultLineGraph,
+  defaultPieGraph,
+  defaultPolarGraph
+} from "../functions/defaultGraph";
 
 export default function Reports() {
   useTitle("Reports");
@@ -64,6 +70,51 @@ export default function Reports() {
     setEndDate(today.toISOString().split("T")[0]);
   };
 
+  let barGraphChart: Chart;
+  let lineGraphChart: Chart;
+  let pieGraphChart: Chart;
+  let polarGraphChart: Chart;
+
+  const barGraph = () => {
+    if (barGraphChart) barGraphChart.destroy();
+
+    barGraphChart = new Chart(
+      document.getElementById("barGraph") as HTMLCanvasElement,
+      defaultBarGrpah()
+    );
+  };
+
+  const lineGraph = () => {
+    if (lineGraphChart) lineGraphChart.destroy();
+
+    lineGraphChart = new Chart(
+      document.getElementById("lineGraph") as HTMLCanvasElement,
+      defaultLineGraph()
+    );
+  };
+
+  const pieGraph = () => {
+    if (pieGraphChart) pieGraphChart.destroy();
+
+    pieGraphChart = new Chart(
+      document.getElementById("pieGraph") as HTMLCanvasElement,
+      defaultPieGraph()
+    );
+  };
+
+  const polarGraph = () => {
+    if (polarGraphChart) polarGraphChart.destroy();
+
+    polarGraphChart = new Chart(
+      document.getElementById("polarGraph") as HTMLCanvasElement,
+      defaultPolarGraph()
+    );
+  };
+
+  useEffect(() => {
+    barGraph(), lineGraph(), pieGraph(), polarGraph();
+  });
+
   return (
     <div id="reports-container">
       <Group label="Export">
@@ -113,6 +164,15 @@ export default function Reports() {
         </label>
         <button onClick={handleExportTransactions}>Export CSV</button>
         <button onClick={handleExportGraph}>Export Graph</button>
+      </Group>
+
+      <Group label="New Graph">
+        <div className="canvasContainer">
+          <canvas id="barGraph"></canvas>
+          <canvas id="lineGraph"></canvas>
+          <canvas id="pieGraph"></canvas>
+          <canvas id="polarGraph"></canvas>
+        </div>
       </Group>
 
       <select id="typeSelection">
