@@ -199,7 +199,6 @@ export function defaultPieGraph() {
     ],
     datasets: [
       {
-        label: "Spending for March",
         data: [418, 120, 250, 1500, 55, 150, 44],
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
@@ -227,7 +226,7 @@ export function defaultPieGraph() {
     plugins: {
       title: {
         display: true,
-        text: "Test"
+        text: "Spending for March"
       },
       tooltip: {
         callbacks: {

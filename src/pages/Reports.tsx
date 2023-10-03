@@ -74,58 +74,58 @@ export default function Reports() {
   };
 
   // Handle default Graph Generation
-  // let barGraphChart: Chart;
-  // let lineGraphChart: Chart;
-  // let pieGraphChart: Chart;
-  // let polarGraphChart: Chart;
+  let barGraphChart: Chart;
+  let lineGraphChart: Chart;
+  let pieGraphChart: Chart;
+  let polarGraphChart: Chart;
 
-  // const barGraph = () => {
-  //   if (barGraphChart) barGraphChart.destroy();
+  const barGraph = () => {
+    if (barGraphChart) barGraphChart.destroy();
 
-  //   barGraphChart = new Chart(
-  //     document.getElementById("barGraph") as HTMLCanvasElement,
-  //     defaultBarGrpah()
-  //   );
-  // };
+    barGraphChart = new Chart(
+      document.getElementById("bar") as HTMLCanvasElement,
+      defaultBarGrpah()
+    );
+  };
 
-  // const lineGraph = () => {
-  //   if (lineGraphChart) lineGraphChart.destroy();
+  const lineGraph = () => {
+    if (lineGraphChart) lineGraphChart.destroy();
 
-  //   lineGraphChart = new Chart(
-  //     document.getElementById("lineGraph") as HTMLCanvasElement,
-  //     defaultLineGraph()
-  //   );
-  // };
+    lineGraphChart = new Chart(
+      document.getElementById("line") as HTMLCanvasElement,
+      defaultLineGraph()
+    );
+  };
 
-  // const pieGraph = () => {
-  //   if (pieGraphChart) pieGraphChart.destroy();
+  const pieGraph = () => {
+    if (pieGraphChart) pieGraphChart.destroy();
 
-  //   pieGraphChart = new Chart(
-  //     document.getElementById("pieGraph") as HTMLCanvasElement,
-  //     defaultPieGraph()
-  //   );
-  // };
+    pieGraphChart = new Chart(
+      document.getElementById("pie") as HTMLCanvasElement,
+      defaultPieGraph()
+    );
+  };
 
-  // const polarGraph = () => {
-  //   if (polarGraphChart) polarGraphChart.destroy();
+  const polarGraph = () => {
+    if (polarGraphChart) polarGraphChart.destroy();
 
-  //   polarGraphChart = new Chart(
-  //     document.getElementById("polarGraph") as HTMLCanvasElement,
-  //     defaultPolarGraph()
-  //   );
-  // };
+    polarGraphChart = new Chart(
+      document.getElementById("polarArea") as HTMLCanvasElement,
+      defaultPolarGraph()
+    );
+  };
 
   // TODO: Jake this is throwing errors when the popup loads
-  // useEffect(() => {
-  //   barGraph(), lineGraph(), pieGraph(), polarGraph();
-  // });
+  useEffect(() => {
+    barGraph(), lineGraph(), pieGraph(), polarGraph();
+  }, []);
 
   //Handle Popup
   const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
 
-  const handleOpenPopup = (e) => {
+  const handleOpenPopup = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setPopupOpen(true);
-    setType(e.target.id);
+    setType(e.currentTarget.id);
   };
 
   const handleClosePopup = () => {
@@ -188,13 +188,12 @@ export default function Reports() {
         <div className="canvasContainer">
           <canvas onClick={handleOpenPopup} id="bar"></canvas>
           <canvas onClick={handleOpenPopup} id="line"></canvas>
-          <canvas id="pieGraph"></canvas>
-          <canvas id="polarGraph"></canvas>
+          <canvas onClick={handleOpenPopup} id="pie"></canvas>
+          <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
         </div>
       </Group>
 
       <div>
-        <button onClick={handleOpenPopup}>Open Popup</button>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <ConfigureGraph type={type} />
         </CustomPopup>
