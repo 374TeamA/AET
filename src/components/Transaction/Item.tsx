@@ -1,6 +1,10 @@
 import { Button } from "@mui/material";
+import { Transaction } from "../../types/transaction";
+interface ItemProps {
+  transaction: Transaction;
+}
 
-export default function Item() {
+export default function Item({ transaction }: ItemProps) {
   return (
     <div
       style={{
@@ -12,7 +16,7 @@ export default function Item() {
       }}
     >
       <div>
-        <p>01/01/2023</p>
+        <p>{transaction.date.toLocaleDateString()}</p>
       </div>
       <div
         style={{
@@ -23,31 +27,43 @@ export default function Item() {
         }}
       >
         <div style={{ width: "40%" }}>
-          <p>The Warehouse NZ</p>
+          <p>{transaction.merchant}</p>
         </div>
-        <div style={{ width: "15%" }}>
-          <p>$100.00</p>
-        </div>
-        <div>
-          <Button
-            variant="contained"
+        {/* For each details items */}
+        {transaction.details.map((detail) => (
+          <div
             style={{
-              width: "10rem",
-              fontSize: "0.9rem",
-              margin: "2px",
-              backgroundColor: "#3f51b5",
-              color: "white"
+              display: "flex",
+              width: "50%",
+              justifyContent: "space-between",
+              alignItems: "center"
             }}
           >
-            Category
-          </Button>
-          <Button
-            variant="outlined"
-            style={{ width: "5rem", fontSize: "0.9rem" }}
-          >
-            Split
-          </Button>
-        </div>
+            <div style={{ width: "15%" }}>
+              <p>${detail.amount}</p>
+            </div>
+            <div>
+              <Button
+                variant="contained"
+                style={{
+                  width: "10rem",
+                  fontSize: "0.9rem",
+                  margin: "2px",
+                  backgroundColor: "#3f51b5",
+                  color: "white"
+                }}
+              >
+                {detail.category}
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ width: "5rem", fontSize: "0.9rem" }}
+              >
+                Split
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

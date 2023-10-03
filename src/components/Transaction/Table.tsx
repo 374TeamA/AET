@@ -1,17 +1,35 @@
-import React from "react";
 import { useState } from "react";
-import { Transaction } from "../../types/transaction";
+import { Import, Transaction } from "../../types/transaction";
 import "./Table.css";
 import Column from "./Column";
 
-export default function Table() {
-  const [cagegorised, setCategorised] = useState<Transaction[]>([]);
-  const [uncategorised, setUncategorised] = useState<Transaction[]>([]);
+interface TableProps {
+  importData: Import | undefined;
+}
+export default function Table({ importData }: TableProps) {
+  const categorised: Transaction[] =
+    importData?.transactions?.filter((transaction) =>
+      transaction.details.some(
+        (detail) =>
+          typeof detail === "object" &&
+          (detail as { amount: number; category: string }).category !==
+            "Default"
+      )
+    ) ?? [];
+  const uncategorised: Transaction[] =
+    importData?.transactions?.filter((transaction) =>
+      transaction.details.some(
+        (detail) =>
+          typeof detail === "object" &&
+          (detail as { amount: number; category: string }).category ===
+            "Default"
+      )
+    ) ?? [];
   return (
     <div className="display-flex">
-      <Column title="Categorised" />
+      <Column title="Categorised" items={categorised} />
       {/* Categorised transactions list */}
-      <Column title="Un-categorised" />
+      <Column title="Un-categorised" items={uncategorised} />
       {/* Un-Categorised transactions list */}
     </div>
   );
