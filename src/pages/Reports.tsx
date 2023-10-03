@@ -48,8 +48,13 @@ export default function Reports() {
     throw new Error("Function not implemented.");
   };
 
-  const handleExportGraph = () => {
-    throw new Error("Function not implemented.");
+  const handleExportGraph = (graphID: string) => {
+    const canvas: HTMLCanvasElement = document.getElementById(graphID) as HTMLCanvasElement;
+    const dataURL = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = "graph.png";
+    link.href = dataURL;
+    link.click();
   };
 
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -163,7 +168,7 @@ export default function Reports() {
           <span className="checkmark"></span>
         </label>
         <button onClick={handleExportTransactions}>Export CSV</button>
-        <button onClick={handleExportGraph}>Export Graph</button>
+        <button onClick={()=>handleExportGraph("pieGraph")}>Export Graph</button>
       </Group>
 
       <Group label="New Graph">
