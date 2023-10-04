@@ -6,7 +6,6 @@ import { useState, ChangeEvent, useEffect } from "react";
 import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
-import { Button } from "@mui/material";
 import CustomPopup from "../components/Popup";
 import {
   defaultBarGrpah,
@@ -14,7 +13,7 @@ import {
   defaultPieGraph,
   defaultPolarGraph
 } from "../functions/defaultGraph";
-import CustomPopup from "../components/Popup";
+//import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 // import { GraphConfig } from "../types/graph";
@@ -152,10 +151,6 @@ export default function Reports() {
     setPopupOpen(false);
   };
 
-  const handlePopup = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <div id="reports-container" className="content">
       <Group label="Export">
@@ -218,54 +213,7 @@ export default function Reports() {
           <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
         </div>
       </Group>
-      <CustomPopup isOpen={isOpen} onClose={handlePopup}>
-        <div style={{ width: "50vw", display: "flex" }}>
-          <div
-            style={{
-              border: "1px solid lightgrey",
-              borderRadius: "5px",
-              width: "30vw",
-              height: "30vh",
-              margin: "0.5rem",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            Canvas showing Graph Here
-          </div>
-          <div
-            style={{
-              height: "100%",
-              border: "1px solid lightgrey",
-              flex: "1",
-              margin: "0.5rem",
-              padding: "0.5rem"
-            }}
-          >
-            <div>
-              <select>
-                <option>Category 1</option>
-                <option>Category 1</option>
-                <option>Category 1</option>
-                <option>Category 1</option>
-              </select>
-              <button>Add</button>
-            </div>
-            <div>
-              <p
-                style={{
-                  padding: "0.5rem",
-                  backgroundColor: "lightblue",
-                  margin: "0.5rem"
-                }}
-              >
-                Selected Category
-              </p>
-            </div>
-          </div>
-        </div>
-      </CustomPopup>
+
       <select id="typeSelection">
         <option value="pie">Pie</option>
         <option value="bar">Bar</option>

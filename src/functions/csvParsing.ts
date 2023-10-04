@@ -40,7 +40,7 @@ export async function generateImportFromFile(
 ): Promise<Import> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
-  const rawData: string = await getRawDataFromFile(csvFile);
+  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -53,10 +53,10 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
-  const importId: string = uuidv4();
+  // const importId: string = uuidv4();
 
   // Split the data into a list of transactions
-  const transactions: Transaction[] = getTransactions(
+  let transactions: Transaction[] = getTransactions(
     csvData,
     columnIndexes,
     account,
@@ -158,10 +158,10 @@ function cleanData(csvData: string[][]): string[][] {
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
   const header: string[] = csvData[0];
-  const header: string[] = csvData[0];
+  //const header: string[] = csvData[0];
 
   // Get the column indices from the header
-  const columnIndexes: ColumnIndexes = {
+  //const columnIndexes: ColumnIndexes = {
   const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
@@ -197,13 +197,13 @@ function getTransactions(
   importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
-  const transactions: Transaction[] = [];
+  //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
-    const line: string[] = csvData[i];
+    //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
@@ -257,10 +257,10 @@ function getTransactionFromLine(
   // Generate a new ID as a hash from the transaction date, merchant, and the absolute amount
   const id = sha256(date.toString() + merchant + amount).toString();
   // Get the date
-  const date: Date = parseDate(line[columnIndexes.dateIndex]);
+  //const date: Date = parseDate(line[columnIndexes.dateIndex]);
 
   // Get the merchant
-  const merchant: string = line[columnIndexes.merchantIndex];
+  //const merchant: string = line[columnIndexes.merchantIndex];
 
   // Create and return a new transaction from the retrieved data
   return {
@@ -281,7 +281,7 @@ function getTransactionFromLine(
  */
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
-  const date: Date | undefined = dateFormats
+  //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
