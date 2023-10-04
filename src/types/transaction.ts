@@ -8,7 +8,7 @@ export type Import = {
 /* Used to store transaction information */
 export type Transaction = {
   id: string;
-  importId: string;
+  import: string;
   account: string;
   date: Date;
   merchant: string;
