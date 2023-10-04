@@ -2,7 +2,7 @@
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
 import { useState, ChangeEvent, useEffect } from "react";
-import { generateGraph } from "../functions/generateGraph";
+// import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
@@ -14,6 +14,7 @@ import {
 } from "../functions/defaultGraph";
 import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
+// import { GraphConfig } from "../types/graph";
 
 export default function Reports() {
   useTitle("Reports");
@@ -21,29 +22,31 @@ export default function Reports() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
+  // const [canvases, setCanvases] = useState<HTMLCanvasElement[]>([]);
+  // const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
 
-  const createGraph = () => {
-    // Get a reference to the select element
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "typeSelection"
-    ) as HTMLSelectElement;
+  // const createGraph = () => {
+  //   // Get a reference to the select element
+  //   const selectElement: HTMLSelectElement = document.getElementById(
+  //     "typeSelection"
+  //   ) as HTMLSelectElement;
 
-    // Get the selected option
-    const selectedOption = selectElement.options[selectElement.selectedIndex];
+  //   // Get the selected option
+  //   const selectedOption = selectElement.options[selectElement.selectedIndex];
 
-    // Get the value of the selected option
-    const type: string = selectedOption.value;
+  //   // Get the value of the selected option
+  //   const type: string = selectedOption.value;
 
-    const recieved = generateGraph(type);
+  //   const recieved = generateGraph(type);
 
-    const canvas: HTMLCanvasElement = document.createElement("canvas");
-    const canvasContainer: HTMLDivElement = document.getElementById(
-      "canvasContainer"
-    ) as HTMLDivElement;
-    canvasContainer.appendChild(canvas);
-
-    new Chart(canvas, recieved);
-  };
+  //   const canvas: HTMLCanvasElement = document.createElement("canvas");
+  //   const canvasContainer: HTMLDivElement = document.getElementById(
+  //     "canvasContainer"
+  //   ) as HTMLDivElement;
+  //   canvasContainer.appendChild(canvas);
+  //   setCanvases([...canvases, canvas]);
+  //   new Chart(canvas, recieved);
+  // };
 
   useEffect(() => {}, [startDate, endDate]);
 
@@ -52,7 +55,9 @@ export default function Reports() {
   };
 
   const handleExportGraph = (graphID: string) => {
-    const canvas: HTMLCanvasElement = document.getElementById(graphID) as HTMLCanvasElement;
+    const canvas: HTMLCanvasElement = document.getElementById(
+      graphID
+    ) as HTMLCanvasElement;
     const dataURL = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.download = "graph.png";
@@ -78,7 +83,7 @@ export default function Reports() {
     setEndDate(today.toISOString().split("T")[0]);
   };
 
-  // Handle default Graph Generation
+  // Handle default Graph Generation -----------------------------------------------------------------------------------------
   let barGraphChart: Chart;
   let lineGraphChart: Chart;
   let pieGraphChart: Chart;
@@ -125,7 +130,7 @@ export default function Reports() {
     barGraph(), lineGraph(), pieGraph(), polarGraph();
   }, []);
 
-  //Handle Popup
+  //Handle Popup ------------------------------------------------------------------------------------------------------------------
   const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
 
   const handleOpenPopup = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -185,7 +190,9 @@ export default function Reports() {
           <span className="checkmark"></span>
         </label>
         <button onClick={handleExportTransactions}>Export CSV</button>
-        <button onClick={()=>handleExportGraph("pieGraph")}>Export Graph</button>
+        <button onClick={() => handleExportGraph("pieGraph")}>
+          Export Graph
+        </button>
       </Group>
 
       {/*TODO: Jake to fix UI*/}
@@ -203,17 +210,6 @@ export default function Reports() {
           <ConfigureGraph type={type} />
         </CustomPopup>
       </div>
-
-      <select id="typeSelection">
-        <option value="pie">Pie</option>
-        <option value="bar">Bar</option>
-        <option value="line">Line</option>
-        <option value="polarArea">Polar Area</option>
-      </select>
-
-      <button onClick={createGraph}>Generate</button>
-
-      <div className="canvasContainer" id="canvasContainer"></div>
     </div>
   );
 }

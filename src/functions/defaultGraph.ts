@@ -228,6 +228,9 @@ export function defaultPieGraph() {
         display: true,
         text: "Spending for March"
       },
+      legend: {
+        display: false
+      },
       tooltip: {
         callbacks: {
           label: function (context: TooltipItem<"pie">) {
@@ -302,6 +305,9 @@ export function defaultPolarGraph() {
       title: {
         display: true,
         text: "Spending for March"
+      },
+      legend: {
+        display: false
       },
       tooltip: {
         callbacks: {
