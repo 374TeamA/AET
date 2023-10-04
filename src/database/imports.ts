@@ -1,16 +1,16 @@
-import { Merchant } from "../types/merchant";
+import { Import } from "../types/transaction";
 import { connectToDatabase } from "./initialisation";
 
 /**
- * Gets all merchants saved to the database.
+ * Gets all imports saved to the database.
  *
- * @returns {Merchant[]} An array of merchants
+ * @returns {Import[]} An array of imports
  */
-export async function getMerchants(): Promise<Merchant[]> {
+export async function getImports(): Promise<Import[]> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction("Merchants", "readonly");
-    const tos = dbt.objectStore("Merchants");
+    const dbt = db.transaction("Imports", "readonly");
+    const tos = dbt.objectStore("Imports");
     const req = tos.getAll();
 
     req.onsuccess = function () {
@@ -24,19 +24,19 @@ export async function getMerchants(): Promise<Merchant[]> {
 }
 
 /**
- * Saves a merchant to the database. If the merchant already exists it will be updated.
+ * Saves an import to the database.
  *
- * @param m The merchant to be saved
+ * @param i The import to be saved
  * @returns {boolean} True on success, false on error
  */
-export async function saveMerchant(m: Merchant): Promise<boolean> {
+export async function saveImport(i: Import): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction("Merchants", "readwrite");
-    const tos = dbt.objectStore("Merchants");
-    const req = tos.put(m);
+    const dbt = db.transaction("Imports", "readwrite");
+    const tos = dbt.objectStore("Imports");
+    const req = tos.put(i);
     req.onsuccess = () => {
-      console.log("Merchant added", req.result);
+      console.log("Import added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -47,19 +47,19 @@ export async function saveMerchant(m: Merchant): Promise<boolean> {
 }
 
 /**
- * Deletes a merchant from the database.
+ * Deletes an import from the database.
  *
- * @param id The id of the merchant to be deleted
+ * @param id The id of the import to be deleted
  * @returns {boolean} True on success, false on error
  */
-export async function deleteMerchant(id: string): Promise<boolean> {
+export async function deleteImport(id: string): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction("Merchants", "readwrite");
-    const tos = dbt.objectStore("Merchants");
+    const dbt = db.transaction("Imports", "readwrite");
+    const tos = dbt.objectStore("Imports");
     const req = tos.delete(id);
     req.onsuccess = () => {
-      console.log("Merchant deleted", req.result);
+      console.log("Import deleted", req.result);
       resolve(true);
     };
     req.onerror = () => {
