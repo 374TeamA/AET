@@ -4,8 +4,6 @@ import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 
-/*eslint-disable*/
-
 /*
  * This is a list of valid merchant column names from the main five banks:
  *
@@ -40,7 +38,7 @@ export async function generateImportFromFile(
   account: string
 ): Promise<Import> {
   // Get the raw data from the file in the form of a string
-  let rawData: string = await getRawDataFromFile(csvFile);
+  const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -49,13 +47,13 @@ export async function generateImportFromFile(
   csvData = cleanData(csvData);
 
   // Get the column indexes (date, merchant, and amount)
-  let columnIndexes: ColumnIndexes = getColumnIndexes(csvData);
+  const columnIndexes: ColumnIndexes = getColumnIndexes(csvData);
 
   // Generate a new import ID
-  let importId: string = uuidv4();
+  const importId: string = uuidv4();
 
   // Split the data into a list of transactions
-  let transactions: Transaction[] = getTransactions(
+  const transactions: Transaction[] = getTransactions(
     csvData,
     columnIndexes,
     account,
@@ -153,10 +151,10 @@ function cleanData(csvData: string[][]): string[][] {
  */
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
-  let header: string[] = csvData[0];
+  const header: string[] = csvData[0];
 
   // Get the column indices from the header
-  let columnIndexes: ColumnIndexes = {
+  const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
     merchantIndex: header.findIndex((item) => merchantTitles.includes(item))
@@ -191,12 +189,12 @@ function getTransactions(
   importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
-  let transactions: Transaction[] = [];
+  const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
-    let line: string[] = csvData[i];
+    const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
     try {
@@ -245,10 +243,10 @@ function getTransactionFromLine(
   amount = Math.abs(amount);
 
   // Get the date
-  let date: Date = parseDate(line[columnIndexes.dateIndex]);
+  const date: Date = parseDate(line[columnIndexes.dateIndex]);
 
   // Get the merchant
-  let merchant: string = line[columnIndexes.merchantIndex];
+  const merchant: string = line[columnIndexes.merchantIndex];
 
   // Create and return a new transaction from the retrieved data
   return {
@@ -258,7 +256,7 @@ function getTransactionFromLine(
     date: date,
     merchant: merchant,
     details: [{ amount: amount, category: "Default" }]
-  };
+  } as Transaction;
 }
 
 /**
@@ -269,7 +267,7 @@ function getTransactionFromLine(
  */
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
-  let date: Date | undefined = dateFormats
+  const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
 
