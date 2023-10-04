@@ -14,6 +14,7 @@ import {
 } from "../functions/defaultGraph";
 import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
+import { GraphConfig } from "../types/graph";
 // import { GraphConfig } from "../types/graph";
 
 export default function Reports() {
@@ -22,8 +23,8 @@ export default function Reports() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
+  const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
   // const [canvases, setCanvases] = useState<HTMLCanvasElement[]>([]);
-  // const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -47,6 +48,10 @@ export default function Reports() {
   //   setCanvases([...canvases, canvas]);
   //   new Chart(canvas, recieved);
   // };
+
+  const addGraphConfig = (graphConfig: GraphConfig) => {
+    setGraphConfigs([...graphConfigs, graphConfig]);
+  };
 
   useEffect(() => {}, [startDate, endDate]);
 
@@ -127,7 +132,10 @@ export default function Reports() {
 
   // TODO: Jake this is throwing errors when the popup loads
   useEffect(() => {
-    barGraph(), lineGraph(), pieGraph(), polarGraph();
+    barGraph();
+    lineGraph();
+    pieGraph();
+    polarGraph();
   }, []);
 
   //Handle Popup ------------------------------------------------------------------------------------------------------------------
@@ -207,7 +215,11 @@ export default function Reports() {
 
       <div>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
-          <ConfigureGraph type={type} />
+          <ConfigureGraph
+            type={type}
+            handleClose={handleClosePopup}
+            addGraphConfig={addGraphConfig}
+          />
         </CustomPopup>
       </div>
     </div>

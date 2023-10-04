@@ -10,4 +10,5 @@ export type GraphConfig = {
   type: ChartType;
   favourite: boolean;
   update: boolean;
+  allTransactions: boolean;
 };
