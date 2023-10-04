@@ -21,16 +21,3 @@ export type FlattenedTransaction = {
   amount: number;
   category: string;
 };
-
-export type Category = {
-  id: string;
-};
-
-export type Merchant = {
-  id: string;
-  category: string;
-};
-
-export type Account = {
-  id: string;
-};

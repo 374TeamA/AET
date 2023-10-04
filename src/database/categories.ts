@@ -1,4 +1,4 @@
-import { Category } from "../types/transaction";
+import { Category } from "../types/category";
 import { connectToDatabase } from "./initialisation";
 
 /**

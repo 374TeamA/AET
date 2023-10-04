@@ -1,4 +1,4 @@
-import { Account } from "../types/transaction";
+import { Account } from "../types/account";
 import { connectToDatabase } from "./initialisation";
 
 /**

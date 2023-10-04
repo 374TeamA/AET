@@ -1,4 +1,4 @@
-import { Merchant } from "../types/transaction";
+import { Merchant } from "../types/merchant";
 import { connectToDatabase } from "./initialisation";
 
 /**
