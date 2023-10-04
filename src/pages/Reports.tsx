@@ -7,7 +7,7 @@ import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
 import {
-  defaultBarGrpah,
+  defaultBarGraph,
   defaultLineGraph,
   defaultPieGraph,
   defaultPolarGraph
@@ -17,6 +17,10 @@ import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 // import { GraphConfig } from "../types/graph";
 
+/**
+ * Report component. Includes all reporting/exporting aspects
+ * @returns Reports component
+ */
 export default function Reports() {
   useTitle("Reports");
 
@@ -49,16 +53,35 @@ export default function Reports() {
   //   new Chart(canvas, recieved);
   // };
 
+  // Adding New Graphs -----------------------------------------------------------------------------------------------------
+  /**
+   * Adds a graph configuration to the array of graph configurations.
+   *
+   * @param {GraphConfig} graphConfig - The configuration to add.
+   */
   const addGraphConfig = (graphConfig: GraphConfig) => {
+    // Add the provided graph configuration to the existing array.
     setGraphConfigs([...graphConfigs, graphConfig]);
   };
 
+  // Exporting Functionality -----------------------------------------------------------------------------------------------
+  /**
+   * React hook that triggers an effect when `startDate` or `endDate` changes.
+   */
   useEffect(() => {}, [startDate, endDate]);
 
+  /**
+   * Placeholder function for exporting transactions.
+   */
   const handleExportTransactions = () => {
     throw new Error("Function not implemented.");
   };
 
+  /**
+   * Exports a graph as a PNG image.
+   *
+   * @param {string} graphID - The ID of the HTML canvas element containing the graph.
+   */
   const handleExportGraph = (graphID: string) => {
     const canvas: HTMLCanvasElement = document.getElementById(
       graphID
@@ -70,16 +93,31 @@ export default function Reports() {
     link.click();
   };
 
+  /**
+   * Event handler for changes in the start date input field.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - The change event from the input field.
+   */
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newDate: string = event.target.value;
     setStartDate(newDate);
   };
 
+  /**
+   * Event handler for changes in the end date input field.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - The change event from the input field.
+   */
   const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newDate: string = event.target.value;
     setEndDate(newDate);
   };
 
+  /**
+   * Sets the start and end dates based on a given number of days from today.
+   *
+   * @param {number} days - The number of days to go back from today.
+   */
   const handleDays = (days: number) => {
     const today: Date = new Date();
     const startDate: Date = new Date();
@@ -89,20 +127,45 @@ export default function Reports() {
   };
 
   // Handle default Graph Generation -----------------------------------------------------------------------------------------
+  /**
+   * Represents a Bar Graph Chart.
+   * @type {Chart}
+   */
   let barGraphChart: Chart;
+
+  /**
+   * Represents a Line Graph Chart.
+   * @type {Chart}
+   */
   let lineGraphChart: Chart;
+
+  /**
+   * Represents a Pie Graph Chart.
+   * @type {Chart}
+   */
   let pieGraphChart: Chart;
+
+  /**
+   * Represents a Polar Area Graph Chart.
+   * @type {Chart}
+   */
   let polarGraphChart: Chart;
 
+  /**
+   * Initializes and updates the Bar Graph.
+   */
   const barGraph = () => {
     if (barGraphChart) barGraphChart.destroy();
 
     barGraphChart = new Chart(
       document.getElementById("bar") as HTMLCanvasElement,
-      defaultBarGrpah()
+      defaultBarGraph()
     );
   };
 
+  /**
+   * Initializes and updates the Line Graph.
+   */
   const lineGraph = () => {
     if (lineGraphChart) lineGraphChart.destroy();
 
@@ -112,6 +175,9 @@ export default function Reports() {
     );
   };
 
+  /**
+   * Initializes and updates the Pie Graph.
+   */
   const pieGraph = () => {
     if (pieGraphChart) pieGraphChart.destroy();
 
@@ -121,6 +187,9 @@ export default function Reports() {
     );
   };
 
+  /**
+   * Initializes and updates the Polar Area Graph.
+   */
   const polarGraph = () => {
     if (polarGraphChart) polarGraphChart.destroy();
 
@@ -130,7 +199,10 @@ export default function Reports() {
     );
   };
 
-  // TODO: Jake this is throwing errors when the popup loads
+  // TODO: Jake this is throwing errors (sometimes)
+  /**
+   * Use effect to initialize the charts when the component mounts.
+   */
   useEffect(() => {
     barGraph();
     lineGraph();
@@ -139,13 +211,25 @@ export default function Reports() {
   }, []);
 
   //Handle Popup ------------------------------------------------------------------------------------------------------------------
+  /**
+   * Represents the state of whether a popup is open or not.
+   * @type {boolean}
+   */
   const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
 
+  /**
+   * Handles opening a popup and setting its type.
+   *
+   * @param {React.MouseEvent<HTMLCanvasElement>} e - The click event that triggered the popup.
+   */
   const handleOpenPopup = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setPopupOpen(true);
     setType(e.currentTarget.id);
   };
 
+  /**
+   * Handles closing the currently open popup.
+   */
   const handleClosePopup = () => {
     setPopupOpen(false);
   };
@@ -204,16 +288,17 @@ export default function Reports() {
       </Group>
 
       {/*TODO: Jake to fix UI*/}
-      <Group label="New Graph">
+      <div id="newGraphContainer">
         <div className="canvasContainer">
           <canvas onClick={handleOpenPopup} id="bar"></canvas>
           <canvas onClick={handleOpenPopup} id="line"></canvas>
           <canvas onClick={handleOpenPopup} id="pie"></canvas>
           <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
         </div>
-      </Group>
+      </div>
 
-      <div>
+      {/* Popup to handle configuration of new graph */}
+      <div id="configureGraphPopupContainer">
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <ConfigureGraph
             type={type}

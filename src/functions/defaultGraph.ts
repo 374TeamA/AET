@@ -3,9 +3,15 @@ import {
   ChartData,
   ChartOptions,
   TooltipItem
-} from "chart.js/auto";
+} from "chart.js";
 
-export function defaultBarGrpah() {
+/**
+ * Generates the default configuration for a bar graph.
+ *
+ * @returns {ChartConfiguration} The default configuration for a bar graph.
+ */
+export function defaultBarGraph(): ChartConfiguration {
+  // Data for the bar graph, including labels, datasets, and styling.
   const data: ChartData = {
     labels: [
       "Food",
@@ -13,7 +19,7 @@ export function defaultBarGrpah() {
       "Utilities",
       "Housing",
       "Clothing",
-      "Medical/Insurence",
+      "Medical/Insurance",
       "Household Items"
     ],
     datasets: [
@@ -43,11 +49,13 @@ export function defaultBarGrpah() {
     ]
   };
 
+  // Options for the bar graph, including scales, title, legend, and tooltip settings.
   const barOptions = {
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
+          // Custom tick formatting for values greater than or equal to 1000.
           callback: function (value: string) {
             if (parseInt(value) >= 1000) {
               return (
@@ -63,13 +71,14 @@ export function defaultBarGrpah() {
     plugins: {
       title: {
         display: true,
-        text: "Spending for March"
+        text: "Spending for March" // Title text for the graph.
       },
       legend: {
-        display: false
+        display: false // Hide the legend.
       },
       tooltip: {
         callbacks: {
+          // Custom tooltip label formatting as currency (USD).
           label: function (context: TooltipItem<"bar">) {
             let label = context.dataset.label || "";
 
@@ -90,13 +99,12 @@ export function defaultBarGrpah() {
     }
   };
 
+  // Configuration for the bar graph, combining data and options.
   const config: ChartConfiguration = {
     type: "bar",
     data: data,
     options: barOptions as ChartOptions
   };
-
-  console.log(config);
 
   return config;
 }

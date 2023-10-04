@@ -294,18 +294,24 @@ function getTestData() {
   const transactions: Transaction[] = [
     {
       id: "01", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "Countdown",
       details: [{ amount: 7, category: "Food" }]
     },
     {
       id: "02", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "New World",
       details: [{ amount: 10, category: "Food" }]
     },
     {
       id: "03", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-02"),
       merchant: "The Warehouse",
       details: [
@@ -315,6 +321,8 @@ function getTestData() {
     },
     {
       id: "04", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-03"),
       merchant: "The Warehouse",
       details: [
