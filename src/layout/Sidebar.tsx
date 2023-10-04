@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import "../styles/nav.css";
 import { NavLink, useLocation } from "react-router-dom";
+import { AccountContext } from "../context/AccountsContext";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -34,9 +35,19 @@ export default function Sidebar() {
         <li
           className={location.pathname.includes("accounts") ? "selected" : ""}
         >
-          <NavLink style={{ width: "100%", display: "block" }} to="accounts">
-            Accounts
-          </NavLink>
+          <AccountContext.Consumer>
+            {(accounts)=>{
+              return <>
+              {
+                accounts.map((account)=>{
+                  return <NavLink style={{ width: "100%", display: "block" }} to={`/accounts/${account.id}`}>
+                    {account.name}
+                  </NavLink>
+                })
+              }
+              </>
+            }}
+          </AccountContext.Consumer>
         </li>
       </ul>
       <div className="bottom-links">

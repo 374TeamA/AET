@@ -12,7 +12,8 @@ export default function ImportTransaction() {
     const processCSV = async () => {
       if (file) {
         //TODO: properly format the csv parser and its returns
-        const transactions = await generateImportFromFile(file);
+        //TODO: Link importing to an account
+        const transactions = await generateImportFromFile(file, "");
         console.log(transactions);
         setImportData(transactions);
       }

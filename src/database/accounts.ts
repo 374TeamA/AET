@@ -1,4 +1,4 @@
-import { Account } from "../types/transaction";
+import { Account } from "../types/account";
 import { connectToDatabase } from "./initialisation";
 
 /**
@@ -16,7 +16,7 @@ export async function getAccounts(): Promise<Account[]> {
       if (req.result !== undefined) {
         resolve(req.result);
       } else {
-        reject("No categories");
+        reject(false);
       }
     };
   });
@@ -26,34 +26,44 @@ export async function getAccounts(): Promise<Account[]> {
  * Saves an account to the database.
  *
  * @param acc The account to be saved
+ * @returns {boolean} True on success, false on error
  */
-export async function saveAccount(acc: Account) {
+export async function saveAccount(acc: Account): Promise<boolean> {
   const db = await connectToDatabase();
-  const dbt = db.transaction("Accounts", "readwrite");
-  const tos = dbt.objectStore("Accounts");
-  const req = tos.put(acc);
-  req.onsuccess = () => {
-    console.log("Account added", req.result);
-  };
-  req.onerror = () => {
-    console.error("Error", req.error);
-  };
+  return new Promise((resolve, reject) => {
+    const dbt = db.transaction("Accounts", "readwrite");
+    const tos = dbt.objectStore("Accounts");
+    const req = tos.put(acc);
+    req.onsuccess = () => {
+      console.log("Account added", req.result);
+      resolve(true);
+    };
+    req.onerror = () => {
+      console.error("Error", req.error);
+      reject(false);
+    };
+  });
 }
 
 /**
  * Deletes an account and all transactions under that account from the database.
  *
  * @param id The id of the account to be deleted
+ * @returns {boolean} True on success, false on error
  */
-export async function deleteAccount(id: string) {
+export async function deleteAccount(id: string): Promise<boolean> {
   const db = await connectToDatabase();
-  const dbt = db.transaction("Accounts", "readwrite");
-  const tos = dbt.objectStore("Accounts");
-  const req = tos.delete(id);
-  req.onsuccess = () => {
-    console.log("Account deleted", req.result);
-  };
-  req.onerror = () => {
-    console.error("Error", req.error);
-  };
+  return new Promise((resolve, reject) => {
+    const dbt = db.transaction("Accounts", "readwrite");
+    const tos = dbt.objectStore("Accounts");
+    const req = tos.delete(id);
+    req.onsuccess = () => {
+      console.log("Account deleted", req.result);
+      resolve(true);
+    };
+    req.onerror = () => {
+      console.error("Error", req.error);
+      reject(false);
+    };
+  });
 }

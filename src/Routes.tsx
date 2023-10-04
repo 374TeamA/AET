@@ -10,7 +10,7 @@ const Routers: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} /> {/* Creates a route for the root path to lead to dashboards (IE index is dashboard component) */}
-      <Route path="/accounts" element={<Accounts />} /> {/* Creates a route for accounts */}
+      <Route path="/accounts/:id" element={<Accounts />} /> {/* Creates a route for accounts */}
       <Route path="/reports" element={<Reports />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
