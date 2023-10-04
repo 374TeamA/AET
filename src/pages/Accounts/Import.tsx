@@ -10,8 +10,10 @@ export default function Import() {
       if (file) {
         //TODO: properly format the csv parser and its returns
         //TODO: Link importing to an account
-        const transactions = await generateImportFromFile(file, "");
-        console.log(transactions);
+        const importWithDupeIndexes = await generateImportFromFile(file, "");
+
+        console.log(importWithDupeIndexes.import);
+        console.log(importWithDupeIndexes.dupeIndexes);
       }
     };
     processCSV();
