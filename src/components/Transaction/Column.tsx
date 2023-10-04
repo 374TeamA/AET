@@ -3,9 +3,18 @@ import Item from "./Item";
 interface ColumnProps {
   title: string;
   items: Transaction[];
+  categories: {
+    [key: string]: string;
+  };
+  updateTransactions: (transaction: Transaction) => void;
 }
 
-export default function Column({ title, items }: ColumnProps) {
+export default function Column({
+  title,
+  items,
+  categories,
+  updateTransactions
+}: ColumnProps) {
   return (
     <div className="column">
       <div
@@ -18,7 +27,12 @@ export default function Column({ title, items }: ColumnProps) {
         {title}
       </div>
       {items.map((transaction) => (
-        <Item transaction={transaction} />
+        <Item
+          transaction={transaction}
+          categories={categories}
+          updateTransactions={updateTransactions}
+          key={transaction.id}
+        />
       ))}
     </div>
   );

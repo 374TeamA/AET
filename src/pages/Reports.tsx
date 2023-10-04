@@ -70,7 +70,7 @@ export default function Reports() {
   };
 
   return (
-    <div id="reports-container">
+    <div id="reports-container" className="content">
       <Group label="Export">
         <div>
           <label htmlFor="startDate">Start Date:</label>

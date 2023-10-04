@@ -50,32 +50,33 @@ export default function Accounts() {
     setValue(newValue);
   };
 
-  const params = useParams();
-  const accountId = params.id;
+  //const params = useParams();
+  //const accountId = params.id;
 
   return (
-    <Box sx={{ width: "100%", height: "94%" }}>
-      <h1>{accountId}</h1>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="Accounts-Tab-Panel"
-        >
-          <Tab label="Transactions" {...a11yProps(0)} />
-          <Tab label="Import" {...a11yProps(1)} />
-          <Tab label="Import History" {...a11yProps(2)} />
-        </Tabs>
+    <div className="content">
+      <Box sx={{ width: "100%", height: "90%" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="Accounts-Tab-Panel"
+          >
+            <Tab label="Transactions" {...a11yProps(0)} />
+            <Tab label="Import" {...a11yProps(1)} />
+            <Tab label="Import History" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <Transactions />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <Import />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          <History />
+        </CustomTabPanel>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <Transactions />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <Import />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        <History />
-      </CustomTabPanel>
-    </Box>
+    </div>
   );
 }

@@ -17,35 +17,53 @@ export default function Dashboard() {
   useTitle("Dashboard");
   return (
     <div>
-      <AccountContext.Consumer>
-        {(accounts) => {
-          return (
-            <>
-              {accounts.map((account) => {
-                return (
-                  <div className="dashboard-account">
-                    <div
-                      style={{
-                        width: "75%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <p>{account.name}</p>
+      <div style={{ display: "flex", height: "9vh" }}>
+        <AccountContext.Consumer>
+          {(accounts) => {
+            return (
+              <>
+                {accounts.map((account) => {
+                  return (
+                    <div className="dashboard-account" key={account.id}>
+                      <div
+                        style={{
+                          width: "55%",
+                          height: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center"
+                        }}
+                      >
+                        <p>{account.name}</p>
+                      </div>
+                      <div
+                        style={{
+                          width: "45%",
+                          height: "100%",
+                          position: "relative",
+                          overflow: "hidden"
+                        }}
+                      >
+                        <img
+                          style={{
+                            width: "100%",
+                            display: "block",
+                            aspectRatio: "1/1",
+                            objectFit: "cover",
+                            opacity: "0.1"
+                          }}
+                          src="https://uxwing.com/wp-content/themes/uxwing/download/business-professional-services/credit-card-swipe-icon.png"
+                        ></img>
+                      </div>
                     </div>
-                    <div style={{ width: "25%", height: "100%" }}>
-                      <img></img>
-                    </div>
-                  </div>
-                );
-              })}
-            </>
-          );
-        }}
-      </AccountContext.Consumer>
-      <div>
+                  );
+                })}
+              </>
+            );
+          }}
+        </AccountContext.Consumer>
+      </div>
+      <div className="content" style={{ height: "79vh" }}>
         <button onClick={handleOpenPopup}>Open Popup</button>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <h2>This is a custom popup!</h2>

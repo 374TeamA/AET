@@ -24,7 +24,7 @@ export default function ImportTransaction() {
   return (
     <div>
       <CSVUploader setFile={setFile} />
-      <Table importData={importData} />
+      {importData && <Table importData={importData} />}
     </div>
   );
 }

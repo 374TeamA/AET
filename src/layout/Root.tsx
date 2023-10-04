@@ -14,7 +14,7 @@ export default function Root({ children }: RootProps) {
       <Header />
       <div className="sidebar-layout">
         <Sidebar />
-        <div className="content">{children}</div>
+        <div style={{ width: "100%", height: "100%" }}>{children}</div>
       </div>
     </>
   );
