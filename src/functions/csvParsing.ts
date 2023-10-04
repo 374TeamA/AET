@@ -1,6 +1,6 @@
 import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
-import { parse } from "csv-parse/browser/esm";
+import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 
@@ -51,11 +51,15 @@ export async function generateImportFromFile(
   // Get the column indexes (date, merchant, and amount)
   let columnIndexes: ColumnIndexes = getColumnIndexes(csvData);
 
+  // Generate a new import ID
+  let importId: string = uuidv4();
+
   // Split the data into a list of transactions
   let transactions: Transaction[] = getTransactions(
     csvData,
     columnIndexes,
-    account
+    account,
+    importId
   );
 
   // Create a new import with the list of transactions, and return it
@@ -112,7 +116,7 @@ function parseStringToCsvData(rawData: string): Promise<string[][]> {
   // Create a new promise of a string
   return new Promise<string[][]>((resolve, reject) => {
     // Try to parse the raw data, using "," as delimiter, and allow for inconsistent row lengths
-    parse(
+    csvParse(
       rawData,
       { delimiter: ",", relax_column_count: true },
       (err, records: string[][]) => {
@@ -177,12 +181,14 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
  * @param csvData The csv data to split into transactions
  * @param columnIndexes The column indices of the csv data
  * @param account The account that these transactions came from
+ * @param importId The ID of the import these transactions belong to
  * @returns A list of new transactions
  */
 function getTransactions(
   csvData: string[][],
   columnIndexes: ColumnIndexes,
-  account: string
+  account: string,
+  importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
   let transactions: Transaction[] = [];
@@ -194,7 +200,9 @@ function getTransactions(
 
     // Try to create a new transaction from the current line and push it to the list of transactions
     try {
-      transactions.push(getTransactionFromLine(line, columnIndexes, account));
+      transactions.push(
+        getTransactionFromLine(line, columnIndexes, account, importId)
+      );
     } catch (error) {
       console.error(`Error parsing line ${i}: ${(error as Error).message}`);
     }
@@ -217,12 +225,15 @@ function getTransactions(
  * @param line A line from the csv data to be parsed to a transaction
  * @param columnIndexes The column indices of the csv data
  * @param account The account connected to the current transaction
+ * @param importId The ID of the import this transaction belongs to
+ *
  * @returns A new transaction
  */
 function getTransactionFromLine(
   line: string[],
   columnIndexes: ColumnIndexes,
-  account: string
+  account: string,
+  importId: string
 ): Transaction {
   // Get the amount
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
@@ -242,6 +253,7 @@ function getTransactionFromLine(
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
+    importId,
     account: account,
     date: date,
     merchant: merchant,
