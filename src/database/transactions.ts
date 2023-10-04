@@ -2,7 +2,31 @@ import { Transaction } from "../types/transaction";
 import { connectToDatabase } from "./initialisation";
 
 /**
- * Gets all transactions for the accounts in between two dates.
+ * Gets all transactions for the account.
+ *
+ * @param acc The id of the account
+ * @returns {Transaction[]} An array of transactions
+ */
+export async function getAllTransactions(acc: string): Promise<Transaction[]> {
+  const db = await connectToDatabase();
+  return new Promise((resolve, reject) => {
+    const dbt = db.transaction("Transactions", "readonly");
+    const tos = dbt.objectStore("Transactions");
+    const ind = tos.index("account");
+    const req = ind.getAll(IDBKeyRange.only(acc));
+
+    req.onsuccess = function () {
+      if (req.result !== undefined) {
+        resolve(req.result);
+      } else {
+        reject(false);
+      }
+    };
+  });
+}
+
+/**
+ * Gets all transactions for the account in between two dates.
  *
  * @param acc The id of the account
  * @param startDate The from date
