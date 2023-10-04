@@ -12,7 +12,13 @@ let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
 );
 
 */
-import { ChartConfiguration, ChartData, ChartType } from "chart.js";
+import {
+  ChartConfiguration,
+  ChartData,
+  ChartOptions,
+  ChartType,
+  TooltipItem
+} from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
@@ -36,7 +42,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   const config: ChartConfiguration = {
     type: chartType,
     data: data,
-    options: options
+    options: options as ChartOptions
   };
 
   console.log(config);
@@ -151,7 +157,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"bar">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -179,7 +185,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"pie">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -206,7 +212,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"polarArea">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -253,7 +259,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"line">) {
             let label = context.dataset.label || "";
 
             if (label) {

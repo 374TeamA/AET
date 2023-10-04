@@ -1,3 +1,4 @@
+import sha256 from "crypto-js/sha256";
 import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse as csvParse } from "csv-parse/browser/esm";
@@ -39,6 +40,7 @@ export async function generateImportFromFile(
 ): Promise<Import> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
+  const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -51,6 +53,7 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
+  const importId: string = uuidv4();
 
   // Split the data into a list of transactions
   const transactions: Transaction[] = getTransactions(
@@ -59,6 +62,9 @@ export async function generateImportFromFile(
     account,
     importId
   );
+
+  // If any duplicated transactions exist, prompt the user to select which ones to remove
+  transactions = await deleteDupes(transactions);
 
   // Create a new import with the list of transactions, and return it
   return getImportFromTransactions(transactions);
@@ -152,8 +158,10 @@ function cleanData(csvData: string[][]): string[][] {
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
   const header: string[] = csvData[0];
+  const header: string[] = csvData[0];
 
   // Get the column indices from the header
+  const columnIndexes: ColumnIndexes = {
   const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
@@ -190,10 +198,12 @@ function getTransactions(
 ): Transaction[] {
   // Create a new list of transactions populate
   const transactions: Transaction[] = [];
+  const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
+    const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
@@ -218,7 +228,7 @@ function getTransactions(
 }
 
 /**
- * Splits a line from csv data into a single transaction
+ * Splits a line from csv data into a single transaction. It generates a new ID as a hash of the date, merchant, and absolute amount.
  *
  * @param line A line from the csv data to be parsed to a transaction
  * @param columnIndexes The column indices of the csv data
@@ -233,7 +243,9 @@ function getTransactionFromLine(
   account: string,
   importId: string
 ): Transaction {
-  // Get the amount
+  // Get the date, merchant, and amount from the line
+  const date: Date = parseDate(line[columnIndexes.dateIndex]);
+  const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
   // If the amount is positive, throw an error
@@ -242,6 +254,8 @@ function getTransactionFromLine(
   // Make the amount positive
   amount = Math.abs(amount);
 
+  // Generate a new ID as a hash from the transaction date, merchant, and the absolute amount
+  const id = sha256(date.toString() + merchant + amount).toString();
   // Get the date
   const date: Date = parseDate(line[columnIndexes.dateIndex]);
 
@@ -250,8 +264,8 @@ function getTransactionFromLine(
 
   // Create and return a new transaction from the retrieved data
   return {
-    id: uuidv4(),
-    importId,
+    id: id,
+    import: importId,
     account: account,
     date: date,
     merchant: merchant,
@@ -268,6 +282,7 @@ function getTransactionFromLine(
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
   const date: Date | undefined = dateFormats
+  const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
 
@@ -278,6 +293,23 @@ function parseDate(dateString: string): Date {
 
   // Otherwise, throw an error
   throw new Error("Date format not recognised.");
+}
+
+/**
+ * Prompts the user to select which transactions are duplicates, and delete them
+ *
+ * @param transactions A list of transactions awaiting to be imported
+ * @returns The same list of transactions, with duplicates removed
+ */
+async function deleteDupes(
+  transactions: Transaction[]
+): Promise<Transaction[]> {
+  // TOD0:
+  // Get transactions from IndexedDB
+  // Identify the duplicate transactions
+  // Prompt the user to select which ones are actually duplicates
+  // Delete the duplicates
+  return transactions;
 }
 
 /**
