@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Category } from "../../types/category";
 import { deleteCategory, saveCategory } from "../../database/categories";
+import { v4 as uuidv4 } from "uuid";
 export default function EditCategories() {
 
   // state to store the list of categories
@@ -49,7 +50,7 @@ export default function EditCategories() {
   const addCategory = () => {
     // adds a category to the list
     const newCategoryList = [...categoryList];
-    newCategoryList.push({ name: "", id: Math.random().toString()});
+    newCategoryList.push({ name: "", id: uuidv4()});
     setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);

@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Account } from "../../types/account";
 import { deleteAccount, saveAccount } from "../../database/accounts";
+import { v4 as uuidv4 } from "uuid";
 export default function EditAccounts() {
 
   // state to store the list of categories
@@ -45,7 +46,7 @@ export default function EditAccounts() {
   const addAccount = () => {
     // adds a account to the list
     const newAccountList = [...accountList];
-    newAccountList.push({ name: "", id: Math.random().toString()});
+    newAccountList.push({ name: "", id: uuidv4() });
     setAccountList(newAccountList);
     // allow the user to enter a name for the account:
     setEditDialogOpen(true);
