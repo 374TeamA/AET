@@ -7,6 +7,7 @@ import {
 } from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
+//TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
   const transactions: Transaction[] = getTestData();

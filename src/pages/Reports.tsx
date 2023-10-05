@@ -155,7 +155,7 @@ export default function Reports() {
    * Initializes and updates the Bar Graph.
    */
   const barGraph = () => {
-    if (barGraphChart) barGraphChart.destroy();
+    if (barGraphChart) return;
 
     barGraphChart = new Chart(
       document.getElementById("bar") as HTMLCanvasElement,
@@ -167,7 +167,7 @@ export default function Reports() {
    * Initializes and updates the Line Graph.
    */
   const lineGraph = () => {
-    if (lineGraphChart) lineGraphChart.destroy();
+    if (lineGraphChart) return;
 
     lineGraphChart = new Chart(
       document.getElementById("line") as HTMLCanvasElement,
@@ -179,7 +179,7 @@ export default function Reports() {
    * Initializes and updates the Pie Graph.
    */
   const pieGraph = () => {
-    if (pieGraphChart) pieGraphChart.destroy();
+    if (pieGraphChart) return;
 
     pieGraphChart = new Chart(
       document.getElementById("pie") as HTMLCanvasElement,
@@ -191,7 +191,7 @@ export default function Reports() {
    * Initializes and updates the Polar Area Graph.
    */
   const polarGraph = () => {
-    if (polarGraphChart) polarGraphChart.destroy();
+    if (polarGraphChart) return;
 
     polarGraphChart = new Chart(
       document.getElementById("polarArea") as HTMLCanvasElement,
