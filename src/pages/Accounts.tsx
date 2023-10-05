@@ -8,7 +8,7 @@ import Transactions from "./Accounts/Transactions";
 import Import from "./Accounts/ImportTransaction";
 import History from "./Accounts/History";
 import { useTitle } from "../hooks/UseTitle";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 //Accounts page is the default layout for each account and will need to load the specifics of the account based on a given account id
 
 interface TabPanelProps {
@@ -46,7 +46,7 @@ function a11yProps(index: number) {
 export default function Accounts() {
   const [value, setValue] = React.useState(0);
   useTitle("Accounts");
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

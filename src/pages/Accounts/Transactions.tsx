@@ -1,9 +1,9 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, InputLabel, SelectChangeEvent } from "@mui/material";
+import { Box, SelectChangeEvent } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
-  getAllTransactions,
-  saveTransaction
+  getAllTransactions
+  // saveTransaction
 } from "../../database/transactions";
 import { useParams } from "react-router-dom";
 import { FormControl, Select, MenuItem } from "@mui/material";
