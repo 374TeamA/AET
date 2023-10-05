@@ -1,1 +1,0 @@
-This is where all general components will go that are able to be used anywhere in the app.

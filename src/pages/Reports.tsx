@@ -6,13 +6,14 @@ import { useState, ChangeEvent, useEffect } from "react";
 import "../styles/reports.css";
 import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
+import CustomPopup from "../components/Popup";
 import {
   defaultBarGrpah,
   defaultLineGraph,
   defaultPieGraph,
   defaultPolarGraph
 } from "../functions/defaultGraph";
-import CustomPopup from "../components/Popup";
+//import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 // import { GraphConfig } from "../types/graph";
@@ -151,7 +152,7 @@ export default function Reports() {
   };
 
   return (
-    <div id="reports-container">
+    <div id="reports-container" className="content">
       <Group label="Export">
         <div>
           <label htmlFor="startDate">Start Date:</label>
@@ -212,6 +213,13 @@ export default function Reports() {
           <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
         </div>
       </Group>
+
+      <select id="typeSelection">
+        <option value="pie">Pie</option>
+        <option value="bar">Bar</option>
+        <option value="line">Line</option>
+        <option value="polarArea">Polar Area</option>
+      </select>
 
       <div>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>

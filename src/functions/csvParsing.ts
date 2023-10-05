@@ -40,6 +40,7 @@ export async function generateImportFromFile(
 ): Promise<{ import: Import; dupeIndexes: number[] }> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
+  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -52,6 +53,7 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
+  // const importId: string = uuidv4();
 
   // Split the data into a list of transactions
   const transactions: Transaction[] = getTransactions(
@@ -159,8 +161,10 @@ function cleanData(csvData: string[][]): string[][] {
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
   const header: string[] = csvData[0];
+  //const header: string[] = csvData[0];
 
   // Get the column indices from the header
+  //const columnIndexes: ColumnIndexes = {
   const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
@@ -196,11 +200,13 @@ function getTransactions(
   importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
+  //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
+    //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
@@ -260,7 +266,7 @@ function getTransactionFromLine(
     merchant: merchant,
     totalAmount: amount,
     details: [{ amount: amount, category: "Default" }]
-  };
+  } as Transaction;
 }
 
 /**
@@ -271,6 +277,7 @@ function getTransactionFromLine(
  */
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
+  //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
