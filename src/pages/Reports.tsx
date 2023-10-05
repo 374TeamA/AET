@@ -1,7 +1,7 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, MouseEvent } from "react";
 // import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
@@ -24,6 +24,7 @@ import { GraphConfig } from "../types/graph";
 export default function Reports() {
   useTitle("Reports");
 
+  // Variables
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
@@ -126,103 +127,64 @@ export default function Reports() {
     setEndDate(today.toISOString().split("T")[0]);
   };
 
-  // Handle default Graph Generation -----------------------------------------------------------------------------------------
-  /**
-   * Represents a Bar Graph Chart.
-   * @type {Chart}
-   */
-  let barGraphChart: Chart;
-
-  /**
-   * Represents a Line Graph Chart.
-   * @type {Chart}
-   */
-  let lineGraphChart: Chart;
-
-  /**
-   * Represents a Pie Graph Chart.
-   * @type {Chart}
-   */
-  let pieGraphChart: Chart;
-
-  /**
-   * Represents a Polar Area Graph Chart.
-   * @type {Chart}
-   */
-  let polarGraphChart: Chart;
-
-  /**
-   * Initializes and updates the Bar Graph.
-   */
-  const barGraph = () => {
-    if (barGraphChart) return;
-
-    barGraphChart = new Chart(
-      document.getElementById("bar") as HTMLCanvasElement,
-      defaultBarGraph()
-    );
-  };
-
-  /**
-   * Initializes and updates the Line Graph.
-   */
-  const lineGraph = () => {
-    if (lineGraphChart) return;
-
-    lineGraphChart = new Chart(
-      document.getElementById("line") as HTMLCanvasElement,
-      defaultLineGraph()
-    );
-  };
-
-  /**
-   * Initializes and updates the Pie Graph.
-   */
-  const pieGraph = () => {
-    if (pieGraphChart) return;
-
-    pieGraphChart = new Chart(
-      document.getElementById("pie") as HTMLCanvasElement,
-      defaultPieGraph()
-    );
-  };
-
-  /**
-   * Initializes and updates the Polar Area Graph.
-   */
-  const polarGraph = () => {
-    if (polarGraphChart) return;
-
-    polarGraphChart = new Chart(
-      document.getElementById("polarArea") as HTMLCanvasElement,
-      defaultPolarGraph()
-    );
-  };
-
-  // TODO: Jake this is throwing errors (sometimes)
   /**
    * Use effect to initialize the charts when the component mounts.
    */
   useEffect(() => {
-    barGraph();
-    lineGraph();
-    pieGraph();
-    polarGraph();
+    // Handle default bar graph generation
+    if (Chart.getChart("bar") != undefined) {
+      Chart.getChart("bar")?.destroy();
+    }
+
+    new Chart(
+      document.getElementById("bar") as HTMLCanvasElement,
+      defaultBarGraph()
+    );
+
+    // Handle default line graph generation
+    if (Chart.getChart("line") != undefined) {
+      Chart.getChart("line")?.destroy();
+    }
+
+    new Chart(
+      document.getElementById("line") as HTMLCanvasElement,
+      defaultLineGraph()
+    );
+
+    // Handle default pie graph generation
+    if (Chart.getChart("pie") != undefined) {
+      Chart.getChart("pie")?.destroy();
+    }
+
+    new Chart(
+      document.getElementById("pie") as HTMLCanvasElement,
+      defaultPieGraph()
+    );
+
+    // Handle default polar area graph generation
+    if (Chart.getChart("polarArea") != undefined) {
+      Chart.getChart("polarArea")?.destroy();
+    }
+
+    new Chart(
+      document.getElementById("polarArea") as HTMLCanvasElement,
+      defaultPolarGraph()
+    );
   }, []);
 
   //Handle Popup ------------------------------------------------------------------------------------------------------------------
   /**
    * Represents the state of whether a popup is open or not.
-   * @type {boolean}
+   * @type {boolean} status of the popup. True is open, False is closed
    */
   const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
 
   /**
    * Handles opening a popup and setting its type.
    *
-   * @param {React.MouseEvent<HTMLCanvasElement>} e - The click event that triggered the popup.
+   * @param {MouseEvent<HTMLCanvasElement>} e - The click event that triggered the popup.
    */
-  const handleOpenPopup = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleOpenPopup = (e: MouseEvent<HTMLCanvasElement>) => {
     setPopupOpen(true);
     setType(e.currentTarget.id);
   };
