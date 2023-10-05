@@ -1,17 +1,19 @@
 // import React from 'react'
 import {
-    AccountContext,defaultAccounts
+    AccountContext,AccountUpdaterContext,defaultAccounts
   } from "../../context/AccountsContext";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Dialog } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Account } from "../../types/account";
+import { CategoryContext, CategoryUpdaterContext } from "../../context/CategoryContext";
 export default function EditAccounts() {
 
-  // state to store the list of categories
-  const [accountList, setAccountList] =
-    useState<Account[]>(defaultAccounts);
+  // Get the account list context, and the setter function, from the global context (see App.tsx)
+  const accountList = useContext(AccountContext);
+  const setAccountList = useContext(AccountUpdaterContext);
+
   // state for the editDialog
   const [selectedAccount,setSelectedAccount] = useState<number>(0);
   const [newAccountName,setNewAccountName] = useState<string>("");
@@ -48,7 +50,7 @@ export default function EditAccounts() {
   };
 
   return (
-      <AccountContext.Provider value={accountList}>
+    <>
         <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Account List</Typography>
         
@@ -86,7 +88,7 @@ export default function EditAccounts() {
             <Button onClick={()=>{setRemoveDialog(false);removeAccount()}}>Remove</Button>
           </Box>
         </Dialog>
-      </AccountContext.Provider>
+    </>
   );
 }
   

@@ -1,19 +1,19 @@
 // import React from 'react'
 import {
-    CategoryList,
     CategoryContext,
-    defaultCategories
+    CategoryUpdaterContext
   } from "../../context/CategoryContext";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Dialog } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Category } from "../../types/category";
 export default function EditCategories() {
 
-  // state to store the list of categories
-  const [categoryList, setCategoryList] =
-    useState<CategoryList>(defaultCategories);
+
+  // Get the category list context, and the setter function, from the global context (see App.tsx)
+  const categoryList = useContext(CategoryContext);
+  const setCategoryList = useContext(CategoryUpdaterContext);
   // state for the editDialog
   const [selectedCategory,setSelectedCategory] = useState<number>(0);
   const [newCategoryName,setNewCategoryName] = useState<string>("");
@@ -50,7 +50,7 @@ export default function EditCategories() {
   };
 
   return (
-      <CategoryContext.Provider value={categoryList}>
+      <>
         <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Category List</Typography>
         
@@ -88,7 +88,7 @@ export default function EditCategories() {
             <Button onClick={()=>{setRemoveDialog(false);removeCategory()}}>Remove</Button>
           </Box>
         </Dialog>
-      </CategoryContext.Provider>
+      </>
   );
 }
   
