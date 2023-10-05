@@ -1,17 +1,3 @@
-/*
-const config = {
-    type: 'line',
-    data: {},
-    options: {},
-    plugins: []
-}
-
-/*
-let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
-  t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-);
-
-*/
 import {
   ChartConfiguration,
   ChartData,
@@ -90,10 +76,6 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     ]
   };
 
-  console.log(data);
-  console.log(labels);
-  console.log(values);
-
   return data;
 }
 
@@ -121,10 +103,6 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       }
     ]
   };
-
-  console.log(data);
-  console.log(labels);
-  console.log(values);
 
   return data;
 }

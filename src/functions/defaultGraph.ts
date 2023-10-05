@@ -50,14 +50,18 @@ export function defaultBarGraph(): ChartConfiguration {
   };
 
   // Options for the bar graph, including scales, title, legend, and tooltip settings.
-  const barOptions = {
+  const barOptions: ChartOptions = {
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
           // Custom tick formatting for values greater than or equal to 1000.
-          callback: function (value: string) {
-            if (parseInt(value) >= 1000) {
+          callback: function (value: string | number): string {
+            if (typeof value === "number" && value >= 1000) {
+              return (
+                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              );
+            } else if (typeof value === "string" && parseInt(value) >= 1000) {
               return (
                 "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               );
@@ -103,14 +107,20 @@ export function defaultBarGraph(): ChartConfiguration {
   const config: ChartConfiguration = {
     type: "bar",
     data: data,
-    options: barOptions as ChartOptions
+    options: barOptions
   };
 
   return config;
 }
 
-export function defaultLineGraph() {
-  const data = {
+/**
+ * Generates the default configuration for a line graph.
+ *
+ * @returns {ChartConfiguration} The default configuration for a line graph.
+ */
+export function defaultLineGraph(): ChartConfiguration {
+  // Data for the line graph, including labels, datasets, and styling.
+  const data: ChartData = {
     labels: [
       "01/01/2023",
       "02/01/2023",
@@ -136,13 +146,19 @@ export function defaultLineGraph() {
     ]
   };
 
-  const lineOptions = {
+  // Options for the line graph, including scales, title, legend, and tooltip settings.
+  const lineOptions: ChartOptions = {
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function (value: string) {
-            if (parseInt(value) >= 1000) {
+          // Custom tick formatting for values greater than or equal to 1000.
+          callback: function (value: string | number): string {
+            if (typeof value === "number" && value >= 1000) {
+              return (
+                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              );
+            } else if (typeof value === "string" && parseInt(value) >= 1000) {
               return (
                 "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               );
@@ -156,13 +172,14 @@ export function defaultLineGraph() {
     plugins: {
       title: {
         display: true,
-        text: "Spending for a week for Food and Clothing"
+        text: "Spending for a week for Food and Clothing" // Title text for the graph.
       },
       legend: {
-        display: true
+        display: true // Show the legend.
       },
       tooltip: {
         callbacks: {
+          // Custom tooltip label formatting as currency (USD).
           label: function (context: TooltipItem<"line">) {
             let label = context.dataset.label || "";
 
@@ -183,18 +200,23 @@ export function defaultLineGraph() {
     }
   };
 
+  // Configuration for the line graph, combining data and options.
   const config: ChartConfiguration = {
     type: "line",
     data: data,
-    options: lineOptions as ChartOptions
+    options: lineOptions
   };
-
-  console.log(config);
 
   return config;
 }
 
-export function defaultPieGraph() {
+/**
+ * Generates the default configuration for a pie graph.
+ *
+ * @returns {ChartConfiguration} The default configuration for a pie graph.
+ */
+export function defaultPieGraph(): ChartConfiguration {
+  // Data for the pie graph, including labels, datasets, and styling.
   const data: ChartData = {
     labels: [
       "Food",
@@ -202,7 +224,7 @@ export function defaultPieGraph() {
       "Utilities",
       "Housing",
       "Clothing",
-      "Medical/Insurence",
+      "Medical/Insurance",
       "Household Items"
     ],
     datasets: [
@@ -230,17 +252,19 @@ export function defaultPieGraph() {
     ]
   };
 
-  const pieOptions = {
+  // Options for the pie graph, including title, legend, and tooltip settings.
+  const pieOptions: ChartOptions = {
     plugins: {
       title: {
         display: true,
-        text: "Spending for March"
+        text: "Spending for March" // Title text for the graph.
       },
       legend: {
-        display: false
+        display: false // Hide the legend.
       },
       tooltip: {
         callbacks: {
+          // Custom tooltip label formatting as currency (USD).
           label: function (context: TooltipItem<"pie">) {
             let label = context.dataset.label || "";
 
@@ -260,26 +284,31 @@ export function defaultPieGraph() {
     }
   };
 
+  // Configuration for the pie graph, combining data and options.
   const config: ChartConfiguration = {
     type: "pie",
     data: data,
-    options: pieOptions as ChartOptions
+    options: pieOptions
   };
-
-  console.log(config);
 
   return config;
 }
 
-export function defaultPolarGraph() {
-  const data = {
+/**
+ * Generates the default configuration for a polar area graph.
+ *
+ * @returns {ChartConfiguration} The default configuration for a polar area graph.
+ */
+export function defaultPolarGraph(): ChartConfiguration {
+  // Data for the polar area graph, including labels, datasets, and styling.
+  const data: ChartData = {
     labels: [
       "Food",
       "Transportation",
       "Utilities",
       "Housing",
       "Clothing",
-      "Medical/Insurence",
+      "Medical/Insurance",
       "Household Items"
     ],
     datasets: [
@@ -308,17 +337,19 @@ export function defaultPolarGraph() {
     ]
   };
 
-  const polarOptions = {
+  // Options for the polar area graph, including title, legend, and tooltip settings.
+  const polarOptions: ChartOptions = {
     plugins: {
       title: {
         display: true,
-        text: "Spending for March"
+        text: "Spending for March" // Title text for the graph.
       },
       legend: {
-        display: false
+        display: false // Hide the legend.
       },
       tooltip: {
         callbacks: {
+          // Custom tooltip label formatting as currency (USD).
           label: function (context: TooltipItem<"polarArea">) {
             let label = context.dataset.label || "";
 
@@ -339,13 +370,12 @@ export function defaultPolarGraph() {
     }
   };
 
+  // Configuration for the polar area graph, combining data and options.
   const config: ChartConfiguration = {
     type: "polarArea",
     data: data,
-    options: polarOptions as ChartOptions
+    options: polarOptions
   };
-
-  console.log(config);
 
   return config;
 }
