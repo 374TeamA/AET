@@ -9,7 +9,7 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       reject("Your browser does not support IndexedDB");
     }
 
-    const req = indexedDB.open("AET", 4);
+    const req = indexedDB.open("AET", 6);
 
     req.onerror = () => {
       console.error(`IndexedDB Error: ${req.error}`);
@@ -23,6 +23,7 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("Transactions")) {
         const tOS = db.createObjectStore("Transactions", { keyPath: "id" });
         tOS.createIndex("account", "account", { unique: false });
+        tOS.createIndex("import", "import", { unique: false });
         tOS.createIndex("date", "date", { unique: false });
         tOS.createIndex("merchant", "merchant", { unique: false });
         tOS.createIndex("accdate", ["account", "date"], { unique: false });
@@ -42,6 +43,18 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("Accounts")) {
         const tOS = db.createObjectStore("Accounts", { keyPath: "id" });
         tOS.createIndex("name", "name", { unique: true });
+      }
+
+      if (!db.objectStoreNames.contains("Imports")) {
+        const tOS = db.createObjectStore("Imports", { keyPath: "id" });
+        tOS.createIndex("importDate", "importDate", { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains("Graphs")) {
+        const tOS = db.createObjectStore("Graphs", { keyPath: "id" });
+        tOS.createIndex("allTransactions", "allTransactions", {
+          unique: false
+        });
       }
     };
 

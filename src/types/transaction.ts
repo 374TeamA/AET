@@ -9,8 +9,10 @@ export type Import = {
 export type Transaction = {
   id: string;
   account: string;
+  import: string;
   date: Date;
   merchant: string;
+  totalAmount: number;
   details: { amount: number; category: string }[];
 };
 

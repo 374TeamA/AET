@@ -10,6 +10,6 @@
   box-sizing: border-box;
   background-color: #f2f5f9;
   border: 1px solid lightgrey;
-  max-height: 72vh;
+  max-height: 70vh;
   overflow: auto;
 }
