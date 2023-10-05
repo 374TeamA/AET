@@ -1,4 +1,4 @@
-import sha256 from "crypto-js/sha256";
+import { getAllTransactions } from "../database/transactions.ts";
 import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse as csvParse } from "csv-parse/browser/esm";
@@ -28,18 +28,19 @@ const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
 const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
 
 /**
- * Reads a csv bank statement line by line and generates an import of valid expense transactions
+ * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
  * @param csvFile A csv bank statement file loaded in by the user
  * @param account The account to link the import to
- * @returns An import object from the valid expense transactions from the bank statement
+ * @returns An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
   csvFile: File,
   account: string
-): Promise<Import> {
+): Promise<{ import: Import; dupeIndexes: number[] }> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
+  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -52,20 +53,24 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
+  // const importId: string = uuidv4();
 
   // Split the data into a list of transactions
-  let transactions: Transaction[] = getTransactions(
+  const transactions: Transaction[] = getTransactions(
     csvData,
     columnIndexes,
     account,
     importId
   );
 
-  // If any duplicated transactions exist, prompt the user to select which ones to remove
-  transactions = await deleteDupes(transactions);
+  // Get a list of the indexes of any new transactions that are duplicated in the database
+  const dupeIndexes: number[] = await getDupeIndexes(account, transactions);
 
-  // Create a new import with the list of transactions, and return it
-  return getImportFromTransactions(transactions);
+  // Create a new import with the list of transactions
+  const newImport: Import = getImportFromTransactions(transactions);
+
+  // Return the new import and the indexes of the duplicate transactions
+  return { import: newImport, dupeIndexes: dupeIndexes };
 }
 
 /**
@@ -156,8 +161,10 @@ function cleanData(csvData: string[][]): string[][] {
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
   const header: string[] = csvData[0];
+  //const header: string[] = csvData[0];
 
   // Get the column indices from the header
+  //const columnIndexes: ColumnIndexes = {
   const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
@@ -193,11 +200,13 @@ function getTransactions(
   importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
+  //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
+    //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
@@ -222,7 +231,7 @@ function getTransactions(
 }
 
 /**
- * Splits a line from csv data into a single transaction. It generates a new ID as a hash of the date, merchant, and absolute amount.
+ * Splits a line from csv data into a single transaction.
  *
  * @param line A line from the csv data to be parsed to a transaction
  * @param columnIndexes The column indices of the csv data
@@ -248,18 +257,16 @@ function getTransactionFromLine(
   // Make the amount positive
   amount = Math.abs(amount);
 
-  // Generate a new ID as a hash from the transaction date, merchant, and the absolute amount
-  const id = sha256(date.toString() + merchant + amount).toString();
-
   // Create and return a new transaction from the retrieved data
   return {
-    id: id,
+    id: uuidv4(),
     import: importId,
     account: account,
     date: date,
     merchant: merchant,
+    totalAmount: amount,
     details: [{ amount: amount, category: "Default" }]
-  };
+  } as Transaction;
 }
 
 /**
@@ -270,6 +277,7 @@ function getTransactionFromLine(
  */
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
+  //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
@@ -284,20 +292,33 @@ function parseDate(dateString: string): Date {
 }
 
 /**
- * Prompts the user to select which transactions are duplicates, and delete them
+ * Gets a list of indexes of transactions that are potentially duplicating the database
  *
- * @param transactions A list of transactions awaiting to be imported
- * @returns The same list of transactions, with duplicates removed
+ * @param account
+ * @param transactions
+ * @returns An array of indexes of the offending transactions
  */
-async function deleteDupes(
+async function getDupeIndexes(
+  account: string,
   transactions: Transaction[]
-): Promise<Transaction[]> {
-  // TOD0:
-  // Get transactions from IndexedDB
-  // Identify the duplicate transactions
-  // Prompt the user to select which ones are actually duplicates
-  // Delete the duplicates
-  return transactions;
+): Promise<number[]> {
+  // Get a list of saved transactions from IndexedDB
+  const savedTransactions: Transaction[] = await getAllTransactions(account);
+
+  // For each transaction, store a boolean for if it matches a transaction in the database or not
+  const isDupes: boolean[] = transactions.map((transaction) =>
+    savedTransactions.some(
+      (savedTransaction) =>
+        transaction.date === savedTransaction.date &&
+        transaction.merchant === savedTransaction.merchant &&
+        transaction.totalAmount === savedTransaction.totalAmount
+    )
+  );
+
+  // Convert the list of booleans to a list of indexes of each time a boolean is true
+  return isDupes
+    .map((value, index) => (value ? index : -1))
+    .filter((index) => index !== -1);
 }
 
 /**

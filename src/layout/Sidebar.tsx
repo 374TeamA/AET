@@ -13,8 +13,19 @@ export default function Sidebar() {
   useEffect(() => {
     console.log("sidebar " + location.pathname);
   }, [location]);
+
+  const toggleSidebar = () => {
+    const sidebar = document.querySelector(".sidebar");
+    if (sidebar) {
+      sidebar.classList.toggle("open");
+    }
+  };
+
   return (
-    <div className="sidebar">
+    <div className="sidebar open">
+      <button className="hamburger" onClick={toggleSidebar}>
+        &#9776;
+      </button>
       <ul className="navbar">
         <li className={location.pathname === "/" ? "selected" : ""}>
           <NavLink style={{ width: "100%", display: "block" }} to="/">

@@ -5,7 +5,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Transactions from "./Accounts/Transactions";
-import Import from "./Accounts/Import";
+import Import from "./Accounts/ImportTransaction";
 import History from "./Accounts/History";
 import { useTitle } from "../hooks/UseTitle";
 import { useParams } from "react-router-dom";
@@ -40,7 +40,7 @@ function CustomTabPanel(props: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`
   };
 }
 export default function Accounts() {
@@ -50,32 +50,33 @@ export default function Accounts() {
     setValue(newValue);
   };
 
-  const params = useParams();
-  const accountId = params.id;
+  //const params = useParams();
+  //const accountId = params.id;
 
   return (
-    <Box sx={{ width: "100%", height: "94%" }}>
-      <h1>{accountId}</h1>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="Accounts-Tab-Panel"
-        >
-          <Tab label="Transactions" {...a11yProps(0)} />
-          <Tab label="Import" {...a11yProps(1)} />
-          <Tab label="Import History" {...a11yProps(2)} />
-        </Tabs>
+    <div className="content">
+      <Box sx={{ width: "100%", height: "90%" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="Accounts-Tab-Panel"
+          >
+            <Tab label="Transactions" {...a11yProps(0)} />
+            <Tab label="Import" {...a11yProps(1)} />
+            <Tab label="Import History" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <Transactions />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <Import />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          <History />
+        </CustomTabPanel>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <Transactions />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <Import />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        <History />
-      </CustomTabPanel>
-    </Box>
+    </div>
   );
 }
