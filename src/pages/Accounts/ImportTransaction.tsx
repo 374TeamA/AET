@@ -13,9 +13,11 @@ export default function ImportTransaction() {
       if (file) {
         //TODO: properly format the csv parser and its returns
         //TODO: Link importing to an account
-        const transactions = await generateImportFromFile(file, "");
-        console.log(transactions);
-        setImportData(transactions);
+        const importWithDupeIndexes = await generateImportFromFile(file, "");
+
+        console.log(importWithDupeIndexes.import);
+        setImportData(importWithDupeIndexes.import);
+        console.log(importWithDupeIndexes.dupeIndexes);
       }
     };
     processCSV();
