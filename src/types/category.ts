@@ -1,5 +1,5 @@
+/* Used to store category information */
 export type Category = {
-    id:string,
-    displayName:string,
-    color?:string,
-}
+  id: string;
+  name: string;
+};
