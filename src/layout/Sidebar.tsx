@@ -40,7 +40,7 @@ export default function Sidebar() {
               return <>
               {
                 accounts.map((account)=>{
-                  return <li className={location.pathname.includes(account.id) ? "selected" : ""}>
+                  return <li className={location.pathname.includes(account.id) ? "selected" : ""} key={account.id}>
                     <NavLink style={{ width: "100%", display: "block" }} to={`/accounts/${account.id}`}>
                       {account.name}
                     </NavLink>
