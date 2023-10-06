@@ -2,12 +2,6 @@ import { useState } from "react";
 import { AccountContext, AccountUpdaterContext, defaultAccounts } from "./context/AccountsContext.ts";
 import { CategoryContext, CategoryList, CategoryUpdaterContext, defaultCategories } from "./context/CategoryContext.ts";
 import Root from "./layout/Root.tsx";
-import {
-  AccountContext,defaultAccounts
-} from "./context/AccountsContext";
-import {
-  CategoryContext,defaultCategories
-} from "./context/CategoryContext";
 //import { BrowserRouter as Router } from "react-router-dom";
 import Routers from "./Routes.tsx";
 import { Account } from "./types/account.ts";
