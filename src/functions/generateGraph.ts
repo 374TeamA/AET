@@ -1,17 +1,3 @@
-/*
-const config = {
-    type: 'line',
-    data: {},
-    options: {},
-    plugins: []
-}
-
-/*
-let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
-  t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-);
-
-*/
 import {
   ChartConfiguration,
   ChartData,
@@ -21,6 +7,7 @@ import {
 } from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
+//TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
   const transactions: Transaction[] = getTestData();
@@ -90,10 +77,6 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     ]
   };
 
-  console.log(data);
-  console.log(labels);
-  console.log(values);
-
   return data;
 }
 
@@ -121,10 +104,6 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       }
     ]
   };
-
-  console.log(data);
-  console.log(labels);
-  console.log(values);
 
   return data;
 }
@@ -294,18 +273,24 @@ function getTestData() {
   const transactions: Transaction[] = [
     {
       id: "01", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "Countdown",
       details: [{ amount: 7, category: "Food" }]
     },
     {
       id: "02", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "New World",
       details: [{ amount: 10, category: "Food" }]
     },
     {
       id: "03", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-02"),
       merchant: "The Warehouse",
       details: [
@@ -315,6 +300,8 @@ function getTestData() {
     },
     {
       id: "04", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-03"),
       merchant: "The Warehouse",
       details: [
