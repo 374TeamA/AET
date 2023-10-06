@@ -34,7 +34,7 @@ export default function Item({
       //console.log(categories[option]);
       setColor(categories[option] || "#000");
     }
-  }, [option]);
+  }, [option,categories,transaction,updateTransactions]); // TODO: validate that this doesn't break with the extra dependencies.
 
   useEffect(() => {
     //console.log(

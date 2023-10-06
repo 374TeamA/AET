@@ -2,7 +2,6 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Transactions from "./Accounts/Transactions";
 import Import from "./Accounts/ImportTransaction";
@@ -29,14 +28,14 @@ function CustomTabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box sx={{ p: 3, height: "100%" }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
   );
 }
 
-function a11yProps(index: number) {
+function a11yProps(index: number) { // Accessibility props (A11y is shorthand)
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`
