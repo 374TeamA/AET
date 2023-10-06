@@ -1,6 +1,5 @@
-import { Button, Select, MenuItem } from "@mui/material";
+import { Button, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { Transaction } from "../../types/transaction";
-import React, { useEffect } from "react";
 interface ItemProps {
   transaction: Transaction;
   categories: {
@@ -15,34 +14,15 @@ export default function Item({
   updateTransactions
 }: ItemProps) {
   //const categories = React.useContext(CategoryContext);
-  const [color, setColor] = React.useState<string>(
-    categories[transaction.details[0].category]
-  );
-  const [option, setOption] = React.useState<string>("");
 
-  useEffect(() => {
-    //setColor(categories[transaction.details[0].category] || "#000");
-  }, [categories]);
-
-  useEffect(() => {
-    if (option === "Default" || option == "") {
-      //console.log(categories[option]);
-      setColor(categories[option] || "#000");
-    } else {
-      transaction.details[0].category = option;
-      updateTransactions(transaction);
-      //console.log(categories[option]);
-      setColor(categories[option] || "#000");
-    }
-  }, [option,categories,transaction,updateTransactions]); // TODO: validate that this doesn't break with the extra dependencies.
-
-  useEffect(() => {
-    //console.log(
-    //   color,
-    //   categories[option],
-    //   categories[transaction.details[0].category]
-    // );
-  }, [color]);
+  const handleCategoryChange = (e: SelectChangeEvent<string>) => {
+    // Store the update in the database.
+    transaction.details[0].category = e.target.value as string;
+    updateTransactions(transaction);
+    // Note, generally you shouldn't modify props directly, because it doesn't actually change the ui.
+    // Props are immutable as far as react is concerned. However, it works for the purposes
+    // of creating a updated transaction object to send to the database.
+  }
 
   return (
     <div
@@ -69,8 +49,9 @@ export default function Item({
           <p>{transaction.merchant}</p>
         </div>
         {/* For each details items */}
-        {transaction.details.map((detail) => (
+        {transaction.details.map((detail,index) => (
           <div
+            key={index}
             style={{
               display: "flex",
               width: "50%",
@@ -95,9 +76,7 @@ export default function Item({
                   }`,
                   color: "white"
                 }}
-                onChange={(e) => {
-                  setOption(e.target.value as string);
-                }}
+                onChange={handleCategoryChange}
                 size="small"
                 defaultValue={detail.category}
               >
@@ -112,10 +91,11 @@ export default function Item({
                 >
                   {detail.category}
                 </MenuItem>
-                {Object.keys(categories).map((category) => {
+                {Object.keys(categories).map((category,index) => {
                   if (category !== detail.category) {
                     return (
                       <MenuItem
+                        key={index}
                         style={{ backgroundColor: `${categories[category]}` }}
                         value={category}
                       >
