@@ -277,6 +277,7 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-01"),
       merchant: "Countdown",
+      totalAmount: 7,
       details: [{ amount: 7, category: "Food" }]
     },
     {
@@ -285,6 +286,7 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-01"),
       merchant: "New World",
+      totalAmount: 10,
       details: [{ amount: 10, category: "Food" }]
     },
     {
@@ -293,6 +295,7 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-02"),
       merchant: "The Warehouse",
+      totalAmount: 177,
       details: [
         { amount: 27, category: "Food" },
         { amount: 150, category: "Clothes" }
@@ -304,6 +307,7 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-03"),
       merchant: "The Warehouse",
+      totalAmount: 57,
       details: [
         { amount: 27, category: "Entertainment" },
         { amount: 30, category: "Clothes" }
