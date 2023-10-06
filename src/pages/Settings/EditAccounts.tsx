@@ -1,6 +1,6 @@
 // import React from 'react'
-import { AccountContext, defaultAccounts } from "../../context/AccountsContext";
-import { useState } from "react";
+import { AccountContext, AccountUpdaterContext } from "../../context/AccountsContext";
+import { useContext, useState } from "react";
 import {
   Button,
   Paper,
@@ -18,8 +18,11 @@ import { Account } from "../../types/account";
 import { deleteAccount, saveAccount } from "../../database/accounts";
 import { v4 as uuidv4 } from "uuid";
 export default function EditAccounts() {
-  // state to store the list of categories
-  const [accountList, setAccountList] = useState<Account[]>(defaultAccounts);
+
+  // Get the account list context, and the setter function, from the global context (see App.tsx)
+  const accountList = useContext(AccountContext);
+  const setAccountList = useContext(AccountUpdaterContext);
+
   // state for the editDialog
   const [selectedAccount, setSelectedAccount] = useState<number>(0);
   const [newAccountName, setNewAccountName] = useState<string>("");
@@ -61,8 +64,8 @@ export default function EditAccounts() {
   };
 
   return (
-    <AccountContext.Provider value={accountList}>
-      <Paper elevation={4} sx={{ padding: 5 }}>
+    <>
+        <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Account List</Typography>
 
         {/* Display an array of categories */}
@@ -139,6 +142,6 @@ export default function EditAccounts() {
           </Button>
         </Box>
       </Dialog>
-    </AccountContext.Provider>
+    </>
   );
 }

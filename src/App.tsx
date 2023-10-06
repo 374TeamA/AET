@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { AccountContext, AccountUpdaterContext, defaultAccounts } from "./context/AccountsContext.ts";
+import { CategoryContext, CategoryList, CategoryUpdaterContext, defaultCategories } from "./context/CategoryContext.ts";
 import Root from "./layout/Root.tsx";
 import {
   AccountContext,defaultAccounts
@@ -7,17 +10,33 @@ import {
 } from "./context/CategoryContext";
 //import { BrowserRouter as Router } from "react-router-dom";
 import Routers from "./Routes.tsx";
-// TODO: Create a context that stores the setState contexts for the accounts and categories so that we can access them.
+import { Account } from "./types/account.ts";
 function App() {
-  return (
+  /* 
+  Setup AccountContext (Storing the list of users' accounts)
+  */
+  // state to store the list of categories
+  const [accountList, setAccountList] =
+    useState<Account[]>(defaultAccounts);
+  
+  /* 
+  Setup CategoryContext (Storing the list of current categories)
+  */
+  const [categoryList, setCategoryList] =
+  useState<CategoryList>(defaultCategories);
 
-    <Root>
-      <AccountContext.Provider value={defaultAccounts}>
-        <CategoryContext.Provider value={defaultCategories}>
-          <Routers />
+  return (
+    <AccountContext.Provider value={accountList}>
+      <AccountUpdaterContext.Provider value={setAccountList}>
+        <CategoryContext.Provider value={categoryList}>
+          <CategoryUpdaterContext.Provider value={setCategoryList}>
+            <Root>
+              <Routers />
+            </Root>
+          </CategoryUpdaterContext.Provider>
         </CategoryContext.Provider>
-      </AccountContext.Provider>
-    </Root>
+      </AccountUpdaterContext.Provider>
+    </AccountContext.Provider>
   );
 }
 
