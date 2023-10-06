@@ -2,15 +2,22 @@ import React, { useEffect } from "react";
 import CSVUploader from "../../components/CSVUploader";
 import { generateImportFromFile } from "../../functions/csvParsing";
 import Table from "../../components/Transaction/Table";
-export default function Import() {
+import { Import } from "../../types/transaction";
+export default function ImportTransaction() {
   const [file, setFile] = React.useState<File>();
-
+  const [importData, setImportData] = React.useState<Import | undefined>(
+    undefined
+  );
   useEffect(() => {
     const processCSV = async () => {
       if (file) {
         //TODO: properly format the csv parser and its returns
-        const transactions = await generateImportFromFile(file);
-        console.log(transactions);
+        //TODO: Link importing to an account
+        const importWithDupeIndexes = await generateImportFromFile(file, "");
+
+        console.log(importWithDupeIndexes.import);
+        setImportData(importWithDupeIndexes.import);
+        console.log(importWithDupeIndexes.dupeIndexes);
       }
     };
     processCSV();
@@ -19,7 +26,7 @@ export default function Import() {
   return (
     <div>
       <CSVUploader setFile={setFile} />
-      <Table />
+      {importData && <Table importData={importData} />}
     </div>
   );
 }

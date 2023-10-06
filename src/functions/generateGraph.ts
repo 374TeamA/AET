@@ -1,20 +1,13 @@
-/*
-const config = {
-    type: 'line',
-    data: {},
-    options: {},
-    plugins: []
-}
-
-/*
-let flattendTransactions: FlattenedTransaction = transactions.flatMap((t) =>
-  t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-);
-
-*/
-import { ChartConfiguration, ChartData, ChartType } from "chart.js";
+import {
+  ChartConfiguration,
+  ChartData,
+  ChartOptions,
+  ChartType,
+  TooltipItem
+} from "chart.js";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 
+//TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
   const transactions: Transaction[] = getTestData();
@@ -36,7 +29,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   const config: ChartConfiguration = {
     type: chartType,
     data: data,
-    options: options
+    options: options as ChartOptions
   };
 
   console.log(config);
@@ -84,10 +77,6 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     ]
   };
 
-  console.log(data);
-  console.log(labels);
-  console.log(values);
-
   return data;
 }
 
@@ -115,10 +104,6 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       }
     ]
   };
-
-  console.log(data);
-  console.log(labels);
-  console.log(values);
 
   return data;
 }
@@ -151,7 +136,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"bar">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -179,7 +164,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"pie">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -206,7 +191,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"polarArea">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -253,7 +238,7 @@ function getOptions(type: string) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"line">) {
             let label = context.dataset.label || "";
 
             if (label) {
@@ -288,18 +273,24 @@ function getTestData() {
   const transactions: Transaction[] = [
     {
       id: "01", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "Countdown",
       details: [{ amount: 7, category: "Food" }]
     },
     {
       id: "02", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-01"),
       merchant: "New World",
       details: [{ amount: 10, category: "Food" }]
     },
     {
       id: "03", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-02"),
       merchant: "The Warehouse",
       details: [
@@ -309,6 +300,8 @@ function getTestData() {
     },
     {
       id: "04", // uuid
+      account: "Everyday",
+      import: "one",
       date: new Date("2021-01-03"),
       merchant: "The Warehouse",
       details: [

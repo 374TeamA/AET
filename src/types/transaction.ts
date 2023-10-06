@@ -12,6 +12,7 @@ export type Transaction = {
   import: string;
   date: Date;
   merchant: string;
+  totalAmount: number;
   details: { amount: number; category: string }[];
 };
 

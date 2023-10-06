@@ -1,10 +1,9 @@
+import { getAllTransactions } from "../database/transactions.ts";
 import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
-import { parse } from "csv-parse/browser/esm";
+import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
-
-/*eslint-disable*/
 
 /*
  * This is a list of valid merchant column names from the main five banks:
@@ -29,14 +28,19 @@ const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
 const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
 
 /**
- * Reads a csv bank statement line by line and generates an import of valid expense transactions
+ * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
  * @param csvFile A csv bank statement file loaded in by the user
- * @returns An import object from the valid expense transactions from the bank statement
+ * @param account The account to link the import to
+ * @returns An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
-export async function generateImportFromFile(csvFile: File): Promise<Import> {
+export async function generateImportFromFile(
+  csvFile: File,
+  account: string
+): Promise<{ import: Import; dupeIndexes: number[] }> {
   // Get the raw data from the file in the form of a string
-  let rawData: string = await getRawDataFromFile(csvFile);
+  const rawData: string = await getRawDataFromFile(csvFile);
+  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -45,13 +49,28 @@ export async function generateImportFromFile(csvFile: File): Promise<Import> {
   csvData = cleanData(csvData);
 
   // Get the column indexes (date, merchant, and amount)
-  let columnIndexes: ColumnIndexes = getColumnIndexes(csvData);
+  const columnIndexes: ColumnIndexes = getColumnIndexes(csvData);
+
+  // Generate a new import ID
+  const importId: string = uuidv4();
+  // const importId: string = uuidv4();
 
   // Split the data into a list of transactions
-  let transactions: Transaction[] = getTransactions(csvData, columnIndexes);
+  const transactions: Transaction[] = getTransactions(
+    csvData,
+    columnIndexes,
+    account,
+    importId
+  );
 
-  // Create a new import with the list of transactions, and return it
-  return getImportFromTransactions(transactions);
+  // Get a list of the indexes of any new transactions that are duplicated in the database
+  const dupeIndexes: number[] = await getDupeIndexes(account, transactions);
+
+  // Create a new import with the list of transactions
+  const newImport: Import = getImportFromTransactions(transactions);
+
+  // Return the new import and the indexes of the duplicate transactions
+  return { import: newImport, dupeIndexes: dupeIndexes };
 }
 
 /**
@@ -104,7 +123,7 @@ function parseStringToCsvData(rawData: string): Promise<string[][]> {
   // Create a new promise of a string
   return new Promise<string[][]>((resolve, reject) => {
     // Try to parse the raw data, using "," as delimiter, and allow for inconsistent row lengths
-    parse(
+    csvParse(
       rawData,
       { delimiter: ",", relax_column_count: true },
       (err, records: string[][]) => {
@@ -126,23 +145,11 @@ function parseStringToCsvData(rawData: string): Promise<string[][]> {
  * @returns The cleaned csv data
  */
 function cleanData(csvData: string[][]): string[][] {
-  // Starting at the first line in the data
-  let i: number = 0;
-
-  // For each line in the CSV
-  while (i < csvData.length) {
-    // If the current line has no useful information in it, remove it from the data
-    if (csvData[i].length < 3 || csvData[i].every((str) => str === "")) {
-      csvData.splice(i, 1);
-    }
-    // Otherwise, go to the next line
-    else {
-      i++;
-    }
-  }
-
-  // Return the cleaned data
-  return csvData;
+  // Filter the csv data line by line
+  return csvData.filter(
+    // Check if the current line has at least three columns and that its elements aren't all empty strings
+    (line) => line.length >= 3 && !line.every((str) => str === "")
+  );
 }
 
 /**
@@ -153,10 +160,12 @@ function cleanData(csvData: string[][]): string[][] {
  */
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
-  let header: string[] = csvData[0];
+  const header: string[] = csvData[0];
+  //const header: string[] = csvData[0];
 
   // Get the column indices from the header
-  let columnIndexes: ColumnIndexes = {
+  //const columnIndexes: ColumnIndexes = {
+  const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
     merchantIndex: header.findIndex((item) => merchantTitles.includes(item))
@@ -180,23 +189,31 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
  *
  * @param csvData The csv data to split into transactions
  * @param columnIndexes The column indices of the csv data
- * @returns
+ * @param account The account that these transactions came from
+ * @param importId The ID of the import these transactions belong to
+ * @returns A list of new transactions
  */
 function getTransactions(
   csvData: string[][],
-  columnIndexes: ColumnIndexes
+  columnIndexes: ColumnIndexes,
+  account: string,
+  importId: string
 ): Transaction[] {
   // Create a new list of transactions populate
-  let transactions: Transaction[] = [];
+  //const transactions: Transaction[] = [];
+  const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
-    let line: string[] = csvData[i];
+    //const line: string[] = csvData[i];
+    const line: string[] = csvData[i];
 
     // Try to create a new transaction from the current line and push it to the list of transactions
     try {
-      transactions.push(getTransactionFromLine(line, columnIndexes));
+      transactions.push(
+        getTransactionFromLine(line, columnIndexes, account, importId)
+      );
     } catch (error) {
       console.error(`Error parsing line ${i}: ${(error as Error).message}`);
     }
@@ -214,17 +231,24 @@ function getTransactions(
 }
 
 /**
- * Splits a line from csv data into a single transaction
+ * Splits a line from csv data into a single transaction.
  *
  * @param line A line from the csv data to be parsed to a transaction
  * @param columnIndexes The column indices of the csv data
- * @returns
+ * @param account The account connected to the current transaction
+ * @param importId The ID of the import this transaction belongs to
+ *
+ * @returns A new transaction
  */
 function getTransactionFromLine(
   line: string[],
-  columnIndexes: ColumnIndexes
+  columnIndexes: ColumnIndexes,
+  account: string,
+  importId: string
 ): Transaction {
-  // Get the amount
+  // Get the date, merchant, and amount from the line
+  const date: Date = parseDate(line[columnIndexes.dateIndex]);
+  const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
   // If the amount is positive, throw an error
@@ -233,19 +257,16 @@ function getTransactionFromLine(
   // Make the amount positive
   amount = Math.abs(amount);
 
-  // Get the date
-  let date: Date = parseDate(line[columnIndexes.dateIndex]);
-
-  // Get the merchant
-  let merchant: string = line[columnIndexes.merchantIndex];
-
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
+    import: importId,
+    account: account,
     date: date,
     merchant: merchant,
+    totalAmount: amount,
     details: [{ amount: amount, category: "Default" }]
-  };
+  } as Transaction;
 }
 
 /**
@@ -256,7 +277,8 @@ function getTransactionFromLine(
  */
 function parseDate(dateString: string): Date {
   // Try to parse the date using one of the available formats
-  let date: Date | undefined = dateFormats
+  //const date: Date | undefined = dateFormats
+  const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
 
@@ -267,6 +289,36 @@ function parseDate(dateString: string): Date {
 
   // Otherwise, throw an error
   throw new Error("Date format not recognised.");
+}
+
+/**
+ * Gets a list of indexes of transactions that are potentially duplicating the database
+ *
+ * @param account
+ * @param transactions
+ * @returns An array of indexes of the offending transactions
+ */
+async function getDupeIndexes(
+  account: string,
+  transactions: Transaction[]
+): Promise<number[]> {
+  // Get a list of saved transactions from IndexedDB
+  const savedTransactions: Transaction[] = await getAllTransactions(account);
+
+  // For each transaction, store a boolean for if it matches a transaction in the database or not
+  const isDupes: boolean[] = transactions.map((transaction) =>
+    savedTransactions.some(
+      (savedTransaction) =>
+        transaction.date === savedTransaction.date &&
+        transaction.merchant === savedTransaction.merchant &&
+        transaction.totalAmount === savedTransaction.totalAmount
+    )
+  );
+
+  // Convert the list of booleans to a list of indexes of each time a boolean is true
+  return isDupes
+    .map((value, index) => (value ? index : -1))
+    .filter((index) => index !== -1);
 }
 
 /**

@@ -41,7 +41,8 @@ li.selected {
 .sidebar {
   width: 10vw;
   min-width: 200px;
-  height: 99%;
+  height: 88vh;
+  position: inherit;
   background-color: #ffffff;
   color: rgb(69, 143, 255);
   display: flex;
@@ -51,8 +52,12 @@ li.selected {
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
+  z-index: 10;
+  transition: left 0.3s ease;
 }
-
+.sidebar.open {
+  left: 0;
+}
 /* Give space between top and bottom links */
 .bottom-links {
   margin-top: auto; /* Push to the bottom */
@@ -90,4 +95,51 @@ li.selected {
   font-family: "Inconsolata", monospace;
   font-family: "Inter", sans-serif;
   font-family: "Istok Web", sans-serif;
+}
+.hamburger {
+  background-color: #ffffff00;
+  color: #000000;
+  border: none;
+  padding: 10px 15px;
+  font-size: 2rem;
+  cursor: pointer;
+  position: fixed;
+  top: 5px;
+  left: 5px;
+  z-index: 1; /* Ensures the hamburger button is above the sidebar content */
+}
+.title {
+  padding-left: 2rem;
+  font-weight: 500;
+  font-size: 1.5rem;
+}
+.logo {
+  max-width: 128px;
+  max-height: 128px;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 10vh;
+    height: 88vh;
+  }
+  .title {
+    /* display: none; */
+  }
+  .logo {
+    display: none;
+  }
+  .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* Hide the hamburger button on desktop */
+@media (min-width: 769px) {
+  .hamburger {
+    display: none;
+  }
 }
