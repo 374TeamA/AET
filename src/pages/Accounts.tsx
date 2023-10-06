@@ -8,7 +8,6 @@ import Transactions from "./Accounts/Transactions";
 import Import from "./Accounts/ImportTransaction";
 import History from "./Accounts/History";
 import { useTitle } from "../hooks/UseTitle";
-import { useParams } from "react-router-dom";
 //Accounts page is the default layout for each account and will need to load the specifics of the account based on a given account id
 
 interface TabPanelProps {
