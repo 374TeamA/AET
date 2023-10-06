@@ -52,7 +52,7 @@ export async function getGraphs(): Promise<GraphConfig[]> {
  * @param g The graph to be saved
  * @returns {boolean} True on success, false on error
  */
-export async function saveCategory(g: GraphConfig): Promise<boolean> {
+export async function saveGraph(g: GraphConfig): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
     const dbt = db.transaction("Graphs", "readwrite");
@@ -75,7 +75,7 @@ export async function saveCategory(g: GraphConfig): Promise<boolean> {
  * @param id The id of the graph to be deleted
  * @returns {boolean} True on success, false on error
  */
-export async function deleteCategory(id: string): Promise<boolean> {
+export async function deleteGraph(id: string): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
     const dbt = db.transaction("Graphs", "readwrite");
