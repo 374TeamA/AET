@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import "../styles/nav.css";
 import { NavLink, useLocation } from "react-router-dom";
 import { AccountContext } from "../context/AccountsContext";
+import { Divider, Typography } from "@mui/material";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -32,23 +33,24 @@ export default function Sidebar() {
             Dashboard
           </NavLink>
         </li>
-        <li
-          className={location.pathname.includes("accounts") ? "selected" : ""}
-        >
+        <Divider/>
+        <Typography variant="h6" sx={{p:2}}>Accounts</Typography>
           <AccountContext.Consumer>
             {(accounts)=>{
               return <>
               {
                 accounts.map((account)=>{
-                  return <NavLink style={{ width: "100%", display: "block" }} to={`/accounts/${account.id}`}>
-                    {account.name}
-                  </NavLink>
+                  return <li className={location.pathname.includes(account.id) ? "selected" : ""} key={account.id}>
+                    <NavLink style={{ width: "100%", display: "block" }} to={`/accounts/${account.id}`}>
+                      {account.name}
+                    </NavLink>
+                  </li>
                 })
               }
               </>
             }}
           </AccountContext.Consumer>
-        </li>
+        
       </ul>
       <div className="bottom-links">
         <ul>
