@@ -56,11 +56,14 @@ export default function Table({ importData }: TableProps) {
     const index = newUncategorized.findIndex(
       (item) => item.id === transaction.id
     );
+    if(index != -1){
+      newUncategorized.splice(index, 1);
+      setUncategorised(newUncategorized);
+      newCategorized.push(transaction);
+      setCategorised(newCategorized);
+    }
 
-    newUncategorized.splice(index, 1);
-    setUncategorised(newUncategorized);
-    newCategorized.push(transaction);
-    setCategorised(newCategorized);
+    
   };
   useEffect(() => {
     //console.log(importData);
