@@ -105,3 +105,35 @@ export async function deleteTransaction(
     };
   });
 }
+
+/**
+ * Checks for duplicate hashes in the database.
+ *
+ * @param string The hash to check for
+ * @param string The id of the account
+ * @returns {boolean} True if the hash exists, false if it doesn't
+ */
+export async function checkForDuplicate(
+  hash: string,
+  acc: string
+): Promise<boolean> {
+  const db = await connectToDatabase();
+  return new Promise((resolve, reject) => {
+    const dbt = db.transaction(acc, "readonly");
+    const tos = dbt.objectStore(acc);
+    const ind = tos.index("hash");
+    const req = ind.getAll(IDBKeyRange.only(hash));
+
+    req.onsuccess = function () {
+      if (req.result !== undefined) {
+        if (req.result.length > 0) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      } else {
+        reject(false);
+      }
+    };
+  });
+}
