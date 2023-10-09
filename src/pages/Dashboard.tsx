@@ -5,7 +5,6 @@ import { AccountContext } from "../context/AccountsContext";
 import "../styles/dashboard.css";
 import HelpDialog from "../components/HelpDialog";
 import { Account } from "../types/account";
-import { TextField } from "@mui/material";
 import EditAccounts from "./Settings/EditAccounts";
 import EditCategories from "./Settings/EditCategories";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
