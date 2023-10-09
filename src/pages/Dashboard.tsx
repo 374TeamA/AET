@@ -5,10 +5,13 @@ import { AccountContext } from "../context/AccountsContext";
 import "../styles/dashboard.css";
 import HelpDialog from "../components/HelpDialog";
 import { Account } from "../types/account";
+import { TextField } from "@mui/material";
+import EditAccounts from "./Settings/EditAccounts";
+import EditCategories from "./Settings/EditCategories";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
 export default function Dashboard() {
-  const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
   const accounts = useContext(AccountContext);
+  const [isPopupOpen, setPopupOpen] = useState<boolean>(!(accounts.length > 0));
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -69,8 +72,14 @@ export default function Dashboard() {
       >
         <button onClick={handleOpenPopup}>Open Popup</button>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
-          <h2>This is a custom popup!</h2>
-          <p>Popup content goes here.</p>
+          <div style={{ display: "flex" }}>
+            <div style={{ margin: "0.5rem" }}>
+              <EditAccounts />
+            </div>
+            <div style={{ margin: "0.5rem" }}>
+              <EditCategories />
+            </div>
+          </div>
         </CustomPopup>
         <HelpDialog title="This is a help option">
           <p>
