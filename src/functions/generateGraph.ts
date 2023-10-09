@@ -278,7 +278,8 @@ function getTestData() {
       date: new Date("2021-01-01"),
       merchant: "Countdown",
       totalAmount: 7,
-      details: [{ amount: 7, category: "Food" }]
+      details: [{ amount: 7, category: "Food" }],
+      hash:"aaaaa"
     },
     {
       id: "02", // uuid
@@ -287,7 +288,8 @@ function getTestData() {
       date: new Date("2021-01-01"),
       merchant: "New World",
       totalAmount: 10,
-      details: [{ amount: 10, category: "Food" }]
+      details: [{ amount: 10, category: "Food" }],
+      hash:"aaaab",
     },
     {
       id: "03", // uuid
@@ -299,7 +301,8 @@ function getTestData() {
       details: [
         { amount: 27, category: "Food" },
         { amount: 150, category: "Clothes" }
-      ]
+      ],
+      hash:"aaaac"
     },
     {
       id: "04", // uuid
@@ -311,7 +314,8 @@ function getTestData() {
       details: [
         { amount: 27, category: "Entertainment" },
         { amount: 30, category: "Clothes" }
-      ]
+      ],
+      hash:"aaaad",
     }
   ];
 

@@ -1,16 +1,16 @@
 import React, { useRef } from "react";
 import "./csvuploader.css";
 interface Props {
-  setFile: (file: File) => void;
+  onUpload: (file:File) => void;
 }
 
-export default function CSVUploader({ setFile }: Props) {
+export default function CSVUploader({ onUpload }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFile(file);
+      onUpload(file);
     }
   };
 
@@ -25,7 +25,7 @@ export default function CSVUploader({ setFile }: Props) {
 
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      setFile(file);
+      onUpload(file);
     }
   };
 
