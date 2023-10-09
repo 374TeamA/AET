@@ -5,12 +5,12 @@ import {
   ChartType,
   TooltipItem
 } from "chart.js";
-import { FlattenedTransaction } from "../types/transaction";
+import { FlattenedTransaction, Transaction } from "../types/transaction";
 
 //TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
-  const transactions: TestTransaction[] = getTestData();
+  const transactions: Transaction[] = getTestData();
 
   // test data finished
 
@@ -37,7 +37,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
 }
 
 // Flatten each transaction into one single one
-function getData(transactions: TestTransaction[]): FlattenedTransaction[] {
+function getData(transactions: Transaction[]): FlattenedTransaction[] {
   const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
     (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
   );
@@ -268,20 +268,9 @@ function getOptions(type: string) {
     return lineOptions;
   }
 }
-interface TestTransaction {
-  id: string;
-  date: Date;
-  account:string;
-  import: string;
-  merchant: string;
-  details: TestTransactionDetail[];
-}
-interface TestTransactionDetail {
-  amount: number;
-  category: string;
-}
+
 function getTestData() {
-  const transactions: TestTransaction[] = [
+  const transactions: Transaction[] = [
     {
       id: "01", // uuid
       account: "Everyday",
