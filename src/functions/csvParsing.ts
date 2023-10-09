@@ -3,6 +3,7 @@ import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
+import sha256 from "crypto-js/sha256";
 import { v4 as uuidv4 } from "uuid";
 
 /*
@@ -30,17 +31,20 @@ const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
 /**
  * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
- * @param csvFile A csv bank statement file loaded in by the user
- * @param account The account to link the import to
- * @returns An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
+ * @param {File} csvFile A csv bank statement file loaded in by the user
+ * @param {string} account The account to link the import to
+ * @returns {Promise<{import: Import; transactions: Transaction[]; dupeIndexes: number[];}>} An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
   csvFile: File,
   account: string
-): Promise<{ import: Import; dupeIndexes: number[] }> {
+): Promise<{
+  import: Import;
+  transactions: Transaction[];
+  dupeIndexes: number[];
+}> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
-  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -53,7 +57,12 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
-  // const importId: string = uuidv4();
+
+  // Create a new import with the list of transactions
+  const newImport: Import = {
+    id: importId,
+    importDate: new Date()
+  };
 
   // Split the data into a list of transactions
   const transactions: Transaction[] = getTransactions(
@@ -66,11 +75,12 @@ export async function generateImportFromFile(
   // Get a list of the indexes of any new transactions that are duplicated in the database
   const dupeIndexes: number[] = await getDupeIndexes(account, transactions);
 
-  // Create a new import with the list of transactions
-  const newImport: Import = getImportFromTransactions(transactions);
-
   // Return the new import and the indexes of the duplicate transactions
-  return { import: newImport, dupeIndexes: dupeIndexes };
+  return {
+    import: newImport,
+    transactions: transactions,
+    dupeIndexes: dupeIndexes
+  };
 }
 
 /**
@@ -251,17 +261,23 @@ function getTransactionFromLine(
   const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
-  // If the amount is positive, throw an error
-  if (amount > 0) throw new Error("Amount was positive; Not a valid expense.");
+  // If the amount is positive or $0, throw an error
+  if (amount >= 0) throw new Error("Amount was positive; Not a valid expense.");
 
-  // Make the amount positive
-  amount = Math.abs(amount);
+  // Make the amount positive, and convert from dollars to cents
+  amount = Math.round(Math.abs(amount) * 100);
+
+  // Create a hash from the amount, date, and merchant
+  const hash: string = sha256(
+    `${date.toString()}${merchant}${amount}`
+  ).toString();
 
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
     import: importId,
     account: account,
+    hash: hash,
     date: date,
     merchant: merchant,
     totalAmount: amount,
@@ -308,10 +324,7 @@ async function getDupeIndexes(
   // For each transaction, store a boolean for if it matches a transaction in the database or not
   const isDupes: boolean[] = transactions.map((transaction) =>
     savedTransactions.some(
-      (savedTransaction) =>
-        transaction.date === savedTransaction.date &&
-        transaction.merchant === savedTransaction.merchant &&
-        transaction.totalAmount === savedTransaction.totalAmount
+      (savedTransaction) => transaction.hash === savedTransaction.hash
     )
   );
 
@@ -319,18 +332,4 @@ async function getDupeIndexes(
   return isDupes
     .map((value, index) => (value ? index : -1))
     .filter((index) => index !== -1);
-}
-
-/**
- * Converts an array of transactions into an import with a fresh id and timestamp
- *
- * @param transactions An array of transactions to create the import from
- * @returns An import with a unique id and timestamp
- */
-function getImportFromTransactions(transactions: Transaction[]): Import {
-  return {
-    id: uuidv4(),
-    importDate: new Date(),
-    transactions: transactions
-  };
 }

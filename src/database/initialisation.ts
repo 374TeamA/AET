@@ -9,7 +9,7 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       reject("Your browser does not support IndexedDB");
     }
 
-    const req = indexedDB.open("AET", 7);
+    const req = indexedDB.open("AET", 8);
 
     req.onerror = () => {
       console.error(`IndexedDB Error: ${req.error}`);
@@ -27,6 +27,8 @@ export function connectToDatabase(): Promise<IDBDatabase> {
         tOS.createIndex("date", "date", { unique: false });
         tOS.createIndex("merchant", "merchant", { unique: false });
         tOS.createIndex("accdate", ["account", "date"], { unique: false });
+        tOS.createIndex("hash", "hash", { unique: false });
+        tOS.createIndex("acchash", ["account", "hash"], { unique: false });
       }
 
       if (!db.objectStoreNames.contains("Categories")) {

@@ -1,12 +1,12 @@
 // Import statements
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { GraphConfig } from "../types/graph";
 import { ChartType } from "chart.js";
 import { v4 as uuidv4 } from "uuid";
-import { getAccounts } from "../database/accounts";
 import { Account } from "../types/account";
 import { Category } from "../types/category";
-import { getCategories } from "../database/categories";
+import { AccountContext } from "../context/AccountsContext";
+import { CategoryContext } from "../context/CategoryContext";
 
 /**
  * Props for configuring the graph.
@@ -32,23 +32,25 @@ export default function ConfigureGraph({
   const [allTransactions, setAllTransactions] = useState<boolean>(false);
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<string[]>([]);
-  const [databaseAccounts, setDatabaseAccount] = useState<string[]>([]);
-  const [databaseCategories, setDatabaseCategories] = useState<string[]>([]);
+  const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
+  const databaseAccounts = useContext(AccountContext);//useState<Account[]>(defaultAccounts);
+  const databaseCategories = useContext(CategoryContext);//useState<Category[]>(defaultCategories);
+  const [lengthValue, setLengthValue] = useState(1);
 
   // Fetch accounts and categories from the database when the component mounts
-  useEffect(() => {
-    const accountPromise: Promise<Account[]> = getAccounts();
-    accountPromise.then((accounts) => {
-      const dbAccounts = accounts.map((account) => account.name);
-      setDatabaseAccount(dbAccounts);
-    });
+  // useEffect(() => {
+  //   const accountPromise: Promise<Account[]> = getAccounts();
+  //   accountPromise.then((accounts) => {
+  //     const dbAccounts = accounts.map((account) => account.name);
+  //     setDatabaseAccount(dbAccounts);
+  //   });
 
-    const categoryPromise: Promise<Category[]> = getCategories();
-    categoryPromise.then((categories) => {
-      const dbCategories = categories.map((category) => category.name);
-      setDatabaseCategories(dbCategories);
-    });
-  }, []);
+  //   const categoryPromise: Promise<Category[]> = getCategories();
+  //   categoryPromise.then((categories) => {
+  //     const dbCategories = categories.map((category) => category.name);
+  //     setDatabaseCategories(dbCategories);
+  //   });
+  // }, []);
 
   /**
    * Function to add a selected account to the list of accounts
@@ -204,51 +206,91 @@ export default function ConfigureGraph({
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleAllTransactionsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const startDateInput: HTMLInputElement = document.getElementById(
-      "startDatePopup"
-    ) as HTMLInputElement;
-    const endDateInput: HTMLInputElement = document.getElementById(
-      "endDatePopup"
-    ) as HTMLInputElement;
-    const days7Button: HTMLButtonElement = document.getElementById(
-      "days7Popup"
-    ) as HTMLButtonElement;
-    const days14Button: HTMLButtonElement = document.getElementById(
-      "days14Popup"
-    ) as HTMLButtonElement;
-    const days31Button: HTMLButtonElement = document.getElementById(
-      "days31Popup"
-    ) as HTMLButtonElement;
+    const dateRangePopupContainer: HTMLDivElement = document.getElementById(
+      "dateRangePopupContainer"
+    ) as HTMLDivElement;
+    const dynamicUpdatePopupContainer: HTMLLabelElement =
+      document.getElementById(
+        "dynamicUpdatePopupContainer"
+      ) as HTMLLabelElement;
 
     if (e.target.checked) {
       setAllTransactions(true);
-
-      startDateInput.disabled = true;
-      endDateInput.disabled = true;
-      days7Button.disabled = true;
-      days14Button.disabled = true;
-      days31Button.disabled = true;
+      dateRangePopupContainer.style.display = "none";
+      dynamicUpdatePopupContainer.style.display = "none";
     } else {
       setAllTransactions(false);
-
-      startDateInput.disabled = false;
-      endDateInput.disabled = false;
-      days7Button.disabled = false;
-      days14Button.disabled = false;
-      days31Button.disabled = false;
+      dateRangePopupContainer.style.display = "block";
+      dynamicUpdatePopupContainer.style.display = "block";
     }
   };
 
   /**
-   * unction to handle changes in the "Update graphs automatically" checkbox
+   * Function to handle changes in the "Update graphs automatically" checkbox
    *
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleDynamicUpdateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const dateRangePopupContainer: HTMLDivElement = document.getElementById(
+      "dateRangePopupContainer"
+    ) as HTMLDivElement;
+    const allTransactionsPopupContainer: HTMLLabelElement =
+      document.getElementById(
+        "allTransactionsPopupContainer"
+      ) as HTMLLabelElement;
+    const dynamicUpdateConfigurationContainer: HTMLLabelElement =
+      document.getElementById(
+        "dynamicUpdateConfigurationContainer"
+      ) as HTMLLabelElement;
+
     if (e.target.checked) {
       setDynamicUpdate(true);
+      dateRangePopupContainer.style.display = "none";
+      allTransactionsPopupContainer.style.display = "none";
+      dynamicUpdateConfigurationContainer.style.display = "block";
     } else {
       setDynamicUpdate(false);
+      dateRangePopupContainer.style.display = "block";
+      allTransactionsPopupContainer.style.display = "block";
+      dynamicUpdateConfigurationContainer.style.display = "none";
+    }
+  };
+
+  /**
+   * Function to handle changes to either options for the Graph Configuration when the graph should update automatically
+   */
+  const handleDynamicUpdateConfiguration = () => {
+    const lengthElement: HTMLInputElement = document.getElementById(
+      "dynamicUpdateConfiguration"
+    ) as HTMLInputElement;
+    const unitElement: HTMLSelectElement = document.getElementById(
+      "dynamicUpdateConfigurationSelect"
+    ) as HTMLSelectElement;
+
+    const length: number = parseInt(lengthElement.value);
+    const unit: string = unitElement.options[unitElement.selectedIndex].value;
+
+    setLengthValue(length);
+
+    if (unit === "day") {
+      setLengthOfDays(length);
+    } else if (unit === "week") {
+      setLengthOfDays(length * 7);
+    } else if (unit === "month") {
+      setLengthOfDays(length * 31);
+    } else {
+      setLengthOfDays(length * 365);
+    }
+  };
+
+  /**
+   * Ensure input is always 1 or larger
+   */
+  const handleInputBlur = () => {
+    // Handle blur event
+    if (lengthValue < 1 || isNaN(lengthValue)) {
+      // If the value is less than 1 or not a valid number, set it to 1
+      setLengthValue(1);
     }
   };
 
@@ -265,13 +307,19 @@ export default function ConfigureGraph({
       daysDifference = -1;
       dateStart = new Date();
       dateEnd = new Date();
+    } else if (dynamicUpdate) {
+      daysDifference = lengthOfDays;
+      dateStart = new Date();
+      dateEnd = new Date();
     } else {
       if (!startDate || !endDate) {
+        // TODO: Add error handling message for user
         console.log("Error: Missing start or end date");
         return;
       }
 
       if (startDate > endDate) {
+        // TODO: Add error handling message for user
         console.log("Error: Invalid date range");
         return;
       }
@@ -287,15 +335,18 @@ export default function ConfigureGraph({
     }
 
     if (categories.length === 0) {
+      // TODO: Add error handling message for user
       console.log("Error: No category specified");
       return;
     }
 
     if (accounts.length === 0) {
+      // TODO: Add error handling message for user
       console.log("Error: No account specified");
       return;
     }
 
+    // New GraphConfig object
     const graphConfig: GraphConfig = {
       id: uuidv4(),
       startDate: dateStart,
@@ -317,20 +368,27 @@ export default function ConfigureGraph({
   return (
     <div>
       <h1>Configure {type} Graph</h1>
+      {/* TODO: have an automatically updating graph */}
       <canvas id="configureGraph"></canvas>
 
+      {/* Account Selection */}
       <div id="accountPopupContainer">
         <h1>Select Accounts</h1>
+        {/* List of accounts from database */}
+        
         <select id="addAccount">
-          {/* TODO: populate this from the database */}
-          {databaseAccounts.map((item: string, index: number) => (
-            <option value={item} key={index}>
-              {item}
+          {databaseAccounts.map((account: Account, index: number) => (
+            <option value={account.name} key={index}>
+              {account.name}
             </option>
           ))}
         </select>
+        
+
         <button onClick={addAccount}>Add Account</button>
         <button onClick={addAllAccounts}>Add All Accounts</button>
+
+        {/* List of selected accounts */}
         <ul>
           {accounts.map((item: string, index) => (
             <li key={`account${index}`}>
@@ -341,28 +399,33 @@ export default function ConfigureGraph({
         </ul>
       </div>
 
+      {/* Category Selection */}
       <div id="categoryPopupContainer">
         <h1>Select Categories</h1>
-        {/* TODO: Populate this from the database */}
+        {/* List of categories from database */}
         <select id="addCategories">
-          {databaseCategories.map((item: string, index: number) => (
-            <option value={item} key={index}>
-              {item}
+          {databaseCategories.map((category: Category, index: number) => (
+            <option value={category.name} key={index}>
+              {category.name}
             </option>
           ))}
         </select>
+
         <button onClick={addCategory}>Add Category</button>
         <button onClick={addAllCategories}>Add All Categories</button>
+
+        {/* List of selected categories */}
         <ul>
           {categories.map((item: string, index) => (
             <li key={`category${index}`}>
               {item}
-              <button onClick={() => deleteCategory(index)}>remove</button>
+              <button onClick={() => deleteCategory(index)}>X</button>
             </li>
           ))}
         </ul>
       </div>
 
+      {/* Date Range Selection */}
       <div id="dateRangePopupContainer">
         <h1>Select Date Range</h1>
         <div>
@@ -374,6 +437,7 @@ export default function ConfigureGraph({
             onChange={handleStartDateChange}
           />
         </div>
+
         <div>
           <label htmlFor="endDatePopup">End Date:</label>
           <input
@@ -383,6 +447,8 @@ export default function ConfigureGraph({
             onChange={handleEndDateChange}
           />
         </div>
+
+        {/* Automatically set dates for 7 days from today */}
         <button
           id="days7Popup"
           onClick={() => {
@@ -391,6 +457,8 @@ export default function ConfigureGraph({
         >
           7 Days
         </button>
+
+        {/* Automatically set dates for 31 days from today */}
         <button
           id="days14Popup"
           onClick={() => {
@@ -399,6 +467,8 @@ export default function ConfigureGraph({
         >
           14 Days
         </button>
+
+        {/* Automatically set dates for 31 days from today */}
         <button
           id="days31Popup"
           onClick={() => {
@@ -407,8 +477,15 @@ export default function ConfigureGraph({
         >
           1 month
         </button>
+      </div>
 
-        <label htmlFor="allTransactionsPopup" className="custom-checkbox">
+      {/* Additional Options */}
+      <div id="additionalOptionsPopupContainer">
+        <label
+          id="allTransactionsPopupContainer"
+          htmlFor="allTransactionsPopup"
+          className="custom-checkbox"
+        >
           All Transactions
           <input
             type="checkbox"
@@ -418,8 +495,12 @@ export default function ConfigureGraph({
           <span className="checkmark"></span>
         </label>
 
-        <label htmlFor="dynamicUpdatePopup" className="custom-checkbox">
-          Update graphs automatically
+        <label
+          id="dynamicUpdatePopupContainer"
+          htmlFor="dynamicUpdatePopup"
+          className="custom-checkbox"
+        >
+          Update graphs automatically as time passes
           <input
             type="checkbox"
             id="dynamicUpdatePopup"
@@ -427,7 +508,37 @@ export default function ConfigureGraph({
           />
           <span className="checkmark"></span>
         </label>
+
+        {/* Additional Options when Update Graphs automatically is enabled */}
+        <label
+          id="dynamicUpdateConfigurationContainer"
+          htmlFor="dynamicUpdateConfiguration"
+          style={{ display: "none" }}
+        >
+          Update to include last
+          {/* Length of time */}
+          <input
+            type="number"
+            id="dynamicUpdateConfiguration"
+            onChange={handleDynamicUpdateConfiguration}
+            min="1"
+            onBlur={handleInputBlur}
+            value={lengthValue}
+          />
+          {/* Unit of time */}
+          <select
+            id="dynamicUpdateConfigurationSelect"
+            onChange={handleDynamicUpdateConfiguration}
+          >
+            <option value="day">Days</option>
+            <option value="week">Weeks</option>
+            <option value="month">Months</option>
+            <option value="year">Years</option>
+          </select>
+        </label>
       </div>
+
+      {/* Add graph */}
       <button onClick={createGraphConfig}>Add Graph</button>
     </div>
   );

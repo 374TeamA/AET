@@ -5,12 +5,12 @@ import {
   ChartType,
   TooltipItem
 } from "chart.js";
-import { FlattenedTransaction } from "../types/transaction";
+import { FlattenedTransaction, Transaction } from "../types/transaction";
 
 //TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(/*transactions: Transaction[],*/ type: string) {
   // testing purposes
-  const transactions: TestTransaction[] = getTestData();
+  const transactions: Transaction[] = getTestData();
 
   // test data finished
 
@@ -37,7 +37,7 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
 }
 
 // Flatten each transaction into one single one
-function getData(transactions: TestTransaction[]): FlattenedTransaction[] {
+function getData(transactions: Transaction[]): FlattenedTransaction[] {
   const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
     (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
   );
@@ -268,27 +268,18 @@ function getOptions(type: string) {
     return lineOptions;
   }
 }
-interface TestTransaction {
-  id: string;
-  date: Date;
-  account:string;
-  import: string;
-  merchant: string;
-  details: TestTransactionDetail[];
-}
-interface TestTransactionDetail {
-  amount: number;
-  category: string;
-}
+
 function getTestData() {
-  const transactions: TestTransaction[] = [
+  const transactions: Transaction[] = [
     {
       id: "01", // uuid
       account: "Everyday",
       import: "one",
       date: new Date("2021-01-01"),
       merchant: "Countdown",
-      details: [{ amount: 7, category: "Food" }]
+      totalAmount: 7,
+      details: [{ amount: 7, category: "Food" }],
+      hash:"aaaaa"
     },
     {
       id: "02", // uuid
@@ -296,7 +287,9 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-01"),
       merchant: "New World",
-      details: [{ amount: 10, category: "Food" }]
+      totalAmount: 10,
+      details: [{ amount: 10, category: "Food" }],
+      hash:"aaaab",
     },
     {
       id: "03", // uuid
@@ -304,10 +297,12 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-02"),
       merchant: "The Warehouse",
+      totalAmount: 177,
       details: [
         { amount: 27, category: "Food" },
         { amount: 150, category: "Clothes" }
-      ]
+      ],
+      hash:"aaaac"
     },
     {
       id: "04", // uuid
@@ -315,10 +310,12 @@ function getTestData() {
       import: "one",
       date: new Date("2021-01-03"),
       merchant: "The Warehouse",
+      totalAmount: 57,
       details: [
         { amount: 27, category: "Entertainment" },
         { amount: 30, category: "Clothes" }
-      ]
+      ],
+      hash:"aaaad",
     }
   ];
 

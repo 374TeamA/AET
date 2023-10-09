@@ -17,10 +17,10 @@ export default function EditCategories() {
   const categoryList = useContext(CategoryContext);
   const setCategoryList = useContext(CategoryUpdaterContext);
   // state for the editDialog
-  const [selectedCategory,setSelectedCategory] = useState<number>(0);
-  const [newCategoryName,setNewCategoryName] = useState<string>("");
-  const [openDialog,setOpenDialog] = useState<boolean>(false);
-  const [removeDialog,setRemoveDialog] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
+  const [newCategoryName, setNewCategoryName] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [removeDialog, setRemoveDialog] = useState<boolean>(false);
 
   const removeCategory = () => {
     // removes a category from the list
@@ -31,13 +31,13 @@ export default function EditCategories() {
     deleteCategory(categoryList[selectedCategory].id);
   };
 
-  const displayEditDialog = (index:number) =>{
-    setNewCategoryName(categoryList[index].name)// initialise textbox to old category name
-    setSelectedCategory(index)
-    setOpenDialog(true)
-  }
+  const displayEditDialog = (index: number) => {
+    setNewCategoryName(categoryList[index].name); // initialise textbox to old category name
+    setSelectedCategory(index);
+    setOpenDialog(true);
+  };
 
-  const updateSelectedCategory = ()=>{
+  const updateSelectedCategory = () => {
     // update the category name for the selected category
     const newCategoryList = [...categoryList];
     newCategoryList[selectedCategory].name = newCategoryName;
@@ -45,7 +45,7 @@ export default function EditCategories() {
     setOpenDialog(false);
     // Store the updated category list in local storage
     saveCategory(categoryList[selectedCategory]);
-  }
+  };
 
   const addCategory = () => {
     // adds a category to the list
@@ -55,29 +55,42 @@ export default function EditCategories() {
     // allow the user to enter a name for the category:
     setOpenDialog(true);
     setNewCategoryName("");
-    setSelectedCategory(newCategoryList.length-1);
+    setSelectedCategory(newCategoryList.length - 1);
   };
 
   return (
       <>
         <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Category List</Typography>
-        
+
         {/* Display an array of categories */}
         <List>
-        {categoryList.map((category:Category, index:number) => (
-          <ListItem key={index} 
-          secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => {setRemoveDialog(true);setSelectedCategory(index)}}>
-              <DeleteIcon />
-            </IconButton>
-          }>
-            <IconButton edge="start" aria-label="edit" onClick={() => displayEditDialog(index)}>
-              <EditIcon />
-            </IconButton>
-            <Typography variant="body1" > {category.name}</Typography>
-          </ListItem>
-        ))}
+          {categoryList.map((category: Category, index: number) => (
+            <ListItem
+              key={index}
+              secondaryAction={
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => {
+                    setRemoveDialog(true);
+                    setSelectedCategory(index);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              }
+            >
+              <IconButton
+                edge="start"
+                aria-label="edit"
+                onClick={() => displayEditDialog(index)}
+              >
+                <EditIcon />
+              </IconButton>
+              <Typography variant="body1"> {category.name}</Typography>
+            </ListItem>
+          ))}
         </List>
         <Button variant="contained" onClick={addCategory}>Add Category</Button>
         </Paper>
@@ -100,4 +113,3 @@ export default function EditCategories() {
       </>
   );
 }
-  
