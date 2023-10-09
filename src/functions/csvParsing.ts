@@ -263,8 +263,8 @@ function getTransactionFromLine(
   // If the amount is positive, throw an error
   if (amount > 0) throw new Error("Amount was positive; Not a valid expense.");
 
-  // Make the amount positive
-  amount = Math.abs(amount);
+  // Make the amount positive, and convert from dollars to cents
+  amount = Math.round(Math.abs(amount) * 100);
 
   // Create and return a new transaction from the retrieved data
   return {

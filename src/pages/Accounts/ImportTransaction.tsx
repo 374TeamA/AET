@@ -5,19 +5,24 @@ import Table from "../../components/Transaction/Table";
 import { Import } from "../../types/transaction";
 export default function ImportTransaction() {
   const [file, setFile] = React.useState<File>();
-  const [importData, setImportData] = React.useState<Import | undefined>(
+  const [importData /*, setImportData*/] = React.useState<Import | undefined>(
     undefined
   );
   useEffect(() => {
     const processCSV = async () => {
       if (file) {
-        //TODO: properly format the csv parser and its returns
-        //TODO: Link importing to an account
-        const importWithDupeIndexes = await generateImportFromFile(file, "");
+        // TODO: properly format the csv parser and its returns
+        // TODO: Link importing to an account
+        const importWithDupeIndexes = await generateImportFromFile(
+          file,
+          "test"
+        );
+        console.log(importWithDupeIndexes);
 
-        console.log(importWithDupeIndexes.import);
-        setImportData(importWithDupeIndexes.import);
-        console.log(importWithDupeIndexes.dupeIndexes);
+        // TODO: Does not work with new import type
+        // console.log(importWithDupeIndexes.import);
+        // setImportData(importWithDupeIndexes.import);
+        // console.log(importWithDupeIndexes.dupeIndexes);
       }
     };
     processCSV();
