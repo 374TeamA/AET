@@ -28,6 +28,7 @@ export function connectToDatabase(): Promise<IDBDatabase> {
         tOS.createIndex("merchant", "merchant", { unique: false });
         tOS.createIndex("accdate", ["account", "date"], { unique: false });
         tOS.createIndex("hash", "hash", { unique: false });
+        tOS.createIndex("acchash", ["account", "hash"], { unique: false });
       }
 
       if (!db.objectStoreNames.contains("Categories")) {

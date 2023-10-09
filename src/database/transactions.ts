@@ -86,14 +86,11 @@ export async function saveTransaction(t: Transaction): Promise<boolean> {
  * @param acc The account of the transaction to be deleted
  * @returns {boolean} True on success, false on error
  */
-export async function deleteTransaction(
-  id: string,
-  acc: string
-): Promise<boolean> {
+export async function deleteTransaction(id: string): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction(acc, "readwrite");
-    const tos = dbt.objectStore(acc);
+    const dbt = db.transaction("Transactions", "readwrite");
+    const tos = dbt.objectStore("Transactions");
     const req = tos.delete(id);
     req.onsuccess = () => {
       console.log("Transaction deleted", req.result);
@@ -114,15 +111,15 @@ export async function deleteTransaction(
  * @returns {boolean} True if the hash exists, false if it doesn't
  */
 export async function checkForDuplicate(
-  hash: string,
-  acc: string
+  acc: string,
+  hash: string
 ): Promise<boolean> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
-    const dbt = db.transaction(acc, "readonly");
-    const tos = dbt.objectStore(acc);
-    const ind = tos.index("hash");
-    const req = ind.getAll(IDBKeyRange.only(hash));
+    const dbt = db.transaction("Transactions", "readonly");
+    const tos = dbt.objectStore("Transactions");
+    const ind = tos.index("acchash");
+    const req = ind.getAll(IDBKeyRange.only([acc, hash]));
 
     req.onsuccess = function () {
       if (req.result !== undefined) {
