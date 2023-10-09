@@ -1,23 +1,35 @@
-import { useState } from "react";
-import { AccountContext, AccountUpdaterContext, defaultAccounts } from "./context/AccountsContext.ts";
-import { CategoryContext, CategoryList, CategoryUpdaterContext, defaultCategories } from "./context/CategoryContext.ts";
+import { useEffect, useState } from "react";
+import { AccountContext, AccountUpdaterContext } from "./context/AccountsContext.ts";
+import { CategoryContext, CategoryList, CategoryUpdaterContext } from "./context/CategoryContext.ts";
 import Root from "./layout/Root.tsx";
 //import { BrowserRouter as Router } from "react-router-dom";
 import Routers from "./Routes.tsx";
 import { Account } from "./types/account.ts";
+import { getAccounts } from "./database/accounts.ts";
+import { getCategories } from "./database/categories.ts";
 function App() {
   /* 
   Setup AccountContext (Storing the list of users' accounts)
   */
   // state to store the list of categories
   const [accountList, setAccountList] =
-    useState<Account[]>(defaultAccounts);
+    useState<Account[]>([]);
   
   /* 
   Setup CategoryContext (Storing the list of current categories)
   */
   const [categoryList, setCategoryList] =
-  useState<CategoryList>(defaultCategories);
+  useState<CategoryList>([]);
+
+  // Get categories and accounts from database on load
+  useEffect(() => {
+    getAccounts().then((accounts) => {
+      setAccountList(accounts);
+    });
+    getCategories().then((categories) => {
+      setCategoryList(categories);
+    });
+  }, []);
 
   return (
     <AccountContext.Provider value={accountList}>
