@@ -1,30 +1,21 @@
 // import React from 'react'
 import {
-  CategoryList,
-  CategoryContext,
-  defaultCategories
-} from "../../context/CategoryContext";
-import { useState } from "react";
-import {
-  Button,
-  Paper,
-  Box,
-  Typography,
-  List,
-  ListItem,
-  IconButton,
-  TextField,
-  Dialog
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+    CategoryContext,
+    CategoryUpdaterContext
+  } from "../../context/CategoryContext";
+import { useContext, useState } from "react";
+import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Dialog } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Category } from "../../types/category";
 import { deleteCategory, saveCategory } from "../../database/categories";
-
+import { v4 as uuidv4 } from "uuid";
 export default function EditCategories() {
-  // state to store the list of categories
-  const [categoryList, setCategoryList] =
-    useState<CategoryList>(defaultCategories);
+
+
+  // Get the category list context, and the setter function, from the global context (see App.tsx)
+  const categoryList = useContext(CategoryContext);
+  const setCategoryList = useContext(CategoryUpdaterContext);
   // state for the editDialog
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
@@ -59,7 +50,7 @@ export default function EditCategories() {
   const addCategory = () => {
     // adds a category to the list
     const newCategoryList = [...categoryList];
-    newCategoryList.push({ name: "", id: Math.random().toString() });
+    newCategoryList.push({ name: "", id: uuidv4()});
     setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);
@@ -68,8 +59,8 @@ export default function EditCategories() {
   };
 
   return (
-    <CategoryContext.Provider value={categoryList}>
-      <Paper elevation={4} sx={{ padding: 5 }}>
+      <>
+        <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Category List</Typography>
 
         {/* Display an array of categories */}
@@ -101,51 +92,24 @@ export default function EditCategories() {
             </ListItem>
           ))}
         </List>
-        <Button variant="contained" onClick={addCategory}>
-          Add Category
-        </Button>
-      </Paper>
-      <Dialog open={openDialog} sx={{ p: 5 }}>
-        <Box sx={{ p: 5 }}>
-          <Typography variant="h6">Edit category name:</Typography>
-          <TextField
-            variant="outlined"
-            sx={{ width: "100%" }}
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e?.target.value)}
-          />
-          <Button
-            onClick={() => {
-              setOpenDialog(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button onClick={updateSelectedCategory}>Save</Button>
-        </Box>
-      </Dialog>
-      <Dialog open={removeDialog} sx={{ p: 5 }}>
-        <Box sx={{ p: 5 }}>
-          <Typography variant="h6">
-            Are you sure you want to remove this category?
-          </Typography>
-          <Button
-            onClick={() => {
-              setRemoveDialog(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              setRemoveDialog(false);
-              removeCategory();
-            }}
-          >
-            Remove
-          </Button>
-        </Box>
-      </Dialog>
-    </CategoryContext.Provider>
+        <Button variant="contained" onClick={addCategory}>Add Category</Button>
+        </Paper>
+        <Dialog open={openDialog} sx={{p:5}}>
+          <Box sx={{p:5}}>
+            <Typography variant="h6">Edit category name:</Typography>
+            <TextField variant="outlined" sx={{width:"100%"}} value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e?.target.value)} />
+            <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
+            <Button onClick={updateSelectedCategory}>Save</Button>
+          </Box>
+        </Dialog>
+        <Dialog open={removeDialog} sx={{p:5}}>
+          <Box sx={{p:5}}>
+            <Typography variant="h6">Are you sure you want to remove this category?</Typography>
+            <Button onClick={()=>{setRemoveDialog(false)}}>Cancel</Button>
+            <Button onClick={()=>{setRemoveDialog(false);removeCategory()}}>Remove</Button>
+          </Box>
+        </Dialog>
+      </>
   );
 }

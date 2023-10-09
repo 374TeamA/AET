@@ -1,9 +1,9 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, InputLabel, SelectChangeEvent } from "@mui/material";
+import { Box, SelectChangeEvent } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
-  getAllTransactions,
-  saveTransaction
+  getAllTransactions
+  // saveTransaction
 } from "../../database/transactions";
 import { useParams } from "react-router-dom";
 import { FormControl, Select, MenuItem } from "@mui/material";
@@ -97,7 +97,7 @@ export default function Transactions() {
       }
       setTransactions(flatTransactions);
     });
-  }, []);
+  }, [accountId]); // TODO: validate that this doesn't break anything (adding accountId to the dependencies)
   return (
     <Box style={{ height: "77vh" }}>
       <DataGrid columns={columns} rows={transactions} />
@@ -120,7 +120,7 @@ function SelectCell({ value, onSelectionChange, categories }: SelectCellProps) {
       <Select value={value} onChange={handleChange} size="small">
         <MenuItem value="Default">Default</MenuItem>
         {categories.map((category) => (
-          <MenuItem value={category.name}>{category.name}</MenuItem>
+          <MenuItem key={category.id} value={category.name}>{category.name}</MenuItem>
         ))}
       </Select>
     </FormControl>

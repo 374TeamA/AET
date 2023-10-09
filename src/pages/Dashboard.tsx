@@ -3,6 +3,7 @@ import CustomPopup from "../components/Popup";
 import { useState } from "react";
 import { AccountContext } from "../context/AccountsContext";
 import "../styles/dashboard.css";
+import HelpDialog from "../components/HelpDialog";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
 export default function Dashboard() {
   const [isPopupOpen, setPopupOpen] = useState<boolean>(false);
@@ -69,6 +70,7 @@ export default function Dashboard() {
           <h2>This is a custom popup!</h2>
           <p>Popup content goes here.</p>
         </CustomPopup>
+        <HelpDialog title="This is a help option"><p>Help text goes here. You can add as much or as little as you like, or even add more react components inside if you really like. Great fun.<br></br> Might be a good idea to make a similar sort of popup component for other parts of the app?</p></HelpDialog>
       </div>
     </div>
   );

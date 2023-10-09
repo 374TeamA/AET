@@ -47,7 +47,7 @@ export default function Table({ importData }: TableProps) {
         saveTransaction(transaction);
       }
     }
-  }, [importData]);
+  }, [importData,accountId]); // TODO : validate that this doesn't break with the extra dependencies
   const updateTransactions = (transaction: Transaction) => {
     //remove transaction from uncategorized and add it to categorized
     console.log(`Updating transaction ${transaction.id}`);
@@ -56,11 +56,14 @@ export default function Table({ importData }: TableProps) {
     const index = newUncategorized.findIndex(
       (item) => item.id === transaction.id
     );
+    if(index != -1){
+      newUncategorized.splice(index, 1);
+      setUncategorised(newUncategorized);
+      newCategorized.push(transaction);
+      setCategorised(newCategorized);
+    }
 
-    newUncategorized.splice(index, 1);
-    setUncategorised(newUncategorized);
-    newCategorized.push(transaction);
-    setCategorised(newCategorized);
+    
   };
   useEffect(() => {
     //console.log(importData);
