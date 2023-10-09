@@ -30,17 +30,20 @@ const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
 /**
  * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
- * @param csvFile A csv bank statement file loaded in by the user
- * @param account The account to link the import to
- * @returns An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
+ * @param {File} csvFile A csv bank statement file loaded in by the user
+ * @param {string} account The account to link the import to
+ * @returns {Promise<{import: Import; transactions: Transaction[]; dupeIndexes: number[];}>} An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
   csvFile: File,
   account: string
-): Promise<{ import: Import; dupeIndexes: number[] }> {
+): Promise<{
+  import: Import;
+  transactions: Transaction[];
+  dupeIndexes: number[];
+}> {
   // Get the raw data from the file in the form of a string
   const rawData: string = await getRawDataFromFile(csvFile);
-  //const rawData: string = await getRawDataFromFile(csvFile);
 
   // Tokenise the raw data to an array of string arrays
   let csvData: string[][] = await parseStringToCsvData(rawData);
@@ -53,7 +56,12 @@ export async function generateImportFromFile(
 
   // Generate a new import ID
   const importId: string = uuidv4();
-  // const importId: string = uuidv4();
+
+  // Create a new import with the list of transactions
+  const newImport: Import = {
+    id: importId,
+    importDate: new Date()
+  };
 
   // Split the data into a list of transactions
   const transactions: Transaction[] = getTransactions(
@@ -66,11 +74,12 @@ export async function generateImportFromFile(
   // Get a list of the indexes of any new transactions that are duplicated in the database
   const dupeIndexes: number[] = await getDupeIndexes(account, transactions);
 
-  // Create a new import with the list of transactions
-  const newImport: Import = getImportFromTransactions(transactions);
-
   // Return the new import and the indexes of the duplicate transactions
-  return { import: newImport, dupeIndexes: dupeIndexes };
+  return {
+    import: newImport,
+    transactions: transactions,
+    dupeIndexes: dupeIndexes
+  };
 }
 
 /**
@@ -319,18 +328,4 @@ async function getDupeIndexes(
   return isDupes
     .map((value, index) => (value ? index : -1))
     .filter((index) => index !== -1);
-}
-
-/**
- * Converts an array of transactions into an import with a fresh id and timestamp
- *
- * @param transactions An array of transactions to create the import from
- * @returns An import with a unique id and timestamp
- */
-function getImportFromTransactions(transactions: Transaction[]): Import {
-  return {
-    id: uuidv4(),
-    importDate: new Date(),
-    transactions: transactions
-  };
 }
