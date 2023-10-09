@@ -48,8 +48,7 @@ export default function Accounts() {
     setValue(newValue);
   };
 
-  //const params = useParams();
-  //const accountId = params.id;
+  
 
   return (
     <div className="content">
