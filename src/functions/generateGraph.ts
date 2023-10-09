@@ -271,6 +271,8 @@ function getOptions(type: string) {
 interface TestTransaction {
   id: string;
   date: Date;
+  account:string;
+  import: string;
   merchant: string;
   details: TestTransactionDetail[];
 }
