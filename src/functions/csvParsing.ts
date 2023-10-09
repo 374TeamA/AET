@@ -3,6 +3,7 @@ import { Transaction, Import } from "../types/transaction.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
+import sha256 from "crypto-js/sha256";
 import { v4 as uuidv4 } from "uuid";
 
 /*
@@ -260,17 +261,23 @@ function getTransactionFromLine(
   const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
-  // If the amount is positive, throw an error
-  if (amount > 0) throw new Error("Amount was positive; Not a valid expense.");
+  // If the amount is positive or $0, throw an error
+  if (amount >= 0) throw new Error("Amount was positive; Not a valid expense.");
 
-  // Make the amount positive
-  amount = Math.abs(amount);
+  // Make the amount positive, and convert from dollars to cents
+  amount = Math.round(Math.abs(amount) * 100);
+
+  // Create a hash from the amount, date, and merchant
+  const hash: string = sha256(
+    `${date.toString()}${merchant}${amount}`
+  ).toString();
 
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
     import: importId,
     account: account,
+    hash: hash,
     date: date,
     merchant: merchant,
     totalAmount: amount,
@@ -317,10 +324,7 @@ async function getDupeIndexes(
   // For each transaction, store a boolean for if it matches a transaction in the database or not
   const isDupes: boolean[] = transactions.map((transaction) =>
     savedTransactions.some(
-      (savedTransaction) =>
-        transaction.date === savedTransaction.date &&
-        transaction.merchant === savedTransaction.merchant &&
-        transaction.totalAmount === savedTransaction.totalAmount
+      (savedTransaction) => transaction.hash === savedTransaction.hash
     )
   );
 
