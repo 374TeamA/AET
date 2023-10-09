@@ -1,6 +1,6 @@
-import { Button, Select, MenuItem } from "@mui/material";
-import { Transaction } from "../../types/transaction";
-import React, { useEffect } from "react";
+import { Button, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+import { Transaction, TransactionDetail } from "../../types/transaction";
+import { useState } from "react";
 interface ItemProps {
   transaction: Transaction;
   categories: {
@@ -9,40 +9,91 @@ interface ItemProps {
   updateTransactions: (transaction: Transaction) => void;
 }
 
+
+function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{[key: string]: string},onChange:(e: SelectChangeEvent<string>) => void}) {
+  const [currentCategory, setCurrentCategory] = useState<string>(props.transactionDetail.category);
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "50%",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}
+    >
+      <div style={{ width: "15%" }}>
+        <p>${props.transactionDetail.amount}</p>
+      </div>
+      <div>
+        <Select
+          // variant="contained"
+          style={{
+            width: "10rem",
+            fontSize: "0.9rem",
+            margin: "2px",
+            //make the background colour the selected item's colour
+
+            backgroundColor: `${
+              props.categories[currentCategory] || "black"
+            }`,
+            color: "white"
+          }}
+          onChange={(e)=>{setCurrentCategory(e.target.value);props.onChange(e)}}
+          size="small"
+          value={currentCategory}
+        >
+          <MenuItem
+            style={{
+              backgroundColor: `${
+                props.categories[currentCategory] || "black"
+              }`,
+              color: "white"
+            }}
+            value={currentCategory}
+          >
+            {currentCategory}
+          </MenuItem>
+          {Object.keys(props.categories).map((category,index) => {
+            if (category !== currentCategory) {
+              return (
+                <MenuItem
+                  key={index}
+                  style={{ backgroundColor: `${props.categories[category]}` }}
+                  value={category}
+                >
+                  {category}
+                </MenuItem>
+              );
+            }
+          })}
+        </Select>
+        <Button
+          variant="outlined"
+          style={{ width: "5rem", fontSize: "0.9rem" }}
+        >
+          Split
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+
 export default function Item({
   transaction,
   categories,
   updateTransactions
 }: ItemProps) {
   //const categories = React.useContext(CategoryContext);
-  const [color, setColor] = React.useState<string>(
-    categories[transaction.details[0].category]
-  );
-  const [option, setOption] = React.useState<string>("");
 
-  useEffect(() => {
-    //setColor(categories[transaction.details[0].category] || "#000");
-  }, [categories]);
-
-  useEffect(() => {
-    if (option === "Default" || option == "") {
-      //console.log(categories[option]);
-      setColor(categories[option] || "#000");
-    } else {
-      transaction.details[0].category = option;
-      updateTransactions(transaction);
-      //console.log(categories[option]);
-      setColor(categories[option] || "#000");
-    }
-  }, [option]);
-
-  useEffect(() => {
-    //console.log(
-    //   color,
-    //   categories[option],
-    //   categories[transaction.details[0].category]
-    // );
-  }, [color]);
+  const handleCategoryChange = (e: SelectChangeEvent<string>) => {
+    // Store the update in the database.
+    transaction.details[0].category = e.target.value as string;
+    updateTransactions(transaction);
+    // Note, generally you shouldn't modify props directly, because it doesn't actually change the ui.
+    // Props are immutable as far as react is concerned. However, it works for the purposes
+    // of creating a updated transaction object to send to the database.
+  }
 
   return (
     <div
@@ -69,71 +120,7 @@ export default function Item({
           <p>{transaction.merchant}</p>
         </div>
         {/* For each details items */}
-        {transaction.details.map((detail) => (
-          <div
-            style={{
-              display: "flex",
-              width: "50%",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}
-          >
-            <div style={{ width: "15%" }}>
-              <p>${detail.amount}</p>
-            </div>
-            <div>
-              <Select
-                // variant="contained"
-                style={{
-                  width: "10rem",
-                  fontSize: "0.9rem",
-                  margin: "2px",
-                  //make the background colour the selected item's colour
-
-                  backgroundColor: `${
-                    categories[transaction.details[0].category]
-                  }`,
-                  color: "white"
-                }}
-                onChange={(e) => {
-                  setOption(e.target.value as string);
-                }}
-                size="small"
-                defaultValue={detail.category}
-              >
-                <MenuItem
-                  style={{
-                    backgroundColor: `${
-                      categories[detail.category] || "black"
-                    }`,
-                    color: "white"
-                  }}
-                  value={detail.category}
-                >
-                  {detail.category}
-                </MenuItem>
-                {Object.keys(categories).map((category) => {
-                  if (category !== detail.category) {
-                    return (
-                      <MenuItem
-                        style={{ backgroundColor: `${categories[category]}` }}
-                        value={category}
-                      >
-                        {category}
-                      </MenuItem>
-                    );
-                  }
-                })}
-              </Select>
-              <Button
-                variant="outlined"
-                style={{ width: "5rem", fontSize: "0.9rem" }}
-              >
-                Split
-              </Button>
-            </div>
-          </div>
-        ))}
+        {transaction.details.map((detail,index) => <CategoryPicker key={index} transactionDetail={detail} categories={categories} onChange={handleCategoryChange}></CategoryPicker> )}
       </div>
     </div>
   );

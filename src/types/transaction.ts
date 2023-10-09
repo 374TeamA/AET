@@ -13,8 +13,10 @@ export type Transaction = {
   date: Date;
   merchant: string;
   totalAmount: number;
-  details: { amount: number; category: string }[];
+  details: TransactionDetail[];
 };
+export type TransactionDetail = { amount: number; category: string }
+
 
 /* Used to split transactions into smaller transactions for graphing */
 export type FlattenedTransaction = {

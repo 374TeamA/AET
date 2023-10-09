@@ -2,13 +2,11 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Transactions from "./Accounts/Transactions";
 import Import from "./Accounts/ImportTransaction";
 import History from "./Accounts/History";
 import { useTitle } from "../hooks/UseTitle";
-import { useParams } from "react-router-dom";
 //Accounts page is the default layout for each account and will need to load the specifics of the account based on a given account id
 
 interface TabPanelProps {
@@ -30,14 +28,14 @@ function CustomTabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box sx={{ p: 3, height: "100%" }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
   );
 }
 
-function a11yProps(index: number) {
+function a11yProps(index: number) { // Accessibility props (A11y is shorthand)
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`
@@ -46,7 +44,7 @@ function a11yProps(index: number) {
 export default function Accounts() {
   const [value, setValue] = React.useState(0);
   useTitle("Accounts");
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
