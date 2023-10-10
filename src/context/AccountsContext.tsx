@@ -27,12 +27,12 @@ export function AccountsProvider({ children }: { children: React.ReactNode }) {
   const [accounts, setAccounts] = useState<Account[] | null>(null);
 
   useEffect(() => {
-    getAccounts().then(setAccounts);
+    console.time("getAccounts");
+    getAccounts().then((accounts) => {
+      setAccounts(accounts);
+    });
+    console.timeEnd("getAccounts");
   }, []);
-
-  useEffect(() => {
-    console.log("Accounts updated");
-  }, [accounts]);
 
   return (
     <AccountContext.Provider value={accounts}>
