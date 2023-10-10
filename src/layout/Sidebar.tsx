@@ -1,6 +1,6 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import "../styles/nav.css";
 import { NavLink, useLocation } from "react-router-dom";
 import { AccountContext } from "../context/AccountsContext";
@@ -9,12 +9,32 @@ import { Divider, Typography } from "@mui/material";
 export default function Sidebar() {
   const location = useLocation();
   const accounts = useContext(AccountContext);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   useEffect(() => {
-    console.log("sidebar " + window.location.href);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Initialize isMobile on component mount
+    handleResize();
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   useEffect(() => {
     console.log("sidebar " + location.pathname);
   }, [location]);
+
+  const toggleIfMobile = () => {
+    if (isMobile) {
+      toggleSidebar();
+    }
+  };
 
   const toggleSidebar = () => {
     const sidebar = document.querySelector(".sidebar");
@@ -30,7 +50,11 @@ export default function Sidebar() {
       </button>
       <ul className="navbar">
         <li className={location.pathname === "/" ? "selected" : ""}>
-          <NavLink style={{ width: "100%", display: "block" }} to="/">
+          <NavLink
+            onClick={toggleIfMobile}
+            style={{ width: "100%", display: "block" }}
+            to="/"
+          >
             Dashboard
           </NavLink>
         </li>
@@ -48,6 +72,7 @@ export default function Sidebar() {
                 key={account.id}
               >
                 <NavLink
+                  onClick={toggleIfMobile}
                   style={{ width: "100%", display: "block" }}
                   to={`/accounts/${account.id}`}
                 >
@@ -62,14 +87,22 @@ export default function Sidebar() {
           <li
             className={location.pathname.includes("reports") ? "selected" : ""}
           >
-            <NavLink style={{ width: "100%", display: "block" }} to="/reports">
+            <NavLink
+              onClick={toggleIfMobile}
+              style={{ width: "100%", display: "block" }}
+              to="/reports"
+            >
               Reports
             </NavLink>
           </li>
           <li
             className={location.pathname.includes("settings") ? "selected" : ""}
           >
-            <NavLink style={{ width: "100%", display: "block" }} to="/settings">
+            <NavLink
+              onClick={toggleIfMobile}
+              style={{ width: "100%", display: "block" }}
+              to="/settings"
+            >
               Settings
             </NavLink>
           </li>
