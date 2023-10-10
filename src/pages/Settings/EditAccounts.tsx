@@ -33,41 +33,52 @@ export default function EditAccounts() {
 
   const removeAccount = () => {
     // removes a account from the list
-    const newAccountList = [...accountList];
-    newAccountList.splice(selectedAccount, 1);
-    setAccountList(newAccountList);
-    // remove the account from local storage
-    deleteAccount(accountList[selectedAccount].id);
+    if (accountList == null) {
+      return;
+    } else {
+      const newAccountList = [...accountList];
+      newAccountList.splice(selectedAccount, 1);
+      setAccountList(newAccountList);
+      // remove the account from local storage
+      accountList && deleteAccount(accountList[selectedAccount].id);
+    }
   };
 
   const editItem = (index: number) => {
-    setNewAccountName(accountList[index].name); // initialise textbox to old account name
+    accountList && setNewAccountName(accountList[index].name); // initialise textbox to old account name
     setSelectedAccount(index);
     setEditDialogOpen(true);
   };
   const updateSelectedAccount = () => {
-    // update the account name for the selected account
-    const newAccountList = [...accountList];
-    newAccountList[selectedAccount].name = newAccountName;
-    setAccountList(newAccountList);
-    setEditDialogOpen(false);
-    saveAccount(accountList[selectedAccount]);
+    if (accountList) {
+      // update the account name for the selected account
+      const newAccountList = [...accountList];
+      newAccountList[selectedAccount].name = newAccountName;
+      setAccountList(newAccountList);
+      setEditDialogOpen(false);
+      accountList && saveAccount(accountList[selectedAccount]);
+    }
   };
 
   const addAccount = () => {
     // adds a account to the list
-    const newAccountList = [...accountList];
-    newAccountList.push({ name: "", id: uuidv4() });
-    setAccountList(newAccountList);
-    // allow the user to enter a name for the account:
-    setEditDialogOpen(true);
-    setNewAccountName("");
-    setSelectedAccount(newAccountList.length - 1);
+    if (accountList) {
+      const newAccountList = [...accountList];
+      newAccountList.push({ name: "", id: uuidv4() });
+      setAccountList(newAccountList);
+      // allow the user to enter a name for the account:
+      setEditDialogOpen(true);
+      setNewAccountName("");
+      setSelectedAccount(newAccountList.length - 1);
+    }
   };
 
   return (
     <>
-      <Paper elevation={1} sx={{ padding: 2, width: "50dwv" }}>
+      <Paper
+        elevation={1}
+        sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
+      >
         <Typography variant="h6">Account List</Typography>
 
         {/* Display an array of categories */}
@@ -76,10 +87,12 @@ export default function EditAccounts() {
             accountList.map((account: Account, index: number) => (
               <ListItem
                 key={index}
+                sx={{ margin: 0, padding: 0 }}
                 secondaryAction={
                   <IconButton
                     edge="end"
                     aria-label="delete"
+                    size="small"
                     onClick={() => {
                       setRemoveDialogOpen(true);
                       setSelectedAccount(index);
@@ -92,6 +105,7 @@ export default function EditAccounts() {
                 <IconButton
                   edge="start"
                   aria-label="edit"
+                  size="small"
                   onClick={() => editItem(index)}
                 >
                   <EditIcon />

@@ -68,7 +68,10 @@ export default function EditCategories() {
 
   return (
     <>
-      <Paper elevation={1} sx={{ padding: 2, width: "40dvw" }}>
+      <Paper
+        elevation={1}
+        sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
+      >
         <Typography variant="h6">Category List</Typography>
 
         {/* Display an array of categories */}
@@ -76,6 +79,7 @@ export default function EditCategories() {
           {categoryList.map((category: Category, index: number) => (
             <ListItem
               key={index}
+              sx={{ margin: 0, padding: 0 }}
               secondaryAction={
                 <IconButton
                   edge="end"

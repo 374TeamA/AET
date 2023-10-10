@@ -22,7 +22,23 @@ export default function Dashboard() {
   const handleOpenPopup = () => {
     setPopupOpen(true);
   };
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Initialize isMobile on component mount
+    handleResize();
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const handleClosePopup = () => {
     setPopupOpen(false);
   };
@@ -83,11 +99,23 @@ export default function Dashboard() {
       >
         <button onClick={handleOpenPopup}>Open Popup</button>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
-          <div style={{ display: "flex" }}>
-            <div style={{ margin: "0.5rem" }}>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}
+          >
+            <div
+              style={{
+                margin: "0.5rem",
+                width: `${isMobile ? "100%" : "50%"}`
+              }}
+            >
               <EditAccounts />
             </div>
-            <div style={{ margin: "0.5rem" }}>
+            <div
+              style={{
+                margin: "0.5rem",
+                width: `${isMobile ? "100%" : "50%"}`
+              }}
+            >
               <EditCategories />
             </div>
           </div>

@@ -27,7 +27,7 @@ export default function Settings() {
         </div>
 
         {/* CategoryContext Provider sets the CategoryContext to whatever categoryList is (and react handles updating it in the background)*/}
-
+        <div style={{ minHeight: "1dvh" }}></div>
         <Grid container direction="row" spacing={2} justifyContent="center">
           {/* <Grid item xs={4} md={6} sm={12}>
             <EditCategories />
