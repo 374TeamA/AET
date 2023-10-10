@@ -33,8 +33,8 @@ export default function ConfigureGraph({
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<string[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
-  const databaseAccounts = useContext(AccountContext);//useState<Account[]>(defaultAccounts);
-  const databaseCategories = useContext(CategoryContext);//useState<Category[]>(defaultCategories);
+  const databaseAccounts = useContext(AccountContext); //useState<Account[]>(defaultAccounts);
+  const databaseCategories = useContext(CategoryContext); //useState<Category[]>(defaultCategories);
   const [lengthValue, setLengthValue] = useState(1);
 
   // Fetch accounts and categories from the database when the component mounts
@@ -375,15 +375,15 @@ export default function ConfigureGraph({
       <div id="accountPopupContainer">
         <h1>Select Accounts</h1>
         {/* List of accounts from database */}
-        
+
         <select id="addAccount">
-          {databaseAccounts.map((account: Account, index: number) => (
-            <option value={account.name} key={index}>
-              {account.name}
-            </option>
-          ))}
+          {databaseAccounts &&
+            databaseAccounts.map((account: Account, index: number) => (
+              <option value={account.name} key={index}>
+                {account.name}
+              </option>
+            ))}
         </select>
-        
 
         <button onClick={addAccount}>Add Account</button>
         <button onClick={addAllAccounts}>Add All Accounts</button>
