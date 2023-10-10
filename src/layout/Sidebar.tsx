@@ -24,7 +24,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="sidebar open">
+    <div className="sidebar">
       <button className="hamburger" onClick={toggleSidebar}>
         &#9776;
       </button>
@@ -38,23 +38,24 @@ export default function Sidebar() {
         <Typography variant="h6" sx={{ p: 2 }}>
           Accounts
         </Typography>
-        {accounts.map((account) => {
-          return (
-            <li
-              className={
-                location.pathname.includes(account.id) ? "selected" : ""
-              }
-              key={account.id}
-            >
-              <NavLink
-                style={{ width: "100%", display: "block" }}
-                to={`/accounts/${account.id}`}
+        {accounts &&
+          accounts.map((account) => {
+            return (
+              <li
+                className={
+                  location.pathname.includes(account.id) ? "selected" : ""
+                }
+                key={account.id}
               >
-                {account.name}
-              </NavLink>
-            </li>
-          );
-        })}
+                <NavLink
+                  style={{ width: "100%", display: "block" }}
+                  to={`/accounts/${account.id}`}
+                >
+                  {account.name}
+                </NavLink>
+              </li>
+            );
+          })}
       </ul>
       <div className="bottom-links">
         <ul>
