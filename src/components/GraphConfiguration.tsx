@@ -26,12 +26,12 @@ export default function ConfigureGraph({
   addGraphConfig
 }: ConfigureGraphProps) {
   // State for selected categories, start date, end date, and other options
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [allTransactions, setAllTransactions] = useState<boolean>(false);
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
-  const [accounts, setAccounts] = useState<string[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
   const [databaseAccounts] = useState<Account[]>(defaultAccounts);
   const [databaseCategories] = useState<Category[]>(defaultCategories);
@@ -64,38 +64,22 @@ export default function ConfigureGraph({
     const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const account: string = selectedOption.value;
+    const account: Account = {
+      id: selectedOption.value,
+      name: selectedOption.text
+    };
 
     if (!accounts.includes(account)) {
       setAccounts([...accounts, account]);
     }
   };
 
+  // TODO: fix this
   /**
    * Function to add all unadded accounts to the list of accounts
    */
   const addAllAccounts = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addAccount"
-    ) as HTMLSelectElement;
-
-    let options: HTMLOptionsCollection;
-
-    if (selectElement) {
-      options = selectElement.options;
-    } else {
-      return;
-    }
-
-    const tempAccounts: string[] = [];
-
-    for (let i = 0; i < options.length; i++) {
-      if (!accounts.includes(options[i].value)) {
-        tempAccounts.push(options[i].value);
-      }
-    }
-
-    setAccounts([...accounts, ...tempAccounts]);
+    setAccounts([...accounts, ...databaseAccounts]);
   };
 
   /**
@@ -121,7 +105,10 @@ export default function ConfigureGraph({
     const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const category: string = selectedOption.value;
+    const category: Category = {
+      id: selectedOption.value,
+      name: selectedOption.text
+    };
 
     if (!categories.includes(category)) {
       setCategories([...categories, category]);
@@ -132,27 +119,7 @@ export default function ConfigureGraph({
    * Function to add all unadded categories to the list of categories
    */
   const addAllCategories = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addCategories"
-    ) as HTMLSelectElement;
-
-    let options: HTMLOptionsCollection;
-
-    if (selectElement) {
-      options = selectElement.options;
-    } else {
-      return;
-    }
-
-    const tempCategories: string[] = [];
-
-    for (let i = 0; i < options.length; i++) {
-      if (!categories.includes(options[i].value)) {
-        tempCategories.push(options[i].value);
-      }
-    }
-
-    setCategories([...categories, ...tempCategories]);
+    setCategories([...categories, ...databaseCategories]);
   };
 
   /**
@@ -352,7 +319,8 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories,
+      categories: categories.map((category) => category.id),
+      accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: false,
       update: dynamicUpdate,
@@ -378,7 +346,7 @@ export default function ConfigureGraph({
         <AccountContext.Provider value={databaseAccounts}>
           <select id="addAccount">
             {databaseAccounts.map((account: Account, index: number) => (
-              <option value={account.name} key={index}>
+              <option value={account.id} key={index}>
                 {account.name}
               </option>
             ))}
@@ -390,9 +358,9 @@ export default function ConfigureGraph({
 
         {/* List of selected accounts */}
         <ul>
-          {accounts.map((item: string, index) => (
+          {accounts.map((item: Account, index) => (
             <li key={`account${index}`}>
-              {item}
+              {item.name}
               <button onClick={() => deleteAccount(index)}>remove</button>
             </li>
           ))}
@@ -406,7 +374,7 @@ export default function ConfigureGraph({
         <CategoryContext.Provider value={databaseCategories}>
           <select id="addCategories">
             {databaseCategories.map((category: Category, index: number) => (
-              <option value={category.name} key={index}>
+              <option value={category.id} key={index}>
                 {category.name}
               </option>
             ))}
@@ -418,9 +386,9 @@ export default function ConfigureGraph({
 
         {/* List of selected categories */}
         <ul>
-          {categories.map((item: string, index) => (
+          {categories.map((item: Category, index) => (
             <li key={`category${index}`}>
-              {item}
+              {item.name}
               <button onClick={() => deleteCategory(index)}>X</button>
             </li>
           ))}

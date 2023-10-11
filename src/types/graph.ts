@@ -8,6 +8,7 @@ export type GraphConfig = {
   endDate: Date;
   length: number;
   categories: string[];
+  accounts: string[];
   type: ChartType;
   favourite: boolean;
   update: boolean;

@@ -1,7 +1,7 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent, useEffect, MouseEvent } from "react";
+import { useState, ChangeEvent, useEffect, MouseEvent, createRef } from "react";
 // import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
@@ -16,6 +16,10 @@ import {
 //import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
+import { getGraphs, saveGraph } from "../database/graphs";
+import { FlattenedTransaction, Transaction } from "../types/transaction";
+import { getAllTransactions } from "../database/transactions";
+import { generateGraph } from "../functions/generateGraph";
 // import { GraphConfig } from "../types/graph";
 
 /**
@@ -30,7 +34,8 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
-  // const [canvases, setCanvases] = useState<HTMLCanvasElement[]>([]);
+  const [canvasCount, setCanvasCount] = useState<number>(0);
+  const allCanvasContainer = createRef<HTMLDivElement>();
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -64,7 +69,111 @@ export default function Reports() {
   const addGraphConfig = (graphConfig: GraphConfig) => {
     // Add the provided graph configuration to the existing array.
     setGraphConfigs([...graphConfigs, graphConfig]);
+    saveGraph(graphConfig);
   };
+
+  // TODO: fix this
+  const handleGenerateGraphs = () => {
+    // Render graphs
+    for (let i = 0; i < graphConfigs.length; i++) {
+      console.log(
+        "Canvas Count: " +
+          canvasCount +
+          "\ni: " +
+          i +
+          "\nGraph Config Count: " +
+          graphConfigs.length
+      );
+
+      if (i < canvasCount) {
+        console.log("skipping");
+        continue;
+      }
+
+      setCanvasCount((canvasCount) => canvasCount + 1);
+
+      console.log("running");
+
+      if (graphConfigs[i].allTransactions) {
+        let transactions: Transaction[] = [];
+        // all transactions regradless of date via account
+        // Create an array of Promises for all accounts
+        const transactionPromises = graphConfigs[i].accounts.map((account) =>
+          getAllTransactions(account)
+        );
+
+        // Use Promise.all to wait for all transactions to load
+        Promise.all(transactionPromises)
+          .then((allTransactions) => {
+            // Concatenate all the transactions from different accounts
+            transactions = allTransactions.reduce(
+              (acc, accountTransactions) => acc.concat(accountTransactions),
+              []
+            );
+
+            console.log("All Transactions: " + transactions.length);
+            console.log(transactions);
+
+            const flattendTransactions: FlattenedTransaction[] =
+              transactions.flatMap((t) =>
+                t.details.map((d) => ({
+                  ...d,
+                  date: t.date,
+                  merchant: t.merchant
+                }))
+              );
+
+            // remove a transaction if it is not in any of the categories provided
+            flattendTransactions.forEach(
+              (transaction: FlattenedTransaction) => {
+                // if this transaction is not in any of the categories provided in the graph config array then delete it from the array of flattendedtransactions
+                if (
+                  !graphConfigs[i].categories.some((category: string) =>
+                    transaction.category.includes(category)
+                  )
+                ) {
+                  const index = flattendTransactions.indexOf(transaction);
+                  if (index > -1) {
+                    flattendTransactions.splice(index, 1);
+                  }
+                }
+              }
+            );
+
+            const recieved = generateGraph(
+              flattendTransactions,
+              graphConfigs[i].type
+            );
+
+            console.log("Generating Canvas");
+
+            const canvas: HTMLCanvasElement = document.createElement("canvas");
+            canvas.id = "canvas" + i;
+            const canvasContainer: HTMLDivElement = document.getElementById(
+              "canvasContainerAll"
+            ) as HTMLDivElement;
+            canvasContainer.appendChild(canvas);
+            new Chart(canvas, recieved);
+          })
+          .catch((error) => {
+            console.error("Error fetching transactions: " + error);
+          });
+      }
+    }
+  };
+
+  /**
+   * React hook that triggers an effect when the component mounts
+   * This is fine
+   */
+  useEffect(() => {
+    // Handle adding new graph configurations
+    getGraphs().then((graphs) => {
+      setGraphConfigs([...graphs]);
+    });
+
+    console.log("done");
+  }, []);
 
   // Exporting Functionality -----------------------------------------------------------------------------------------------
   /**
@@ -269,6 +378,14 @@ export default function Reports() {
             addGraphConfig={addGraphConfig}
           />
         </CustomPopup>
+      </div>
+
+      <div
+        ref={allCanvasContainer}
+        id="canvasContainerAll"
+        className="canvasContainer"
+      >
+        <button onClick={handleGenerateGraphs}>Generate Graphs</button>
       </div>
     </div>
   );

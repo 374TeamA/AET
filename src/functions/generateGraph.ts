@@ -5,21 +5,23 @@ import {
   ChartType,
   TooltipItem
 } from "chart.js";
-import { FlattenedTransaction, Transaction } from "../types/transaction";
+import { FlattenedTransaction } from "../types/transaction";
 
 //TODO: All this code is likely to be changed soon so not gonna comment it
-export function generateGraph(/*transactions: Transaction[],*/ type: string) {
+export function generateGraph(
+  transactions: FlattenedTransaction[],
+  type: string
+) {
   // testing purposes
-  const transactions: Transaction[] = getTestData();
+  console.log("Generating graphs from flattended");
 
-  // test data finished
+  console.log(transactions);
 
-  const rawData: FlattenedTransaction[] = getData(transactions);
   let data: ChartData;
   if (type == "pie" || type == "bar" || type == "polarArea") {
-    data = getDataByCategory(rawData);
+    data = getDataByCategory(transactions);
   } else {
-    data = getDataByDate(rawData);
+    data = getDataByDate(transactions);
   }
 
   const chartType: ChartType = type as ChartType;
@@ -34,15 +36,6 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
 
   console.log(config);
   return config;
-}
-
-// Flatten each transaction into one single one
-function getData(transactions: Transaction[]): FlattenedTransaction[] {
-  const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
-    (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-  );
-
-  return flattendTransactions;
 }
 
 /**
@@ -267,53 +260,4 @@ function getOptions(type: string) {
   } else {
     return lineOptions;
   }
-}
-
-function getTestData() {
-  const transactions: Transaction[] = [
-    {
-      id: "01", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-01"),
-      merchant: "Countdown",
-      totalAmount: 7,
-      details: [{ amount: 7, category: "Food" }]
-    },
-    {
-      id: "02", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-01"),
-      merchant: "New World",
-      totalAmount: 10,
-      details: [{ amount: 10, category: "Food" }]
-    },
-    {
-      id: "03", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-02"),
-      merchant: "The Warehouse",
-      totalAmount: 177,
-      details: [
-        { amount: 27, category: "Food" },
-        { amount: 150, category: "Clothes" }
-      ]
-    },
-    {
-      id: "04", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-03"),
-      merchant: "The Warehouse",
-      totalAmount: 57,
-      details: [
-        { amount: 27, category: "Entertainment" },
-        { amount: 30, category: "Clothes" }
-      ]
-    }
-  ];
-
-  return transactions;
 }
