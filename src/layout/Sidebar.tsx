@@ -1,6 +1,6 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import "../styles/nav.css";
 import { NavLink, useLocation } from "react-router-dom";
 import { AccountContext } from "../context/AccountsContext";
@@ -8,6 +8,7 @@ import { Divider, Typography } from "@mui/material";
 
 export default function Sidebar() {
   const location = useLocation();
+  const accounts = useContext(AccountContext);
   useEffect(() => {
     console.log("sidebar " + window.location.href);
   }, []);
@@ -33,24 +34,27 @@ export default function Sidebar() {
             Dashboard
           </NavLink>
         </li>
-        <Divider/>
-        <Typography variant="h6" sx={{p:2}}>Accounts</Typography>
-          <AccountContext.Consumer>
-            {(accounts)=>{
-              return <>
-              {
-                accounts.map((account)=>{
-                  return <li className={location.pathname.includes(account.id) ? "selected" : ""} key={account.id}>
-                    <NavLink style={{ width: "100%", display: "block" }} to={`/accounts/${account.id}`}>
-                      {account.name}
-                    </NavLink>
-                  </li>
-                })
+        <Divider />
+        <Typography variant="h6" sx={{ p: 2 }}>
+          Accounts
+        </Typography>
+        {accounts.map((account) => {
+          return (
+            <li
+              className={
+                location.pathname.includes(account.id) ? "selected" : ""
               }
-              </>
-            }}
-          </AccountContext.Consumer>
-        
+              key={account.id}
+            >
+              <NavLink
+                style={{ width: "100%", display: "block" }}
+                to={`/accounts/${account.id}`}
+              >
+                {account.name}
+              </NavLink>
+            </li>
+          );
+        })}
       </ul>
       <div className="bottom-links">
         <ul>

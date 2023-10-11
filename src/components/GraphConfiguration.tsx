@@ -1,12 +1,12 @@
 // Import statements
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { GraphConfig } from "../types/graph";
 import { ChartType } from "chart.js";
 import { v4 as uuidv4 } from "uuid";
 import { Account } from "../types/account";
 import { Category } from "../types/category";
-import { AccountContext, defaultAccounts } from "../context/AccountsContext";
-import { CategoryContext, defaultCategories } from "../context/CategoryContext";
+import { AccountContext } from "../context/AccountsContext";
+import { CategoryContext } from "../context/CategoryContext";
 
 /**
  * Props for configuring the graph.
@@ -33,8 +33,8 @@ export default function ConfigureGraph({
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
-  const [databaseAccounts] = useState<Account[]>(defaultAccounts);
-  const [databaseCategories] = useState<Category[]>(defaultCategories);
+  const databaseAccounts = useContext(AccountContext); //useState<Account[]>(defaultAccounts);
+  const databaseCategories = useContext(CategoryContext); //useState<Category[]>(defaultCategories);
   const [lengthValue, setLengthValue] = useState(1);
 
   // Fetch accounts and categories from the database when the component mounts
@@ -343,15 +343,14 @@ export default function ConfigureGraph({
       <div id="accountPopupContainer">
         <h1>Select Accounts</h1>
         {/* List of accounts from database */}
-        <AccountContext.Provider value={databaseAccounts}>
-          <select id="addAccount">
-            {databaseAccounts.map((account: Account, index: number) => (
-              <option value={account.id} key={index}>
-                {account.name}
-              </option>
-            ))}
-          </select>
-        </AccountContext.Provider>
+
+        <select id="addAccount">
+          {databaseAccounts.map((account: Account, index: number) => (
+            <option value={account.name} key={index}>
+              {account.name}
+            </option>
+          ))}
+        </select>
 
         <button onClick={addAccount}>Add Account</button>
         <button onClick={addAllAccounts}>Add All Accounts</button>
@@ -371,15 +370,13 @@ export default function ConfigureGraph({
       <div id="categoryPopupContainer">
         <h1>Select Categories</h1>
         {/* List of categories from database */}
-        <CategoryContext.Provider value={databaseCategories}>
-          <select id="addCategories">
-            {databaseCategories.map((category: Category, index: number) => (
-              <option value={category.id} key={index}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </CategoryContext.Provider>
+        <select id="addCategories">
+          {databaseCategories.map((category: Category, index: number) => (
+            <option value={category.name} key={index}>
+              {category.name}
+            </option>
+          ))}
+        </select>
 
         <button onClick={addCategory}>Add Category</button>
         <button onClick={addAllCategories}>Add All Categories</button>
