@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Category } from "../../types/category";
 import { deleteCategory, saveCategory } from "../../database/categories";
 import { v4 as uuidv4 } from "uuid";
+import { MuiColorInput } from "mui-color-input";
 export default function EditCategories() {
 
 
@@ -19,6 +20,7 @@ export default function EditCategories() {
   // state for the editDialog
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
+  const [newCategoryColor,setNewCategoryColor] = useState('#ffffff');
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [removeDialog, setRemoveDialog] = useState<boolean>(false);
 
@@ -38,9 +40,14 @@ export default function EditCategories() {
   };
 
   const updateSelectedCategory = () => {
-    // update the category name for the selected category
     const newCategoryList = [...categoryList];
+    // check if this is a new item first - we may need to add it to the list
+    if(selectedCategory == categoryList.length){
+      newCategoryList.push({ name: "", id: uuidv4(),color:"#ffffff"})
+    }
+    // update the category name for the selected category
     newCategoryList[selectedCategory].name = newCategoryName;
+    newCategoryList[selectedCategory].color = newCategoryColor;
     setCategoryList(newCategoryList);
     setOpenDialog(false);
     // Store the updated category list in local storage
@@ -48,14 +55,10 @@ export default function EditCategories() {
   };
 
   const addCategory = () => {
-    // adds a category to the list
-    const newCategoryList = [...categoryList];
-    newCategoryList.push({ name: "", id: uuidv4()});
-    setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);
     setNewCategoryName("");
-    setSelectedCategory(newCategoryList.length - 1);
+    setSelectedCategory(categoryList.length); // Selected category index is out of bounds of list to indicate addding a new item
   };
 
   return (
@@ -99,6 +102,7 @@ export default function EditCategories() {
             <Typography variant="h6">Edit category name:</Typography>
             <TextField variant="outlined" sx={{width:"100%"}} value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e?.target.value)} />
+            <MuiColorInput value={newCategoryColor} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
             <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
             <Button onClick={updateSelectedCategory}>Save</Button>
           </Box>
