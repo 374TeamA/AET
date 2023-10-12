@@ -79,7 +79,9 @@ export default function ConfigureGraph({
    * Function to add all unadded accounts to the list of accounts
    */
   const addAllAccounts = () => {
-    setAccounts([...accounts, ...databaseAccounts]);
+    if (databaseAccounts) {
+      setAccounts([...accounts, ...databaseAccounts]);
+    }
   };
 
   /**
@@ -347,7 +349,7 @@ export default function ConfigureGraph({
         <select id="addAccount">
           {databaseAccounts &&
             databaseAccounts.map((account: Account, index: number) => (
-              <option value={account.name} key={index}>
+              <option value={account.id} key={index}>
                 {account.name}
               </option>
             ))}
@@ -373,7 +375,7 @@ export default function ConfigureGraph({
         {/* List of categories from database */}
         <select id="addCategories">
           {databaseCategories.map((category: Category, index: number) => (
-            <option value={category.name} key={index}>
+            <option value={category.id} key={index}>
               {category.name}
             </option>
           ))}

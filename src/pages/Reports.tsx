@@ -1,7 +1,7 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent, useEffect, MouseEvent, createRef } from "react";
+import { useState, ChangeEvent, useEffect, MouseEvent } from "react";
 // import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
 import Group from "../components/Group";
@@ -35,7 +35,6 @@ export default function Reports() {
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
   const [canvasCount, setCanvasCount] = useState<number>(0);
-  const allCanvasContainer = createRef<HTMLDivElement>();
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -92,83 +91,114 @@ export default function Reports() {
 
       setCanvasCount((canvasCount) => canvasCount + 1);
 
-      console.log("running");
+      console.log("New Graph");
 
-      if (graphConfigs[i].allTransactions) {
-        let transactions: Transaction[] = [];
-        // all transactions regradless of date via account
-        // Create an array of Promises for all accounts
-        const transactionPromises = graphConfigs[i].accounts.map((account) =>
-          getAllTransactions(account)
-        );
+      let transactions: Transaction[] = [];
+      // all transactions regradless of date via account
+      // Create an array of Promises for all accounts
+      console.log(graphConfigs[i]);
 
-        // Use Promise.all to wait for all transactions to load
-        Promise.all(transactionPromises)
-          .then((allTransactions) => {
-            // Concatenate all the transactions from different accounts
-            transactions = allTransactions.reduce(
-              (acc, accountTransactions) => acc.concat(accountTransactions),
-              []
-            );
+      const transactionPromises = graphConfigs[i].accounts.map((account) =>
+        getAllTransactions(account)
+      );
 
-            console.log("All Transactions: " + transactions.length);
-            console.log(transactions);
+      // Use Promise.all to wait for all transactions to load
+      Promise.all(transactionPromises)
+        .then((allTransactions) => {
+          console.log(allTransactions);
 
-            const flattenedTransactions: FlattenedTransaction[] = [];
+          // Concatenate all the transactions from different accounts
+          transactions = allTransactions.reduce(
+            (acc, accountTransactions) => acc.concat(accountTransactions),
+            []
+          );
 
-            transactions.forEach((transaction) => {
-              console.log("transaction");
+          console.log("All Transactions: " + transactions.length);
+          console.log(transactions);
 
-              transaction.details.forEach((detail) => {
-                console.log("detail");
-
-                // Create a FlattenedTransaction for each TransactionDetail
-                const flattenedTransaction: FlattenedTransaction = {
-                  date: transaction.date,
-                  merchant: transaction.merchant,
-                  amount: detail.amount,
-                  category: detail.category
-                };
-
-                console.log(flattenedTransaction);
-
-                flattenedTransactions.push(flattenedTransaction);
-              });
-            });
-
-            console.log(
-              "Flattened Transactions: " + flattenedTransactions.length
-            );
-            console.log(flattenedTransactions.map((t) => t));
-
-            //const specificCategoryTransactions: FlattenedTransaction[] = [];
-
-            // remove a transaction if it is not in any of the categories provided
-            // flattenedTransactions.forEach(
-            //   (transaction: FlattenedTransaction) => {
-            //     console.log(1);
-            //   }
-            // );
-
-            const recieved = generateGraph(
-              flattenedTransactions,
-              graphConfigs[i].type
-            );
-
-            console.log("Generating Canvas");
-
-            const canvas: HTMLCanvasElement = document.createElement("canvas");
-            canvas.id = "canvas" + i;
-            const canvasContainer: HTMLDivElement = document.getElementById(
-              "canvasContainerAll"
-            ) as HTMLDivElement;
-            canvasContainer.appendChild(canvas);
-            new Chart(canvas, recieved);
-          })
-          .catch((error) => {
-            console.error("Error fetching transactions: " + error);
+          // sort transactions by date (index 0 is oldest, index length-1 is newest)
+          transactions.sort((a, b) => {
+            const aDate: Date = new Date(a.date);
+            const bDate: Date = new Date(b.date);
+            return aDate.getTime() - bDate.getTime();
           });
-      }
+
+          if (graphConfigs[i].allTransactions) {
+            // dont need to do anything
+          } else if (graphConfigs[i].update) {
+            // handle update per day
+            transactions = transactions.filter((transaction) => {
+              const transactionDate: Date = new Date(transaction.date);
+              const today: Date = new Date();
+              const cutOffDate: Date = new Date(
+                today.getTime() - 1000 * 60 * 60 * 24 * graphConfigs[i].length
+              );
+              return transactionDate >= cutOffDate;
+            });
+          } else {
+            //static date range
+            transactions = transactions.filter((transaction) => {
+              const transactionDate: Date = new Date(transaction.date);
+              const startDate: Date = new Date(graphConfigs[i].startDate);
+              const endDate: Date = new Date(graphConfigs[i].endDate);
+              return transactionDate >= startDate && transactionDate <= endDate;
+            });
+          }
+
+          const flattenedTransactions: FlattenedTransaction[] = [];
+
+          transactions.forEach((transaction) => {
+            console.log("transaction");
+
+            transaction.details.forEach((detail) => {
+              console.log("detail");
+
+              // Create a FlattenedTransaction for each TransactionDetail
+              const flattenedTransaction: FlattenedTransaction = {
+                date: transaction.date,
+                merchant: transaction.merchant,
+                amount: detail.amount,
+                category: detail.category
+              };
+
+              console.log(flattenedTransaction);
+
+              flattenedTransactions.push(flattenedTransaction);
+            });
+          });
+
+          console.log(
+            "Flattened Transactions: " + flattenedTransactions.length
+          );
+          console.log(flattenedTransactions.map((t) => t));
+
+          //const specificCategoryTransactions: FlattenedTransaction[] = [];
+
+          // remove a transaction if it is not in any of the categories provided
+          // flattenedTransactions.forEach(
+          //   (transaction: FlattenedTransaction) => {
+          //     console.log(1);
+          //   }
+          // );
+
+          const recieved = generateGraph(
+            flattenedTransactions,
+            graphConfigs[i].type
+          );
+
+          console.log("Generating Canvas");
+
+          const canvas: HTMLCanvasElement = document.createElement("canvas");
+          canvas.id = "canvas" + i;
+          const canvasContainer: HTMLDivElement = document.getElementById(
+            "canvasContainerAll"
+          ) as HTMLDivElement;
+          canvasContainer.appendChild(canvas);
+          new Chart(canvas, recieved);
+        })
+        .catch((error) => {
+          console.error("Error fetching transactions: " + error);
+        });
     }
   };
 
@@ -390,11 +420,7 @@ export default function Reports() {
         </CustomPopup>
       </div>
 
-      <div
-        ref={allCanvasContainer}
-        id="canvasContainerAll"
-        className="canvasContainer"
-      >
+      <div id="canvasContainerAll" className="canvasContainer">
         <button onClick={handleGenerateGraphs}>Generate Graphs</button>
       </div>
     </div>

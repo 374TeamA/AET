@@ -15,6 +15,10 @@ export function generateGraph(
   // testing purposes
   console.log("Generating graphs from flattended");
 
+  transactions.forEach((transaction) => {
+    transaction.amount /= 100;
+  });
+
   console.log(transactions);
 
   let data: ChartData;
