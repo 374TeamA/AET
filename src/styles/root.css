@@ -5,11 +5,11 @@ body {
 }
 
 .padding-1 {
-  padding: 1vh;
+  padding: 1dvh;
 }
 
 .padding-2 {
-  padding: 2vh;
+  padding: 2dvh;
 }
 
 /* Style for the container of the checkbox */
