@@ -15,11 +15,12 @@ import {
 } from "../functions/defaultGraph";
 //import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
-import { GraphConfig, GraphData } from "../types/graph";
+import { GraphConfig } from "../types/graph";
 import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
-import { FlattenedTransaction, Transaction } from "../types/transaction";
-import { getAllTransactions } from "../database/transactions";
-import { generateGraph } from "../functions/generateGraph";
+// import { FlattenedTransaction, Transaction } from "../types/transaction";
+// import { getAllTransactions } from "../database/transactions";
+// import { generateGraph } from "../functions/generateGraph";
+import NewGraph from "../components/NewGraph";
 // import { GraphConfig } from "../types/graph";
 
 /**
@@ -34,8 +35,6 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
-  const [canvasCount, setCanvasCount] = useState<number>(0);
-  const [graphData, setGraphData] = useState<GraphData[]>([]);
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -73,160 +72,25 @@ export default function Reports() {
   };
 
   // TODO: get this function to run whenever the graphConfigs is updated
-  const handleGenerateGraphs = () => {
-    // Render graphs
-    for (let i = 0; i < graphConfigs.length; i++) {
-      console.log(
-        "Canvas Count: " +
-          canvasCount +
-          "\ni: " +
-          i +
-          "\nGraph Config Count: " +
-          graphConfigs.length
-      );
 
-      if (i < canvasCount) {
-        console.log("skipping");
-        continue;
-      }
-
-      setCanvasCount((canvasCount) => canvasCount + 1);
-
-      console.log("New Graph");
-
-      let transactions: Transaction[] = [];
-      // all transactions regradless of date via account
-      // Create an array of Promises for all accounts
-      console.log(graphConfigs[i]);
-
-      const transactionPromises = graphConfigs[i].accounts.map((account) =>
-        getAllTransactions(account)
-      );
-
-      // Use Promise.all to wait for all transactions to load
-      Promise.all(transactionPromises)
-        .then((allTransactions) => {
-          console.log(allTransactions);
-
-          // Concatenate all the transactions from different accounts
-          transactions = allTransactions.reduce(
-            (acc, accountTransactions) => acc.concat(accountTransactions),
-            []
-          );
-
-          console.log("All Transactions: " + transactions.length);
-          console.log(transactions);
-
-          // sort transactions by date (index 0 is oldest, index length-1 is newest)
-          transactions.sort((a, b) => {
-            const aDate: Date = new Date(a.date);
-            const bDate: Date = new Date(b.date);
-            return aDate.getTime() - bDate.getTime();
-          });
-
-          if (graphConfigs[i].allTransactions) {
-            // dont need to do anything
-          } else if (graphConfigs[i].update) {
-            // handle update per day
-            transactions = transactions.filter((transaction) => {
-              const transactionDate: Date = new Date(transaction.date);
-              const today: Date = new Date();
-              const cutOffDate: Date = new Date(
-                today.getTime() - 1000 * 60 * 60 * 24 * graphConfigs[i].length
-              );
-              return transactionDate >= cutOffDate;
-            });
-          } else {
-            //static date range
-            transactions = transactions.filter((transaction) => {
-              const transactionDate: Date = new Date(transaction.date);
-              const startDate: Date = new Date(graphConfigs[i].startDate);
-              const endDate: Date = new Date(graphConfigs[i].endDate);
-              return transactionDate >= startDate && transactionDate <= endDate;
-            });
-          }
-
-          const flattenedTransactions: FlattenedTransaction[] = [];
-
-          transactions.forEach((transaction) => {
-            console.log("transaction");
-
-            transaction.details.forEach((detail) => {
-              console.log("detail");
-
-              // Create a FlattenedTransaction for each TransactionDetail
-              const flattenedTransaction: FlattenedTransaction = {
-                date: transaction.date,
-                merchant: transaction.merchant,
-                amount: detail.amount,
-                category: detail.category
-              };
-
-              console.log(flattenedTransaction);
-
-              flattenedTransactions.push(flattenedTransaction);
-            });
-          });
-
-          console.log(
-            "Flattened Transactions: " + flattenedTransactions.length
-          );
-
-          const recieved = generateGraph(
-            flattenedTransactions,
-            graphConfigs[i].type
-          );
-
-          const singleGraphData: GraphData = {
-            graphConfig: graphConfigs[i],
-            data: flattenedTransactions,
-            canvasID: "graphContainer" + i
-          };
-
-          setGraphData([...graphData, singleGraphData]);
-
-          // Create the graph container and canvas
-          // TODO: This could probably be react-afied but i dont know how
-          const graphContainer: HTMLDivElement = document.createElement("div");
-          graphContainer.id = "graphContainer" + i;
-          graphContainer.className = "canvasContainer";
-          const canvas: HTMLCanvasElement = document.createElement("canvas");
-          canvas.id = "canvas" + i;
-          const button: HTMLButtonElement = document.createElement("button");
-          button.textContent = "Delete Graph";
-          button.addEventListener("click", () => {
-            handleDeleteGraph(singleGraphData);
-          });
-          const canvasContainer: HTMLDivElement = document.getElementById(
-            "canvasContainerAll"
-          ) as HTMLDivElement;
-          graphContainer.appendChild(canvas);
-          graphContainer.appendChild(button);
-          canvasContainer.appendChild(graphContainer);
-          new Chart(canvas, recieved);
-        })
-        .catch((error) => {
-          console.error("Error fetching transactions: " + error);
-        });
-    }
+  const handleDeleteGraph = (index: number) => {
+    const newConfigs = [...graphConfigs];
+    const removed = newConfigs.splice(index, 1);
+    setGraphConfigs(newConfigs);
+    deleteGraph(removed[0].id);
   };
 
-  const handleDeleteGraph = (singleGraphData: GraphData) => {
-    const canvasContainerAll: HTMLDivElement = document.getElementById(
-      "canvasContainerAll"
-    ) as HTMLDivElement;
-    canvasContainerAll.removeChild(
-      document.getElementById(singleGraphData.canvasID) as HTMLDivElement
-    );
+  const handleFavouriteGraph = (index: number) => {
+    //do things
+    console.log(index, "Update Favourties");
 
-    setGraphConfigs(
-      graphConfigs.filter((config) => config != singleGraphData.graphConfig)
-    );
-    setGraphData(graphData.filter((data) => data != singleGraphData));
-    setCanvasCount((canvasCount) => canvasCount - 1);
-    deleteGraph(singleGraphData.graphConfig.id);
+    const newConfigs = graphConfigs;
+    newConfigs[index].favourite = !newConfigs[index].favourite;
+    setGraphConfigs([...newConfigs]);
+    saveGraph(newConfigs[index]);
   };
 
+  useEffect(() => {}, [graphConfigs]);
   /**
    * React hook that triggers an effect when the component mounts
    * This is fine
@@ -447,7 +311,15 @@ export default function Reports() {
       </div>
 
       <div id="canvasContainerAll" className="canvasContainer">
-        <button onClick={handleGenerateGraphs}>Generate Graphs</button>
+        {graphConfigs.map((config, index) => (
+          <NewGraph
+            key={JSON.stringify(graphConfigs[index])}
+            graphConfig={config}
+            index={index}
+            handleDeleteGraph={handleDeleteGraph}
+            handleFavourite={handleFavouriteGraph}
+          />
+        ))}
       </div>
     </div>
   );

@@ -66,6 +66,7 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     labels: labels,
     datasets: [
       {
+        label: "Total",
         data: values
       }
     ]
@@ -203,7 +204,7 @@ function getOptions(type: string) {
         text: "Test"
       },
       legend: {
-        display: false
+        display: true
       },
       tooltip: {
         callbacks: {
