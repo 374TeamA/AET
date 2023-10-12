@@ -72,15 +72,25 @@ export default function Sidebar() {
                 key={account.id}
               >
                 <NavLink
-                  onClick={toggleIfMobile}
                   style={{ width: "100%", display: "block" }}
-                  to={`/accounts/${account.id}`}
-                >
-                  {account.name}
+                  to={`/accounts/${account.id}`}>
+                    {account.name}
                 </NavLink>
-              </li>
-            );
-          })}
+            </li>
+          );
+        })}
+        <li
+              className={
+                location.pathname.includes("CASH") ? "selected" : ""
+              }
+            >
+              <NavLink
+                style={{ width: "100%", display: "block" }}
+                to={`/accounts/CASH`}
+              >
+                Manual Entry
+              </NavLink>
+            </li>
       </ul>
       <div className="bottom-links">
         <ul>
