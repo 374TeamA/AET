@@ -32,7 +32,7 @@ const CustomPopup: React.FC<CustomPopupProps> = ({
         onClick={(e) => e.stopPropagation()}
         style={{ maxHeight: "100vh", overflow: "scroll" }}
       >
-        <Paper elevation={4} sx={{ padding: 5 }}>
+        <Paper elevation={0} sx={{ padding: 2 }}>
           <button className="close-button" onClick={handleClose}>
             &times;
           </button>

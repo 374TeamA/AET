@@ -28,7 +28,7 @@ export default function EditCategories() {
   // state for the editDialog
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
-  const [newCategoryColor,setNewCategoryColor] = useState('#ffffff');
+  const [newCategoryColor, setNewCategoryColor] = useState("#ffffff");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [removeDialog, setRemoveDialog] = useState<boolean>(false);
 
@@ -50,8 +50,8 @@ export default function EditCategories() {
   const updateSelectedCategory = () => {
     const newCategoryList = [...categoryList];
     // check if this is a new item first - we may need to add it to the list
-    if(selectedCategory == categoryList.length){
-      newCategoryList.push({ name: "", id: uuidv4(),color:"#ffffff"})
+    if (selectedCategory == categoryList.length) {
+      newCategoryList.push({ name: "", id: uuidv4(), color: "#ffffff" });
     }
     // update the category name for the selected category
     newCategoryList[selectedCategory].name = newCategoryName;
@@ -59,7 +59,7 @@ export default function EditCategories() {
     setCategoryList(newCategoryList);
     setOpenDialog(false);
     // Store the updated category list in local storage
-    saveCategory(categoryList[selectedCategory]);
+    saveCategory(newCategoryList[selectedCategory]);
   };
 
   const addCategory = () => {
@@ -76,13 +76,16 @@ export default function EditCategories() {
         sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
       >
         <Typography variant="h6">Category List</Typography>
-        <Typography variant="body1">Add & remove expense categories here. Choose categories that make sense for your budgeting goals.</Typography>
+        <Typography variant="body1">
+          Add & remove expense categories here. Choose categories that make
+          sense for your budgeting goals.
+        </Typography>
 
         {/* Display an array of categories */}
         <List>
           {categoryList.map((category: Category, index: number) => (
-            <ListItem  
-              sx={{ backgroundColor: category.color,m:1,p:0 }}
+            <ListItem
+              sx={{ backgroundColor: category.color, m: 1, p: 0 }}
               key={index}
               onClick={() => displayEditDialog(index)}
               secondaryAction={
@@ -112,25 +115,58 @@ export default function EditCategories() {
             </ListItem>
           ))}
         </List>
-        <Button variant="contained" onClick={addCategory}>Add Category</Button>
-        </Paper>
-        <Dialog open={openDialog} sx={{p:5}}>
-          <Box sx={{p:5}}>
-            <Typography variant="h6">Edit category</Typography>
-            <TextField variant="outlined" label="Category Name" sx={{width:"100%"}} value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e?.target.value)} />
-            <MuiColorInput label="Colour" value={newCategoryColor} sx={{width:"100%",mt:1}} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
-            <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
-            <Button onClick={updateSelectedCategory}>Save</Button>
-          </Box>
-        </Dialog>
-        <Dialog open={removeDialog} sx={{p:5}}>
-          <Box sx={{p:5}}>
-            <Typography variant="h6">Are you sure you want to remove this category?</Typography>
-            <Button onClick={()=>{setRemoveDialog(false)}}>Cancel</Button>
-            <Button onClick={()=>{setRemoveDialog(false);removeCategory()}}>Remove</Button>
-          </Box>
-        </Dialog>
-      </>
+        <Button variant="contained" onClick={addCategory}>
+          Add Category
+        </Button>
+      </Paper>
+      <Dialog open={openDialog} sx={{ p: 5 }}>
+        <Box sx={{ p: 5 }}>
+          <Typography variant="h6">Edit category</Typography>
+          <TextField
+            variant="outlined"
+            label="Category Name"
+            sx={{ width: "100%" }}
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e?.target.value)}
+          />
+          <MuiColorInput
+            label="Colour"
+            value={newCategoryColor}
+            sx={{ width: "100%", mt: 1 }}
+            onChange={(c) => setNewCategoryColor(c)}
+          ></MuiColorInput>
+          <Button
+            onClick={() => {
+              setOpenDialog(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={updateSelectedCategory}>Save</Button>
+        </Box>
+      </Dialog>
+      <Dialog open={removeDialog} sx={{ p: 5 }}>
+        <Box sx={{ p: 5 }}>
+          <Typography variant="h6">
+            Are you sure you want to remove this category?
+          </Typography>
+          <Button
+            onClick={() => {
+              setRemoveDialog(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setRemoveDialog(false);
+              removeCategory();
+            }}
+          >
+            Remove
+          </Button>
+        </Box>
+      </Dialog>
+    </>
   );
 }
