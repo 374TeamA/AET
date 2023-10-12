@@ -5,21 +5,24 @@ import {
   ChartType,
   TooltipItem
 } from "chart.js";
-import { FlattenedTransaction, Transaction } from "../types/transaction";
+import { FlattenedTransaction } from "../types/transaction";
 
 //TODO: All this code is likely to be changed soon so not gonna comment it
-export function generateGraph(/*transactions: Transaction[],*/ type: string) {
-  // testing purposes
-  const transactions: Transaction[] = getTestData();
+export function generateGraph(
+  transactions: FlattenedTransaction[],
+  type: string
+) {
+  // Convert to dollars
+  transactions.forEach((transaction) => {
+    transaction.amount /= 100;
+  });
 
-  // test data finished
-
-  const rawData: FlattenedTransaction[] = getData(transactions);
+  // Decide how to process data based on type of graph
   let data: ChartData;
   if (type == "pie" || type == "bar" || type == "polarArea") {
-    data = getDataByCategory(rawData);
+    data = getDataByCategory(transactions);
   } else {
-    data = getDataByDate(rawData);
+    data = getDataByDate(transactions);
   }
 
   const chartType: ChartType = type as ChartType;
@@ -34,15 +37,6 @@ export function generateGraph(/*transactions: Transaction[],*/ type: string) {
 
   console.log(config);
   return config;
-}
-
-// Flatten each transaction into one single one
-function getData(transactions: Transaction[]): FlattenedTransaction[] {
-  const flattendTransactions: FlattenedTransaction[] = transactions.flatMap(
-    (t) => t.details.map((d) => ({ ...d, date: t.date, merchant: t.merchant }))
-  );
-
-  return flattendTransactions;
 }
 
 /**
@@ -72,6 +66,7 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
     labels: labels,
     datasets: [
       {
+        label: "Total",
         data: values
       }
     ]
@@ -80,18 +75,93 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   return data;
 }
 
+// TODO: rewrite all of this
+// It needs to handle multiple categories and show a line for each, along with a label
+// It needs to generate a date and populate it with $0 if no money was spent that day
 function getDataByDate(rawData: FlattenedTransaction[]) {
+  const categories: string[] = [];
+  const startDate: Date = rawData[0].date;
+  const endDate: Date = rawData[rawData.length - 1].date;
+
+  // populate array with dates between start and end (inclusive)
+  const dates: Date[] = [];
+  const currentDate: Date = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    dates.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // get all categories
+  for (let i = 0; i < rawData.length; i++) {
+    if (!categories.includes(rawData[i].category)) {
+      categories.push(rawData[i].category);
+    }
+  }
+
+  // convert each date in the array into a string in the format "Month Day, Year"
   const labels: string[] = [];
+  dates.forEach((date) => {
+    labels.push(date.toDateString());
+  });
+
   const values: number[] = [];
+  for (let i = 0; i < labels.length; i++) {
+    values.push(0);
+  }
+
+  if (categories.length > 1) {
+    // More than 1 category
+    const datasets = [];
+    for (let i = 0; i < categories.length; i++) {
+      const category = categories[i];
+      const categoryValues = [];
+      for (let j = 0; j < labels.length; j++) {
+        const date = new Date(labels[j]);
+        let total = 0;
+        for (let k = 0; k < rawData.length; k++) {
+          if (
+            rawData[k].category == category &&
+            rawData[k].date.toDateString() == date.toDateString()
+          ) {
+            total += rawData[k].amount;
+          }
+        }
+        categoryValues.push(total);
+      }
+      datasets.push({
+        label: category,
+        data: categoryValues,
+        pointStyle: false
+      });
+    }
+
+    const totalValues: number[] = [];
+    for (let i = 0; i < labels.length; i++) {
+      totalValues.push(0);
+    }
+
+    for (let i = 0; i < rawData.length; i++) {
+      const date: string = rawData[i].date.toDateString();
+      const index: number = labels.indexOf(date);
+      totalValues[index] += rawData[i].amount;
+    }
+
+    datasets.push({
+      label: "Total",
+      data: totalValues,
+      pointStyle: false
+    });
+
+    const data: ChartData = {
+      labels: labels,
+      datasets: datasets
+    };
+    return data;
+  }
 
   for (let i = 0; i < rawData.length; i++) {
     const date: string = rawData[i].date.toDateString();
-
-    if (!labels.includes(date)) {
-      labels.push(date);
-      values.push(0);
-    }
-
     const index: number = labels.indexOf(date);
     values[index] += rawData[i].amount;
   }
@@ -100,7 +170,9 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
     labels: labels,
     datasets: [
       {
-        data: values
+        label: categories[0],
+        data: values,
+        pointStyle: false
       }
     ]
   };
@@ -132,7 +204,7 @@ function getOptions(type: string) {
         text: "Test"
       },
       legend: {
-        display: false
+        display: true
       },
       tooltip: {
         callbacks: {
@@ -228,13 +300,14 @@ function getOptions(type: string) {
         }
       }
     },
+    interaction: {
+      mode: "index",
+      intersect: false
+    },
     plugins: {
       title: {
         display: true,
         text: "Test"
-      },
-      legend: {
-        display: false
       },
       tooltip: {
         callbacks: {
@@ -267,57 +340,4 @@ function getOptions(type: string) {
   } else {
     return lineOptions;
   }
-}
-
-function getTestData() {
-  const transactions: Transaction[] = [
-    {
-      id: "01", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-01"),
-      merchant: "Countdown",
-      totalAmount: 7,
-      details: [{ amount: 7, category: "Food" }],
-      hash:"aaaaa"
-    },
-    {
-      id: "02", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-01"),
-      merchant: "New World",
-      totalAmount: 10,
-      details: [{ amount: 10, category: "Food" }],
-      hash:"aaaab",
-    },
-    {
-      id: "03", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-02"),
-      merchant: "The Warehouse",
-      totalAmount: 177,
-      details: [
-        { amount: 27, category: "Food" },
-        { amount: 150, category: "Clothes" }
-      ],
-      hash:"aaaac"
-    },
-    {
-      id: "04", // uuid
-      account: "Everyday",
-      import: "one",
-      date: new Date("2021-01-03"),
-      merchant: "The Warehouse",
-      totalAmount: 57,
-      details: [
-        { amount: 27, category: "Entertainment" },
-        { amount: 30, category: "Clothes" }
-      ],
-      hash:"aaaad",
-    }
-  ];
-
-  return transactions;
 }

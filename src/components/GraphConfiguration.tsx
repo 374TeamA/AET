@@ -26,12 +26,12 @@ export default function ConfigureGraph({
   addGraphConfig
 }: ConfigureGraphProps) {
   // State for selected categories, start date, end date, and other options
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [allTransactions, setAllTransactions] = useState<boolean>(false);
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
-  const [accounts, setAccounts] = useState<string[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
   const databaseAccounts = useContext(AccountContext); //useState<Account[]>(defaultAccounts);
   const databaseCategories = useContext(CategoryContext); //useState<Category[]>(defaultCategories);
@@ -52,6 +52,8 @@ export default function ConfigureGraph({
   //   });
   // }, []);
 
+  //useEffect(() => {}, [categories, accounts]);
+
   /**
    * Function to add a selected account to the list of accounts
    */
@@ -64,49 +66,36 @@ export default function ConfigureGraph({
     const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const account: string = selectedOption.value;
+    const account: Account = {
+      id: selectedOption.value,
+      name: selectedOption.text
+    };
 
-    if (!accounts.includes(account)) {
+    if (!accounts.some((a) => a.id === account.id)) {
       setAccounts([...accounts, account]);
     }
   };
 
+  // TODO: fix this
   /**
    * Function to add all unadded accounts to the list of accounts
    */
   const addAllAccounts = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addAccount"
-    ) as HTMLSelectElement;
-
-    let options: HTMLOptionsCollection;
-
-    if (selectElement) {
-      options = selectElement.options;
-    } else {
-      return;
+    if (databaseAccounts) {
+      const uniqueAccounts = databaseAccounts.filter(
+        (account) => !accounts.some((a) => a.id === account.id)
+      );
+      setAccounts([...accounts, ...uniqueAccounts]);
     }
-
-    const tempAccounts: string[] = [];
-
-    for (let i = 0; i < options.length; i++) {
-      if (!accounts.includes(options[i].value)) {
-        tempAccounts.push(options[i].value);
-      }
-    }
-
-    setAccounts([...accounts, ...tempAccounts]);
   };
 
   /**
    * Function to delete an account from the list of accounts
    *
-   * @param {number} index index of account to delete
+   * @param {Account} account index of account to delete
    */
-  const deleteAccount = (index: number) => {
-    const tempAccounts = [...accounts];
-    tempAccounts.splice(index, 1);
-    setAccounts(tempAccounts);
+  const deleteAccount = (account: Account) => {
+    setAccounts(accounts.filter((a) => a !== account));
   };
 
   /**
@@ -121,9 +110,12 @@ export default function ConfigureGraph({
     const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const category: string = selectedOption.value;
+    const category: Category = {
+      id: selectedOption.value,
+      name: selectedOption.text
+    };
 
-    if (!categories.includes(category)) {
+    if (!categories.some((c) => c.id === category.id)) {
       setCategories([...categories, category]);
     }
   };
@@ -132,38 +124,22 @@ export default function ConfigureGraph({
    * Function to add all unadded categories to the list of categories
    */
   const addAllCategories = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addCategories"
-    ) as HTMLSelectElement;
-
-    let options: HTMLOptionsCollection;
-
-    if (selectElement) {
-      options = selectElement.options;
-    } else {
-      return;
+    // add any categories from database catagories that arent already in categories (so there are no duplicates)
+    if (databaseCategories) {
+      const uniqueCategories = databaseCategories.filter(
+        (category) => !categories.some((c) => c.id === category.id)
+      );
+      setCategories([...categories, ...uniqueCategories]);
     }
-
-    const tempCategories: string[] = [];
-
-    for (let i = 0; i < options.length; i++) {
-      if (!categories.includes(options[i].value)) {
-        tempCategories.push(options[i].value);
-      }
-    }
-
-    setCategories([...categories, ...tempCategories]);
   };
 
   /**
    * Function to delete a category from the list of categories
    *
-   * @param {number} index index of category to delete
+   * @param {number} category index of category to delete
    */
-  const deleteCategory = (index: number) => {
-    const tempCategories = [...categories];
-    tempCategories.splice(index, 1);
-    setCategories(tempCategories);
+  const deleteCategory = (category: Category) => {
+    setCategories(categories.filter((c) => c !== category));
   };
 
   /**
@@ -352,7 +328,8 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories,
+      categories: categories.map((category) => category.id),
+      accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: false,
       update: dynamicUpdate,
@@ -379,7 +356,7 @@ export default function ConfigureGraph({
         <select id="addAccount">
           {databaseAccounts &&
             databaseAccounts.map((account: Account, index: number) => (
-              <option value={account.name} key={index}>
+              <option value={account.id} key={index}>
                 {account.name}
               </option>
             ))}
@@ -390,10 +367,10 @@ export default function ConfigureGraph({
 
         {/* List of selected accounts */}
         <ul>
-          {accounts.map((item: string, index) => (
+          {accounts.map((item: Account, index) => (
             <li key={`account${index}`}>
-              {item}
-              <button onClick={() => deleteAccount(index)}>remove</button>
+              {item.name}
+              <button onClick={() => deleteAccount(item)}>remove</button>
             </li>
           ))}
         </ul>
@@ -405,7 +382,7 @@ export default function ConfigureGraph({
         {/* List of categories from database */}
         <select id="addCategories">
           {databaseCategories.map((category: Category, index: number) => (
-            <option value={category.name} key={index}>
+            <option value={category.id} key={index}>
               {category.name}
             </option>
           ))}
@@ -416,10 +393,10 @@ export default function ConfigureGraph({
 
         {/* List of selected categories */}
         <ul>
-          {categories.map((item: string, index) => (
+          {categories.map((item: Category, index) => (
             <li key={`category${index}`}>
-              {item}
-              <button onClick={() => deleteCategory(index)}>X</button>
+              {item.name}
+              <button onClick={() => deleteCategory(item)}>X</button>
             </li>
           ))}
         </ul>
