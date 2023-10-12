@@ -56,6 +56,32 @@ export async function getTransactions(
 }
 
 /**
+ * Gets all transactions for the import.
+ *
+ * @param imp The id of the import
+ * @returns {Transaction[]} An array of transactions
+ */
+export async function getTransactionsByImport(
+  imp: string
+): Promise<Transaction[]> {
+  const db = await connectToDatabase();
+  return new Promise((resolve, reject) => {
+    const dbt = db.transaction("Transactions", "readonly");
+    const tos = dbt.objectStore("Transactions");
+    const ind = tos.index("import");
+    const req = ind.getAll(IDBKeyRange.only(imp));
+
+    req.onsuccess = function () {
+      if (req.result !== undefined) {
+        resolve(req.result);
+      } else {
+        reject(false);
+      }
+    };
+  });
+}
+
+/**
  * Saves a transaction under an account to the database. If the transaction already exists it will be updated.
  *
  * @param t The transaction to be saved
