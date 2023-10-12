@@ -5,6 +5,8 @@ import { deleteImport, getImports } from "../../database/imports";
 import { Import } from "../../types/transaction";
 import { getAllTransactions } from "../../database/transactions";
 import { useParams } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 interface ImportTotals {
   id: string;
   earliestTransaction: Date;
@@ -17,13 +19,18 @@ export default function History() {
   const params = useParams();
   const accountId: string | undefined = params.id;
   const [imports, setImports] = useState<Import[]>([]);
-  const [importTotals, setImportTotals] = useState<{
-    [key: string]: ImportTotals;
-  }>({});
+  const [importTotals, setImportTotals] = useState<ImportTotals[]>([]);
 
   const deleteDBImport = (importId: string) => {
     deleteImport(importId).then(() => {
-      delete importTotals[importId];
+      const importTotalsCopy = [...importTotals];
+      const index = importTotalsCopy.findIndex(
+        (importItem) => importItem.id === importId
+      );
+      if (index > -1) {
+        importTotalsCopy.splice(index, 1);
+        setImportTotals(importTotalsCopy);
+      }
     });
   };
   useEffect(() => {
@@ -61,94 +68,58 @@ export default function History() {
             }
           }
         }
-        setImportTotals(importTotals);
+        const newImpTotals: ImportTotals[] = [];
+        Object.keys(importTotals).forEach((importItem) => {
+          newImpTotals.push(importTotals[importItem]);
+        });
+        setImportTotals(newImpTotals);
       });
   }, []);
-
-  return (
-    <div style={{ width: "100%" }}>
-      <table style={{ width: "100%" }}>
-        <thead>
-          <tr>
-            <th>Delete</th>
-            <th>Import Date</th>
-            <th>Earliest Transaction</th>
-            <th>Latest Transaction</th>
-            <th>Transactions</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(importTotals).map((importItem) => (
-            <tr key={importTotals[importItem].id}>
-              <td
-                onClick={() => {
-                  deleteDBImport(importTotals[importItem].id);
-                }}
-              >
-                X
-              </td>
-              <td>
-                {importTotals[importItem].importDate.toLocaleDateString()}
-              </td>
-              <td>
-                {importTotals[
-                  importItem
-                ].earliestTransaction.toLocaleDateString()}
-              </td>
-              <td>
-                {importTotals[
-                  importItem
-                ].latestTransaction.toLocaleDateString()}
-              </td>
-              <td>{importTotals[importItem].transactions}</td>
-              <td>${(importTotals[importItem].amount / 100).toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* {Object.keys(importTotals).map((importItem) => (
-        <div
-          style={{
-            display: "flex",
-            height: "3rem",
-            width: "100%",
-            border: "1px solid lightgrey",
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center"
+  const columns: GridColDef[] = [
+    {
+      field: "delete",
+      headerName: "Delete",
+      flex: 0.5,
+      renderCell: (params: GridCellParams) => (
+        <Button
+          onClick={() => {
+            console.log(params.row.id);
+            deleteDBImport(params.row.id as string);
           }}
         >
-          <div
-            style={{
-              flexGrow: "0.2"
-            }}
-          >
-            <p>X</p>
-          </div>
-          <div
-            style={{
-              flexGrow: "1"
-            }}
-          >
-            {importTotals[importItem].importDate.toLocaleDateString()}
-          </div>
-          <div
-            style={{
-              flexGrow: "1"
-            }}
-          >
-            {importTotals[importItem].transactions}
-          </div>
-          <div
-            style={{
-              flexGrow: "1"
-            }}
-          >
-            ${(importTotals[importItem].amount / 100).toFixed(2)}
-          </div>
-        </div>
-      ))} */}
-    </div>
+          X
+        </Button>
+      )
+    },
+    {
+      field: "importDate",
+      headerName: "Import Date",
+      flex: 1,
+      valueFormatter: ({ value }) => (value as Date).toLocaleDateString()
+    },
+    {
+      field: "earliestTransaction",
+      headerName: "Earliest Transaction",
+      flex: 1,
+      valueFormatter: ({ value }) => (value as Date).toLocaleDateString()
+    },
+    {
+      field: "latestTransaction",
+      headerName: "Latest Transaction",
+      flex: 1,
+      valueFormatter: ({ value }) => (value as Date).toLocaleDateString()
+    },
+    { field: "transactions", headerName: "Transactions", flex: 1 },
+    {
+      field: "amount",
+      headerName: "Amount",
+      flex: 1,
+      valueFormatter: ({ value }) => `$${((value as number) / 100).toFixed(2)}`
+    }
+  ];
+  return (
+    <Box style={{ height: "77vh" }}>
+      <DataGrid columns={columns} rows={importTotals} />
+    </Box>
   );
 }
