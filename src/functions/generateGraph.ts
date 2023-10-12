@@ -130,7 +130,8 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       }
       datasets.push({
         label: category,
-        data: categoryValues
+        data: categoryValues,
+        pointStyle: false
       });
     }
 
@@ -147,7 +148,8 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
 
     datasets.push({
       label: "Total",
-      data: totalValues
+      data: totalValues,
+      pointStyle: false
     });
 
     const data: ChartData = {
@@ -168,7 +170,8 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
     datasets: [
       {
         label: categories[0],
-        data: values
+        data: values,
+        pointStyle: false
       }
     ]
   };
@@ -304,9 +307,6 @@ function getOptions(type: string) {
       title: {
         display: true,
         text: "Test"
-      },
-      legend: {
-        display: false
       },
       tooltip: {
         callbacks: {

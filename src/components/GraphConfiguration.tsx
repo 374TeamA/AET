@@ -52,6 +52,8 @@ export default function ConfigureGraph({
   //   });
   // }, []);
 
+  //useEffect(() => {}, [categories, accounts]);
+
   /**
    * Function to add a selected account to the list of accounts
    */
@@ -69,7 +71,7 @@ export default function ConfigureGraph({
       name: selectedOption.text
     };
 
-    if (!accounts.includes(account)) {
+    if (!accounts.some((a) => a.id === account.id)) {
       setAccounts([...accounts, account]);
     }
   };
@@ -80,19 +82,20 @@ export default function ConfigureGraph({
    */
   const addAllAccounts = () => {
     if (databaseAccounts) {
-      setAccounts([...accounts, ...databaseAccounts]);
+      const uniqueAccounts = databaseAccounts.filter(
+        (account) => !accounts.some((a) => a.id === account.id)
+      );
+      setAccounts([...accounts, ...uniqueAccounts]);
     }
   };
 
   /**
    * Function to delete an account from the list of accounts
    *
-   * @param {number} index index of account to delete
+   * @param {Account} account index of account to delete
    */
-  const deleteAccount = (index: number) => {
-    const tempAccounts = [...accounts];
-    tempAccounts.splice(index, 1);
-    setAccounts(tempAccounts);
+  const deleteAccount = (account: Account) => {
+    setAccounts(accounts.filter((a) => a !== account));
   };
 
   /**
@@ -112,7 +115,7 @@ export default function ConfigureGraph({
       name: selectedOption.text
     };
 
-    if (!categories.includes(category)) {
+    if (!categories.some((c) => c.id === category.id)) {
       setCategories([...categories, category]);
     }
   };
@@ -121,18 +124,22 @@ export default function ConfigureGraph({
    * Function to add all unadded categories to the list of categories
    */
   const addAllCategories = () => {
-    setCategories([...categories, ...databaseCategories]);
+    // add any categories from database catagories that arent already in categories (so there are no duplicates)
+    if (databaseCategories) {
+      const uniqueCategories = databaseCategories.filter(
+        (category) => !categories.some((c) => c.id === category.id)
+      );
+      setCategories([...categories, ...uniqueCategories]);
+    }
   };
 
   /**
    * Function to delete a category from the list of categories
    *
-   * @param {number} index index of category to delete
+   * @param {number} category index of category to delete
    */
-  const deleteCategory = (index: number) => {
-    const tempCategories = [...categories];
-    tempCategories.splice(index, 1);
-    setCategories(tempCategories);
+  const deleteCategory = (category: Category) => {
+    setCategories(categories.filter((c) => c !== category));
   };
 
   /**
@@ -363,7 +370,7 @@ export default function ConfigureGraph({
           {accounts.map((item: Account, index) => (
             <li key={`account${index}`}>
               {item.name}
-              <button onClick={() => deleteAccount(index)}>remove</button>
+              <button onClick={() => deleteAccount(item)}>remove</button>
             </li>
           ))}
         </ul>
@@ -389,7 +396,7 @@ export default function ConfigureGraph({
           {categories.map((item: Category, index) => (
             <li key={`category${index}`}>
               {item.name}
-              <button onClick={() => deleteCategory(index)}>X</button>
+              <button onClick={() => deleteCategory(item)}>X</button>
             </li>
           ))}
         </ul>

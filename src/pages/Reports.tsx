@@ -15,8 +15,8 @@ import {
 } from "../functions/defaultGraph";
 //import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
-import { GraphConfig } from "../types/graph";
-import { getGraphs, saveGraph } from "../database/graphs";
+import { GraphConfig, GraphData } from "../types/graph";
+import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
 import { FlattenedTransaction, Transaction } from "../types/transaction";
 import { getAllTransactions } from "../database/transactions";
 import { generateGraph } from "../functions/generateGraph";
@@ -35,6 +35,7 @@ export default function Reports() {
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
   const [canvasCount, setCanvasCount] = useState<number>(0);
+  const [graphData, setGraphData] = useState<GraphData[]>([]);
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -71,7 +72,7 @@ export default function Reports() {
     saveGraph(graphConfig);
   };
 
-  // TODO: fix this
+  // TODO: get this function to run whenever the graphConfigs is updated
   const handleGenerateGraphs = () => {
     // Render graphs
     for (let i = 0; i < graphConfigs.length; i++) {
@@ -84,10 +85,10 @@ export default function Reports() {
           graphConfigs.length
       );
 
-      // if (i < canvasCount) {
-      //   console.log("skipping");
-      //   continue;
-      // }
+      if (i < canvasCount) {
+        console.log("skipping");
+        continue;
+      }
 
       setCanvasCount((canvasCount) => canvasCount + 1);
 
@@ -170,36 +171,60 @@ export default function Reports() {
           console.log(
             "Flattened Transactions: " + flattenedTransactions.length
           );
-          console.log(flattenedTransactions.map((t) => t));
-
-          //const specificCategoryTransactions: FlattenedTransaction[] = [];
-
-          // remove a transaction if it is not in any of the categories provided
-          // flattenedTransactions.forEach(
-          //   (transaction: FlattenedTransaction) => {
-          //     console.log(1);
-          //   }
-          // );
 
           const recieved = generateGraph(
             flattenedTransactions,
             graphConfigs[i].type
           );
 
-          console.log("Generating Canvas");
+          const singleGraphData: GraphData = {
+            graphConfig: graphConfigs[i],
+            data: flattenedTransactions,
+            canvasID: "graphContainer" + i
+          };
 
+          setGraphData([...graphData, singleGraphData]);
+
+          // Create the graph container and canvas
+          // TODO: This could probably be react-afied but i dont know how
+          const graphContainer: HTMLDivElement = document.createElement("div");
+          graphContainer.id = "graphContainer" + i;
+          graphContainer.className = "canvasContainer";
           const canvas: HTMLCanvasElement = document.createElement("canvas");
           canvas.id = "canvas" + i;
+          const button: HTMLButtonElement = document.createElement("button");
+          button.textContent = "Delete Graph";
+          button.addEventListener("click", () => {
+            handleDeleteGraph(singleGraphData);
+          });
           const canvasContainer: HTMLDivElement = document.getElementById(
             "canvasContainerAll"
           ) as HTMLDivElement;
-          canvasContainer.appendChild(canvas);
+          graphContainer.appendChild(canvas);
+          graphContainer.appendChild(button);
+          canvasContainer.appendChild(graphContainer);
           new Chart(canvas, recieved);
         })
         .catch((error) => {
           console.error("Error fetching transactions: " + error);
         });
     }
+  };
+
+  const handleDeleteGraph = (singleGraphData: GraphData) => {
+    const canvasContainerAll: HTMLDivElement = document.getElementById(
+      "canvasContainerAll"
+    ) as HTMLDivElement;
+    canvasContainerAll.removeChild(
+      document.getElementById(singleGraphData.canvasID) as HTMLDivElement
+    );
+
+    setGraphConfigs(
+      graphConfigs.filter((config) => config != singleGraphData.graphConfig)
+    );
+    setGraphData(graphData.filter((data) => data != singleGraphData));
+    setCanvasCount((canvasCount) => canvasCount - 1);
+    deleteGraph(singleGraphData.graphConfig.id);
   };
 
   /**
@@ -346,6 +371,7 @@ export default function Reports() {
     setPopupOpen(false);
   };
 
+  // Return ------------------------------------------------------------------------------------------------------------------------
   return (
     <div id="reports-container" className="content">
       <Group label="Export">
