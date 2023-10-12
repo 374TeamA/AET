@@ -2,6 +2,7 @@
 export type Import = {
   id: string;
   importDate: Date;
+  account: string;
 };
 
 /* Used to store transaction information */
