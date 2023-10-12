@@ -41,7 +41,12 @@ export default function Table({ transactions }: TableProps) {
         saveTransaction(transaction);
       }
     }
-  }, [transactions]);
+    if (categorised) {
+      for (const transaction of categorised) {
+        saveTransaction(transaction);
+      }
+    }
+  }, [categorised, transactions]);
 
   const updateTransactions = (transaction: Transaction) => {
     //remove transaction from uncategorized and add it to categorized
@@ -51,14 +56,12 @@ export default function Table({ transactions }: TableProps) {
     const index = newUncategorized.findIndex(
       (item) => item.id === transaction.id
     );
-    if(index != -1){
+    if (index != -1) {
       newUncategorized.splice(index, 1);
       setUncategorised(newUncategorized);
       newCategorized.push(transaction);
       setCategorised(newCategorized);
     }
-
-    
   };
   useEffect(() => {
     //console.log(importData);

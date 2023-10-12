@@ -1,4 +1,4 @@
-import { Box, Button, Grid, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Button, Grid, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import HelpDialog from "../../components/HelpDialog";
 import { CategoryContext } from "../../context/CategoryContext";

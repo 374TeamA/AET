@@ -1,19 +1,27 @@
 // import React from 'react'
 import {
-    CategoryContext,
-    CategoryUpdaterContext
-  } from "../../context/CategoryContext";
+  CategoryContext,
+  CategoryUpdaterContext
+} from "../../context/CategoryContext";
 import { useContext, useState } from "react";
-import { Button, Paper, Box, Typography, List,ListItem, IconButton, TextField,Dialog } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import {
+  Button,
+  Paper,
+  Box,
+  Typography,
+  List,
+  ListItem,
+  IconButton,
+  TextField,
+  Dialog
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { Category } from "../../types/category";
 import { deleteCategory, saveCategory } from "../../database/categories";
 import { v4 as uuidv4 } from "uuid";
 import { MuiColorInput } from "mui-color-input";
 export default function EditCategories() {
-
-
   // Get the category list context, and the setter function, from the global context (see App.tsx)
   const categoryList = useContext(CategoryContext);
   const setCategoryList = useContext(CategoryUpdaterContext);
@@ -62,16 +70,19 @@ export default function EditCategories() {
   };
 
   return (
-      <>
-        <Paper elevation={4} sx={{padding:5}}>
-        <Typography variant="h5">Category List</Typography>
+    <>
+      <Paper
+        elevation={1}
+        sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
+      >
+        <Typography variant="h6">Category List</Typography>
         <Typography variant="body1">Add & remove expense categories here. Choose categories that make sense for your budgeting goals.</Typography>
 
         {/* Display an array of categories */}
         <List>
           {categoryList.map((category: Category, index: number) => (
-            <ListItem
-              sx={{ backgroundColor: category.color }}
+            <ListItem  
+              sx={{ backgroundColor: category.color,m:1,p:0 }}
               key={index}
               onClick={() => displayEditDialog(index)}
               secondaryAction={
@@ -83,6 +94,7 @@ export default function EditCategories() {
                     setRemoveDialog(true);
                     setSelectedCategory(index);
                   }}
+                  size="small"
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -91,7 +103,8 @@ export default function EditCategories() {
               <IconButton
                 edge="start"
                 aria-label="edit"
-               
+                onClick={() => displayEditDialog(index)}
+                size="small"
               >
                 <EditIcon />
               </IconButton>
