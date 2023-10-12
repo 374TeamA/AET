@@ -20,6 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Category } from "../../types/category";
 import { deleteCategory, saveCategory } from "../../database/categories";
 import { v4 as uuidv4 } from "uuid";
+import { MuiColorInput } from "mui-color-input";
 export default function EditCategories() {
   // Get the category list context, and the setter function, from the global context (see App.tsx)
   const categoryList = useContext(CategoryContext);
@@ -27,6 +28,7 @@ export default function EditCategories() {
   // state for the editDialog
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
+  const [newCategoryColor,setNewCategoryColor] = useState('#ffffff');
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [removeDialog, setRemoveDialog] = useState<boolean>(false);
 
@@ -46,9 +48,14 @@ export default function EditCategories() {
   };
 
   const updateSelectedCategory = () => {
-    // update the category name for the selected category
     const newCategoryList = [...categoryList];
+    // check if this is a new item first - we may need to add it to the list
+    if(selectedCategory == categoryList.length){
+      newCategoryList.push({ name: "", id: uuidv4(),color:"#ffffff"})
+    }
+    // update the category name for the selected category
     newCategoryList[selectedCategory].name = newCategoryName;
+    newCategoryList[selectedCategory].color = newCategoryColor;
     setCategoryList(newCategoryList);
     setOpenDialog(false);
     // Store the updated category list in local storage
@@ -56,14 +63,10 @@ export default function EditCategories() {
   };
 
   const addCategory = () => {
-    // adds a category to the list
-    const newCategoryList = [...categoryList];
-    newCategoryList.push({ name: "", id: uuidv4() });
-    setCategoryList(newCategoryList);
     // allow the user to enter a name for the category:
     setOpenDialog(true);
     setNewCategoryName("");
-    setSelectedCategory(newCategoryList.length - 1);
+    setSelectedCategory(categoryList.length); // Selected category index is out of bounds of list to indicate addding a new item
   };
 
   return (
@@ -73,18 +76,21 @@ export default function EditCategories() {
         sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
       >
         <Typography variant="h6">Category List</Typography>
+        <Typography variant="body1">Add & remove expense categories here. Choose categories that make sense for your budgeting goals.</Typography>
 
         {/* Display an array of categories */}
         <List>
           {categoryList.map((category: Category, index: number) => (
-            <ListItem
+            <ListItem  
+              sx={{ backgroundColor: category.color,m:1,p:0 }}
               key={index}
-              sx={{ margin: 0, padding: 0 }}
+              onClick={() => displayEditDialog(index)}
               secondaryAction={
                 <IconButton
                   edge="end"
                   aria-label="delete"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation(); // so that it doesn't bubble up to the parent component and open the edit dialog as well.
                     setRemoveDialog(true);
                     setSelectedCategory(index);
                   }}
@@ -106,54 +112,25 @@ export default function EditCategories() {
             </ListItem>
           ))}
         </List>
-        <Button size="small" variant="contained" onClick={addCategory}>
-          Add Category
-        </Button>
-      </Paper>
-      <Dialog open={openDialog} sx={{ p: 2 }}>
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Edit category name:</Typography>
-          <TextField
-            variant="outlined"
-            sx={{ width: "100%" }}
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e?.target.value)}
-          />
-          <Button
-            size="small"
-            onClick={() => {
-              setOpenDialog(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button onClick={updateSelectedCategory}>Save</Button>
-        </Box>
-      </Dialog>
-      <Dialog open={removeDialog} sx={{ p: 2 }}>
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6">
-            Are you sure you want to remove this category?
-          </Typography>
-          <Button
-            size="small"
-            onClick={() => {
-              setRemoveDialog(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            onClick={() => {
-              setRemoveDialog(false);
-              removeCategory();
-            }}
-          >
-            Remove
-          </Button>
-        </Box>
-      </Dialog>
-    </>
+        <Button variant="contained" onClick={addCategory}>Add Category</Button>
+        </Paper>
+        <Dialog open={openDialog} sx={{p:5}}>
+          <Box sx={{p:5}}>
+            <Typography variant="h6">Edit category</Typography>
+            <TextField variant="outlined" label="Category Name" sx={{width:"100%"}} value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e?.target.value)} />
+            <MuiColorInput label="Colour" value={newCategoryColor} sx={{width:"100%",mt:1}} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
+            <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
+            <Button onClick={updateSelectedCategory}>Save</Button>
+          </Box>
+        </Dialog>
+        <Dialog open={removeDialog} sx={{p:5}}>
+          <Box sx={{p:5}}>
+            <Typography variant="h6">Are you sure you want to remove this category?</Typography>
+            <Button onClick={()=>{setRemoveDialog(false)}}>Cancel</Button>
+            <Button onClick={()=>{setRemoveDialog(false);removeCategory()}}>Remove</Button>
+          </Box>
+        </Dialog>
+      </>
   );
 }

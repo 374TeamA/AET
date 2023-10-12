@@ -80,14 +80,14 @@ export default function EditAccounts() {
         sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
       >
         <Typography variant="h6">Account List</Typography>
-
+        <Typography variant="body1">If you want to add a bank account to AET, add it here.</Typography>
         {/* Display an array of categories */}
         <List>
           {accountList &&
             accountList.map((account: Account, index: number) => (
               <ListItem
                 key={index}
-                sx={{ margin: 0, padding: 0 }}
+                sx={{ margin: 1, padding: 0 }}
                 secondaryAction={
                   <IconButton
                     edge="end"

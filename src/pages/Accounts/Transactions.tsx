@@ -165,6 +165,9 @@ const CustomSelectCell: React.FC<{
     updateTransaction(rowData);
   };
 
+  useEffect(() => {
+    console.log(options);
+  }, [options]);
   //check if options has any keys
   if (Object.keys(options).length === 0) {
     return <p>Loading...</p>;
