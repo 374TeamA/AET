@@ -17,22 +17,22 @@ import { getAccounts } from "../database/accounts";
 
 // The defaultValue argument is only used when a component does not have a matching Provider above it in the tree. This default value can be helpful for testing components in isolation without wrapping them
 // (React Docs https://legacy.reactjs.org/docs/context.html#reactcreatecontext)
-export const AccountContext = createContext<Account[]>([]);
+export const AccountContext = createContext<Account[] | null>(null);
 
 export const AccountUpdaterContext = createContext<
-  Dispatch<SetStateAction<Account[]>>
+  Dispatch<SetStateAction<Account[] | null>>
 >((accounts) => accounts);
 
 export function AccountsProvider({ children }: { children: React.ReactNode }) {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<Account[] | null>(null);
 
   useEffect(() => {
-    getAccounts().then(setAccounts);
+    console.time("getAccounts");
+    getAccounts().then((accounts) => {
+      setAccounts(accounts);
+    });
+    console.timeEnd("getAccounts");
   }, []);
-
-  useEffect(() => {
-    console.log("Accounts updated");
-  }, [accounts]);
 
   return (
     <AccountContext.Provider value={accounts}>

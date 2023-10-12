@@ -34,14 +34,14 @@ li.selected {
 .sidebar-layout {
   display: flex;
   min-width: 100%;
-  height: 89vh;
+  height: 89dvh;
   overflow: hidden; /* To hide scrollbars */
 }
 
 .sidebar {
-  width: 10vw;
+  width: 10dvw;
   min-width: 200px;
-  height: 88vh;
+  height: 88dvh;
   position: inherit;
   background-color: #ffffff;
   color: rgb(69, 143, 255);
@@ -79,8 +79,8 @@ li.selected {
 }
 
 .header {
-  height: 10vh;
-  min-height: 10vh;
+  height: 10dvh;
+  min-height: 10dvh;
   background-color: #ffffff;
   color: rgb(69, 143, 255);
   display: flex;
@@ -91,7 +91,7 @@ li.selected {
   display: flex;
   align-items: center;
   font-family: "Roboto", sans-serif;
-  padding-left: 1vh;
+  padding-left: 1dvw;
   font-family: "Inconsolata", monospace;
   font-family: "Inter", sans-serif;
   font-family: "Istok Web", sans-serif;
@@ -121,19 +121,26 @@ li.selected {
   .sidebar {
     position: fixed;
     left: -250px;
-    top: 10vh;
-    height: 88vh;
+    top: 10dvh;
+    height: 88dvh;
   }
   .title {
-    /* display: none; */
+    display: none;
   }
   .logo {
-    display: none;
+    /* display: none; */
+    max-height: 15dvh;
   }
   .header {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .content {
+    padding: 0rem;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
   }
 }
 

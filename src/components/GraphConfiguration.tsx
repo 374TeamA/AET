@@ -345,11 +345,12 @@ export default function ConfigureGraph({
         {/* List of accounts from database */}
 
         <select id="addAccount">
-          {databaseAccounts.map((account: Account, index: number) => (
-            <option value={account.name} key={index}>
-              {account.name}
-            </option>
-          ))}
+          {databaseAccounts &&
+            databaseAccounts.map((account: Account, index: number) => (
+              <option value={account.name} key={index}>
+                {account.name}
+              </option>
+            ))}
         </select>
 
         <button onClick={addAccount}>Add Account</button>
