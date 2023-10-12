@@ -55,6 +55,18 @@ export default function Sidebar() {
             </li>
           );
         })}
+        <li
+              className={
+                location.pathname.includes("CASH") ? "selected" : ""
+              }
+            >
+              <NavLink
+                style={{ width: "100%", display: "block" }}
+                to={`/accounts/CASH`}
+              >
+                Manual Entry
+              </NavLink>
+            </li>
       </ul>
       <div className="bottom-links">
         <ul>

@@ -8,6 +8,7 @@ import Import from "./Accounts/ImportTransaction";
 import History from "./Accounts/History";
 import { useTitle } from "../hooks/UseTitle";
 import { useParams } from "react-router";
+import Cash from "./Accounts/Cash";
 //Accounts page is the default layout for each account and will need to load the specifics of the account based on a given account id
 
 interface TabPanelProps {
@@ -57,7 +58,9 @@ export default function Accounts() {
     <div className="content">
       <Box sx={{ width: "100%", height: "90%" }}>
         {(accountId == "CASH") ? ( // When it is the cash screen
-          <Transactions></Transactions>
+          <>
+            <Cash></Cash>
+          </>
         ) : ( // When it is not the cash screen
           <>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
