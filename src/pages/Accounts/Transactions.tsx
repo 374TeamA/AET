@@ -32,8 +32,8 @@ interface FlatTransaction {
 
 export default function Transactions() {
   const params = useParams();
-  const categoriesFromDB = useContext(CategoryContext);
   const accountId: string | undefined = params.id;
+  const categoriesFromDB = useContext(CategoryContext);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [options, setOptions] = useState<{ [key: string]: string }>({});
@@ -165,9 +165,6 @@ const CustomSelectCell: React.FC<{
     updateTransaction(rowData);
   };
 
-  useEffect(() => {
-    console.log(options);
-  }, []);
   //check if options has any keys
   if (Object.keys(options).length === 0) {
     return <p>Loading...</p>;

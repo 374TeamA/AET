@@ -61,6 +61,14 @@ export default function Table({ transactions }: TableProps) {
       setUncategorised(newUncategorized);
       newCategorized.push(transaction);
       setCategorised(newCategorized);
+    } else {
+      const catIndex = newCategorized.findIndex(
+        (item) => item.id === transaction.id
+      );
+      if (catIndex != -1) {
+        newCategorized[catIndex] = transaction;
+        setCategorised(newCategorized);
+      }
     }
   };
   useEffect(() => {
