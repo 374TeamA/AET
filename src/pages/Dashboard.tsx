@@ -7,6 +7,7 @@ import HelpDialog from "../components/HelpDialog";
 import { Account } from "../types/account";
 import EditAccounts from "./Settings/EditAccounts";
 import EditCategories from "./Settings/EditCategories";
+import { Grid, Typography } from "@mui/material";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
 export default function Dashboard() {
   const accounts = useContext(AccountContext);
@@ -71,14 +72,16 @@ export default function Dashboard() {
       >
         <button onClick={handleOpenPopup}>Open Popup</button>
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
-          <div style={{ display: "flex" }}>
-            <div style={{ margin: "0.5rem" }}>
+          <Typography variant="h5"> Welcome to AET!</Typography>
+          <Typography sx={{p:2}}>Let's get started - add a bank account and choose how you want to categorise your expenses.</Typography>
+          <Grid container spacing={2}>
+            <Grid md={6} sm={11} item>
               <EditAccounts />
-            </div>
-            <div style={{ margin: "0.5rem" }}>
+            </Grid>
+            <Grid item md={6} sm={11}>
               <EditCategories />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         </CustomPopup>
         <HelpDialog title="This is a help option">
           <p>

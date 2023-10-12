@@ -14,7 +14,7 @@ const CustomPopup: React.FC<CustomPopupProps> = ({ isOpen, onClose, children }) 
   };
   return isOpen ? (
     <div className="popup-overlay" onClick={handleClose}>
-      <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+      <div className="popup-content" onClick={(e) => e.stopPropagation()} style={{maxHeight:"100vh",overflow:"scroll"}}>
         <button className="close-button" onClick={handleClose}>
           &times;
         </button>

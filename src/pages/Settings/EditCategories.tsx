@@ -65,17 +65,21 @@ export default function EditCategories() {
       <>
         <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Category List</Typography>
+        <Typography variant="body1">Add & remove expense categories here. Choose categories that make sense for your budgeting goals.</Typography>
 
         {/* Display an array of categories */}
         <List>
           {categoryList.map((category: Category, index: number) => (
             <ListItem
+              sx={{ backgroundColor: category.color }}
               key={index}
+              onClick={() => displayEditDialog(index)}
               secondaryAction={
                 <IconButton
                   edge="end"
                   aria-label="delete"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation(); // so that it doesn't bubble up to the parent component and open the edit dialog as well.
                     setRemoveDialog(true);
                     setSelectedCategory(index);
                   }}
@@ -87,7 +91,7 @@ export default function EditCategories() {
               <IconButton
                 edge="start"
                 aria-label="edit"
-                onClick={() => displayEditDialog(index)}
+               
               >
                 <EditIcon />
               </IconButton>
@@ -99,10 +103,10 @@ export default function EditCategories() {
         </Paper>
         <Dialog open={openDialog} sx={{p:5}}>
           <Box sx={{p:5}}>
-            <Typography variant="h6">Edit category name:</Typography>
-            <TextField variant="outlined" sx={{width:"100%"}} value={newCategoryName}
+            <Typography variant="h6">Edit category</Typography>
+            <TextField variant="outlined" label="Category Name" sx={{width:"100%"}} value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e?.target.value)} />
-            <MuiColorInput value={newCategoryColor} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
+            <MuiColorInput label="Colour" value={newCategoryColor} sx={{width:"100%",mt:1}} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
             <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
             <Button onClick={updateSelectedCategory}>Save</Button>
           </Box>

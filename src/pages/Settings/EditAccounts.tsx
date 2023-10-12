@@ -67,7 +67,7 @@ export default function EditAccounts() {
     <>
         <Paper elevation={4} sx={{padding:5}}>
         <Typography variant="h5">Account List</Typography>
-
+        <Typography variant="body1">If you want to add a bank account to AET, add it here.</Typography>
         {/* Display an array of categories */}
         <List>
           {accountList.map((account: Account, index: number) => (
