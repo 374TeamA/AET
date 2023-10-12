@@ -85,10 +85,10 @@ export default function Reports() {
           graphConfigs.length
       );
 
-      if (i < canvasCount) {
-        console.log("skipping");
-        continue;
-      }
+      // if (i < canvasCount) {
+      //   console.log("skipping");
+      //   continue;
+      // }
 
       setCanvasCount((canvasCount) => canvasCount + 1);
 
@@ -114,34 +114,44 @@ export default function Reports() {
             console.log("All Transactions: " + transactions.length);
             console.log(transactions);
 
-            const flattendTransactions: FlattenedTransaction[] =
-              transactions.flatMap((t) =>
-                t.details.map((d) => ({
-                  ...d,
-                  date: t.date,
-                  merchant: t.merchant
-                }))
-              );
+            const flattenedTransactions: FlattenedTransaction[] = [];
+
+            transactions.forEach((transaction) => {
+              console.log("transaction");
+
+              transaction.details.forEach((detail) => {
+                console.log("detail");
+
+                // Create a FlattenedTransaction for each TransactionDetail
+                const flattenedTransaction: FlattenedTransaction = {
+                  date: transaction.date,
+                  merchant: transaction.merchant,
+                  amount: detail.amount,
+                  category: detail.category
+                };
+
+                console.log(flattenedTransaction);
+
+                flattenedTransactions.push(flattenedTransaction);
+              });
+            });
+
+            console.log(
+              "Flattened Transactions: " + flattenedTransactions.length
+            );
+            console.log(flattenedTransactions.map((t) => t));
+
+            //const specificCategoryTransactions: FlattenedTransaction[] = [];
 
             // remove a transaction if it is not in any of the categories provided
-            flattendTransactions.forEach(
-              (transaction: FlattenedTransaction) => {
-                // if this transaction is not in any of the categories provided in the graph config array then delete it from the array of flattendedtransactions
-                if (
-                  !graphConfigs[i].categories.some((category: string) =>
-                    transaction.category.includes(category)
-                  )
-                ) {
-                  const index = flattendTransactions.indexOf(transaction);
-                  if (index > -1) {
-                    flattendTransactions.splice(index, 1);
-                  }
-                }
-              }
-            );
+            // flattenedTransactions.forEach(
+            //   (transaction: FlattenedTransaction) => {
+            //     console.log(1);
+            //   }
+            // );
 
             const recieved = generateGraph(
-              flattendTransactions,
+              flattenedTransactions,
               graphConfigs[i].type
             );
 
