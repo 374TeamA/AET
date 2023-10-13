@@ -16,6 +16,11 @@ import {
 //import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
+import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
+// import { FlattenedTransaction, Transaction } from "../types/transaction";
+// import { getAllTransactions } from "../database/transactions";
+// import { generateGraph } from "../functions/generateGraph";
+import NewGraph from "../components/NewGraph";
 // import { GraphConfig } from "../types/graph";
 
 /**
@@ -30,7 +35,6 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
-  // const [canvases, setCanvases] = useState<HTMLCanvasElement[]>([]);
 
   // const createGraph = () => {
   //   // Get a reference to the select element
@@ -64,7 +68,41 @@ export default function Reports() {
   const addGraphConfig = (graphConfig: GraphConfig) => {
     // Add the provided graph configuration to the existing array.
     setGraphConfigs([...graphConfigs, graphConfig]);
+    saveGraph(graphConfig);
   };
+
+  // TODO: get this function to run whenever the graphConfigs is updated
+
+  const handleDeleteGraph = (index: number) => {
+    const newConfigs = [...graphConfigs];
+    const removed = newConfigs.splice(index, 1);
+    setGraphConfigs(newConfigs);
+    deleteGraph(removed[0].id);
+  };
+
+  const handleFavouriteGraph = (index: number) => {
+    //do things
+    console.log(index, "Update Favourties");
+
+    const newConfigs = graphConfigs;
+    newConfigs[index].favourite = !newConfigs[index].favourite;
+    setGraphConfigs([...newConfigs]);
+    saveGraph(newConfigs[index]);
+  };
+
+  useEffect(() => {}, [graphConfigs]);
+  /**
+   * React hook that triggers an effect when the component mounts
+   * This is fine
+   */
+  useEffect(() => {
+    // Handle adding new graph configurations
+    getGraphs().then((graphs) => {
+      setGraphConfigs([...graphs]);
+    });
+
+    console.log("done");
+  }, []);
 
   // Exporting Functionality -----------------------------------------------------------------------------------------------
   /**
@@ -197,6 +235,7 @@ export default function Reports() {
     setPopupOpen(false);
   };
 
+  // Return ------------------------------------------------------------------------------------------------------------------------
   return (
     <div id="reports-container" className="content">
       <Group label="Export">
@@ -269,6 +308,18 @@ export default function Reports() {
             addGraphConfig={addGraphConfig}
           />
         </CustomPopup>
+      </div>
+
+      <div id="canvasContainerAll" className="canvasContainer">
+        {graphConfigs.map((config, index) => (
+          <NewGraph
+            key={JSON.stringify(graphConfigs[index])}
+            graphConfig={config}
+            index={index}
+            handleDeleteGraph={handleDeleteGraph}
+            handleFavourite={handleFavouriteGraph}
+          />
+        ))}
       </div>
     </div>
   );

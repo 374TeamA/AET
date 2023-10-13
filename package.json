@@ -22,6 +22,7 @@
     "crypto-js": "^4.1.1",
     "csv-parse": "^5.5.0",
     "date-fns": "^2.30.0",
+    "mui-color-input": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0",

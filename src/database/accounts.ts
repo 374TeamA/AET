@@ -1,4 +1,6 @@
 import { Account } from "../types/account";
+import { Import } from "../types/transaction";
+import { deleteImport, getImportsByAccount } from "./imports";
 import { connectToDatabase } from "./initialisation";
 
 /**
@@ -57,8 +59,14 @@ export async function deleteAccount(id: string): Promise<boolean> {
     const dbt = db.transaction("Accounts", "readwrite");
     const tos = dbt.objectStore("Accounts");
     const req = tos.delete(id);
-    req.onsuccess = () => {
+    req.onsuccess = async () => {
       console.log("Account deleted", req.result);
+
+      const impList: Import[] = await getImportsByAccount(id);
+      for (const imp of impList) {
+        deleteImport(imp.id);
+      }
+
       resolve(true);
     };
     req.onerror = () => {

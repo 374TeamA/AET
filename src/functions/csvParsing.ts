@@ -61,7 +61,8 @@ export async function generateImportFromFile(
   // Create a new import with the list of transactions
   const newImport: Import = {
     id: importId,
-    importDate: new Date()
+    importDate: new Date(),
+    account: account
   };
 
   // Split the data into a list of transactions

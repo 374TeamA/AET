@@ -9,9 +9,14 @@ interface ItemProps {
   updateTransactions: (transaction: Transaction) => void;
 }
 
-
-function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{[key: string]: string},onChange:(e: SelectChangeEvent<string>) => void}) {
-  const [currentCategory, setCurrentCategory] = useState<string>(props.transactionDetail.category);
+function CategoryPicker(props: {
+  transactionDetail: TransactionDetail;
+  categories: { [key: string]: string };
+  onChange: (e: SelectChangeEvent<string>) => void;
+}) {
+  const [currentCategory, setCurrentCategory] = useState<string>(
+    props.transactionDetail.category
+  );
   return (
     <div
       style={{
@@ -22,7 +27,7 @@ function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{
       }}
     >
       <div style={{ width: "15%" }}>
-        <p>${props.transactionDetail.amount}</p>
+        <p>${(props.transactionDetail.amount / 100).toFixed(2)}</p>
       </div>
       <div>
         <Select
@@ -33,12 +38,13 @@ function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{
             margin: "2px",
             //make the background colour the selected item's colour
 
-            backgroundColor: `${
-              props.categories[currentCategory] || "black"
-            }`,
+            backgroundColor: `${props.categories[currentCategory] || "black"}`,
             color: "white"
           }}
-          onChange={(e)=>{setCurrentCategory(e.target.value);props.onChange(e)}}
+          onChange={(e) => {
+            setCurrentCategory(e.target.value);
+            props.onChange(e);
+          }}
           size="small"
           value={currentCategory}
         >
@@ -53,7 +59,7 @@ function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{
           >
             {currentCategory}
           </MenuItem>
-          {Object.keys(props.categories).map((category,index) => {
+          {Object.keys(props.categories).map((category, index) => {
             if (category !== currentCategory) {
               return (
                 <MenuItem
@@ -75,9 +81,8 @@ function CategoryPicker(props: {transactionDetail:TransactionDetail,categories:{
         </Button>
       </div>
     </div>
-  )
+  );
 }
-
 
 export default function Item({
   transaction,
@@ -93,7 +98,7 @@ export default function Item({
     // Note, generally you shouldn't modify props directly, because it doesn't actually change the ui.
     // Props are immutable as far as react is concerned. However, it works for the purposes
     // of creating a updated transaction object to send to the database.
-  }
+  };
 
   return (
     <div
@@ -120,7 +125,14 @@ export default function Item({
           <p>{transaction.merchant}</p>
         </div>
         {/* For each details items */}
-        {transaction.details.map((detail,index) => <CategoryPicker key={index} transactionDetail={detail} categories={categories} onChange={handleCategoryChange}></CategoryPicker> )}
+        {transaction.details.map((detail, index) => (
+          <CategoryPicker
+            key={index}
+            transactionDetail={detail}
+            categories={categories}
+            onChange={handleCategoryChange}
+          ></CategoryPicker>
+        ))}
       </div>
     </div>
   );
