@@ -5,7 +5,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/
 
 // Credit: https://chat.openai.com/share/981949f1-bb2a-4eec-bc21-e1445e543e39
 
-function JsonUploadButton() {
+export function RestoreButton() {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
@@ -85,5 +85,3 @@ function JsonUploadButton() {
     </div>
   );
 }
-
-export default JsonUploadButton;
