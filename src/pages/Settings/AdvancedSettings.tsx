@@ -1,6 +1,8 @@
 
 import { Button, Typography, Accordion, AccordionDetails, AccordionSummary, Box } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { BackupButton } from "./BackupButton";
+import { ClearButton } from "./ClearButton";
 export default function EditAccounts() {
 
   return (
@@ -13,18 +15,16 @@ export default function EditAccounts() {
             <Typography variant="h5">Backup & Restore</Typography>
             <Box sx={{width:"100%", p:3}}>
                 <Typography>Back up all AET data to an external file</Typography>
-                <Button variant="contained" >Backup</Button>
+                <BackupButton></BackupButton>
             </Box>
             <Box sx={{width:"100%", p:3}}>
                 <Typography>Clear current data and restore from a backup file</Typography>
                 <Button variant="contained" >Restore from Backup</Button>
-
             </Box>
             <Typography variant="h5">Clear Data</Typography>
             <Box sx={{width:"100%", p:3}}>
                 <Typography>Reset AET back to default state, removing all data</Typography>
-                <Button variant="contained" >Clear Data</Button>
-
+                <ClearButton></ClearButton>
             </Box>
 
         </AccordionDetails>
