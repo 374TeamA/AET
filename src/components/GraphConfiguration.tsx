@@ -110,13 +110,14 @@ export default function ConfigureGraph({
     const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const category: Category = {
-      id: selectedOption.value,
-      name: selectedOption.text
-    };
+    const category: Category | undefined = databaseCategories.find(
+      (c) => c.id === selectedOption.value
+    );
 
-    if (!categories.some((c) => c.id === category.id)) {
-      setCategories([...categories, category]);
+    if (category) {
+      if (!categories.some((c) => c.id === category.id)) {
+        setCategories([...categories, category]);
+      }
     }
   };
 
