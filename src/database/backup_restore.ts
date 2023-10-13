@@ -1,5 +1,11 @@
 // Credit: https://gist.github.com/loilo/ed43739361ec718129a15ae5d531095b
 
+
+interface IDBEventTarget {
+    error?: string; // idk if this is actually a string, but we don't use it
+    result: IDBCursorWithValue;
+}
+
 /**
  * Export all data from an IndexedDB database
  *
@@ -8,7 +14,7 @@
  */
 export function exportToJson(idbDatabase:IDBDatabase) {
     return new Promise((resolve, reject) => {
-      const exportObject:Record<string,any> = {}
+      const exportObject:Record<string,unknown> = {}
       if (idbDatabase.objectStoreNames.length === 0) {
         resolve(JSON.stringify(exportObject))
       } else {
@@ -25,7 +31,7 @@ export function exportToJson(idbDatabase:IDBDatabase) {
             .objectStore(storeName)
             .openCursor()
             .addEventListener('success', event => {
-              const cursor:IDBCursorWithValue = (event?.target as any).result 
+              const cursor:IDBCursorWithValue = (event?.target as unknown as IDBEventTarget).result 
               if (cursor) {
                 // Cursor holds value, put it into store data
                 allObjects.push(cursor.value)
@@ -64,8 +70,13 @@ export function exportToJson(idbDatabase:IDBDatabase) {
       )
       transaction.addEventListener('error', reject)
   
-      var importObject = JSON.parse(json)
+      const importObject = JSON.parse(json)
       for (const storeName of idbDatabase.objectStoreNames) {
+        // ignore empty stores (we have to do this explicitly or the keys will never be deleted, and the promise will not resolve)
+        if(importObject[storeName].length == 0){
+            delete importObject[storeName]
+            continue;
+        }
         let count = 0
         for (const toAdd of importObject[storeName]) {
           const request = transaction.objectStore(storeName).add(toAdd)
@@ -80,6 +91,7 @@ export function exportToJson(idbDatabase:IDBDatabase) {
               }
             }
           })
+          request.addEventListener("error",(e)=>{console.log(e)});
         }
       }
     })

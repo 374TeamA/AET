@@ -16,7 +16,7 @@ const downloadJSON = async () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'data.json';
+    a.download = 'AET_Data.json';
 
     // Trigger a click event on the download link
     a.click();

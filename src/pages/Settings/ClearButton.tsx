@@ -1,9 +1,11 @@
 import { Button } from '@mui/material';
-import { clearDatabase, exportToJson } from '../../database/backup_restore';
+import { clearDatabase } from '../../database/backup_restore';
 import { connectToDatabase } from '../../database/initialisation';
 
 const clear = async () =>{
     await clearDatabase(await connectToDatabase())
+    // do a full page reload - reset the app
+    window.location.reload();
 }
 
 export const ClearButton = ()=>{

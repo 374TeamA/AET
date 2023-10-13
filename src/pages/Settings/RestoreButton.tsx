@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { importFromJson } from '../../database/backup_restore';
+import { clearDatabase, importFromJson } from '../../database/backup_restore';
 import { connectToDatabase } from '../../database/initialisation';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -17,7 +17,8 @@ export function RestoreButton() {
     setOpen(false);
   };
 
-  const handleFileChange = (event:any) => {
+  const handleFileChange:React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    if(event.target.files == null) return;
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
   };
@@ -38,7 +39,11 @@ export function RestoreButton() {
         // Import the JSON Data
         console.log("Importing")
         console.log(jsonData);
-        await importFromJson(await connectToDatabase(),jsonData);
+        const db = await connectToDatabase();
+        await clearDatabase(db);
+        await importFromJson(db,jsonData);
+        // Do a full page reload
+        window.location.reload();
       };
       reader.readAsText(file);
     }
@@ -46,6 +51,7 @@ export function RestoreButton() {
     // Close the dialog
     handleClose();
   };
+  // TODO: add a confirmation dialog, as this will delete everything currently in AET.
 
   return (
     <div>
