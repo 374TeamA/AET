@@ -72,7 +72,7 @@ export async function generateImportFromFile(
   };
 
   // Split the data into a list of transactions
-  const transactions: Transaction[] = getTransactions(
+  const transactions: Transaction[] = await getTransactions(
     csvData,
     columnIndexes,
     account,
@@ -212,13 +212,13 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
  * @param useAmericanDates Whether to assume the dates are in American date format or not
  * @returns A list of new transactions
  */
-function getTransactions(
+async function getTransactions(
   csvData: string[][],
   columnIndexes: ColumnIndexes,
   account: string,
   importId: string,
   useAmericanDates: boolean
-): Transaction[] {
+): Promise<Transaction[]> {
   // Create a new list of transactions populate
   //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
@@ -229,17 +229,18 @@ function getTransactions(
     //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
-    // Try to create a new transaction from the current line and push it to the list of transactions
     try {
-      transactions.push(
-        getTransactionFromLine(
-          line,
-          columnIndexes,
-          account,
-          importId,
-          useAmericanDates
-        )
+      // Try to create a new transaction from the current line
+      const transaction: Transaction = await getTransactionFromLine(
+        line,
+        columnIndexes,
+        account,
+        importId,
+        useAmericanDates
       );
+
+      // Push the new transaction to the list of transactions
+      transactions.push(transaction);
     } catch (error) {
       console.error(`Error parsing line ${i}: ${(error as Error).message}`);
     }
@@ -267,13 +268,13 @@ function getTransactions(
  *
  * @returns A new transaction
  */
-function getTransactionFromLine(
+async function getTransactionFromLine(
   line: string[],
   columnIndexes: ColumnIndexes,
   account: string,
   importId: string,
   useAmericanDates: boolean
-): Transaction {
+): Promise<Transaction> {
   // Get the date, merchant, and amount from the line
   const date: Date = tryParseDate(
     line[columnIndexes.dateIndex],
@@ -293,6 +294,9 @@ function getTransactionFromLine(
     `${date.toString()}${merchant}${amount}`
   ).toString();
 
+  // Get the predicted category for the transaction
+  const category: string = await getCategory(merchant);
+
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
@@ -302,8 +306,23 @@ function getTransactionFromLine(
     date: date,
     merchant: merchant,
     totalAmount: amount,
-    details: [{ amount: amount, category: "Default" }]
+    details: [{ amount: amount, category: category }]
   } as Transaction;
+}
+
+/**
+ * Retrieves the category based on the merchant name
+ *
+ * @param merchantName The name of the merchant
+ * @returns The predicted category.
+ */
+async function getCategory(merchantName: string): Promise<string> {
+  // Random code just to make it not error
+  if (merchantName !== "") {
+    return Promise.resolve("Default");
+  } else {
+    return Promise.reject(new Error("This should not happen."));
+  }
 }
 
 /**
