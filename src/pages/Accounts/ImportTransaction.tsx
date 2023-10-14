@@ -10,11 +10,12 @@ export default function ImportTransaction() {
     Transaction[] | undefined
   >(undefined);
   const params = useParams();
-  const accountId = params.id ? params.id : "Default";
+  const accountId = params.id;
 
   const processCSV = async (file: File) => {
     if (file) {
       // Generate a list of transactions linked to an account, along with import data and dupe indexes
+      if (!accountId) return;
       const importWithDupeIndexes = await generateImportFromFile(
         file,
         accountId,
