@@ -6,26 +6,22 @@ import { Transaction } from "../../types/transaction";
 import { saveImport } from "../../database/imports";
 import { useParams } from "react-router-dom";
 export default function ImportTransaction() {
-  const [transactions , setTransactions] = React.useState<Transaction[] | undefined>(
-    undefined
-  );
+  const [transactions, setTransactions] = React.useState<
+    Transaction[] | undefined
+  >(undefined);
   const params = useParams();
   const accountId = params.id;
-  
-  const processCSV = async (file:File) => {
+
+  const processCSV = async (file: File) => {
     if (file) {
-      // TODO: properly format the csv parser and its returns
-      // TODO: Link importing to an account
+      // Generate a list of transactions linked to an account, along with import data and dupe indexes
+      if (!accountId) return;
       const importWithDupeIndexes = await generateImportFromFile(
         file,
-        "test"
+        accountId,
+        false
       );
       console.log(importWithDupeIndexes);
-      
-      // give each transaction an account ID
-      importWithDupeIndexes.transactions.forEach((transaction) => {
-        transaction.account = accountId as string;
-      });
 
       //console.log(importWithDupeIndexes.import);
       setTransactions(importWithDupeIndexes.transactions);
