@@ -6,7 +6,7 @@ import { parse as dateParse } from "date-fns";
 import sha256 from "crypto-js/sha256";
 import { v4 as uuidv4 } from "uuid";
 
-/*
+/**
  * This is a list of valid merchant column names from the main five banks:
  *
  * ANZ: Details
@@ -17,27 +17,33 @@ import { v4 as uuidv4 } from "uuid";
  */
 const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
 
-/*
- * This is a list of valid date formats from the main five banks:
- *
- * ANZ: dd/MM/yyyy
- * ASB: yyyy/MM/dd
- * BNZ: dd/MM/yyyy
- * Kiwibank: dd-MM-yyyy
- * Westpac: dd/MM/yyyy
- */
-const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
+/** A list of European date formats compatible with AET CSV parsing */
+const euDateFormats: string[] = [
+  "dd/MM/yyyy", // Used by ANZ, BNZ, and Westpac
+  "dd-MM-yyyy" // Used by Kiwibank
+];
+
+/** A list of American date formats compatible with AET CSV parsing */
+const usDateFormats: string[] = ["MM/dd/yyyy", "MM-dd-yyyy"];
+
+/** A list of universal date formats compatible with AET CSV parsing */
+const uniDateFormats: string[] = [
+  "yyyy/MM/dd", // Used by ASB
+  "yyyy-MM-dd"
+];
 
 /**
  * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
  * @param {File} csvFile A csv bank statement file loaded in by the user
  * @param {string} account The account to link the import to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
  * @returns {Promise<{import: Import; transactions: Transaction[]; dupeIndexes: number[];}>} An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
   csvFile: File,
-  account: string
+  account: string,
+  useAmericanDates: boolean
 ): Promise<{
   import: Import;
   transactions: Transaction[];
@@ -58,7 +64,7 @@ export async function generateImportFromFile(
   // Generate a new import ID
   const importId: string = uuidv4();
 
-  // Create a new import with the list of transactions
+  // Generate a new import
   const newImport: Import = {
     id: importId,
     importDate: new Date(),
@@ -70,7 +76,8 @@ export async function generateImportFromFile(
     csvData,
     columnIndexes,
     account,
-    importId
+    importId,
+    useAmericanDates
   );
 
   // Get a list of the indexes of any new transactions that are duplicated in the database
@@ -202,13 +209,15 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
  * @param columnIndexes The column indices of the csv data
  * @param account The account that these transactions came from
  * @param importId The ID of the import these transactions belong to
+ * @param useAmericanDates Whether to assume the dates are in American date format or not
  * @returns A list of new transactions
  */
 function getTransactions(
   csvData: string[][],
   columnIndexes: ColumnIndexes,
   account: string,
-  importId: string
+  importId: string,
+  useAmericanDates: boolean
 ): Transaction[] {
   // Create a new list of transactions populate
   //const transactions: Transaction[] = [];
@@ -223,7 +232,13 @@ function getTransactions(
     // Try to create a new transaction from the current line and push it to the list of transactions
     try {
       transactions.push(
-        getTransactionFromLine(line, columnIndexes, account, importId)
+        getTransactionFromLine(
+          line,
+          columnIndexes,
+          account,
+          importId,
+          useAmericanDates
+        )
       );
     } catch (error) {
       console.error(`Error parsing line ${i}: ${(error as Error).message}`);
@@ -248,6 +263,7 @@ function getTransactions(
  * @param columnIndexes The column indices of the csv data
  * @param account The account connected to the current transaction
  * @param importId The ID of the import this transaction belongs to
+ * @param useAmericanDates Whether to assume the dates are in American date format or not
  *
  * @returns A new transaction
  */
@@ -255,10 +271,14 @@ function getTransactionFromLine(
   line: string[],
   columnIndexes: ColumnIndexes,
   account: string,
-  importId: string
+  importId: string,
+  useAmericanDates: boolean
 ): Transaction {
   // Get the date, merchant, and amount from the line
-  const date: Date = parseDate(line[columnIndexes.dateIndex]);
+  const date: Date = tryParseDate(
+    line[columnIndexes.dateIndex],
+    useAmericanDates
+  );
   const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
@@ -290,9 +310,16 @@ function getTransactionFromLine(
  * Attempts to parse a date string into a date object using the list of available date formats
  *
  * @param dateString The string to be parsed into a date object
+ * @param useAmericanDates Whether to assume the dates are in American date format or not
+ *
  * @returns A parsed date object
  */
-function parseDate(dateString: string): Date {
+function tryParseDate(dateString: string, useAmericanDates: boolean): Date {
+  // Get a list of usable dates, based on if the check box "Assume American Dates" was selected
+  const dateFormats = uniDateFormats.concat(
+    useAmericanDates ? usDateFormats : euDateFormats
+  );
+
   // Try to parse the date using one of the available formats
   //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
