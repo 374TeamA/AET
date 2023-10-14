@@ -10,7 +10,7 @@ export default function ImportTransaction() {
     Transaction[] | undefined
   >(undefined);
   const params = useParams();
-  const accountId = params.id;
+  const accountId = params.id ? params.id : "Default";
 
   const processCSV = async (file: File) => {
     if (file) {
