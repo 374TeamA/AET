@@ -38,6 +38,7 @@ const uniDateFormats: string[] = [
  * @param {File} csvFile A csv bank statement file loaded in by the user
  * @param {string} account The account to link the import to
  * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
+ *
  * @returns {Promise<{import: Import; transactions: Transaction[]; dupeIndexes: number[];}>} An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
@@ -94,8 +95,9 @@ export async function generateImportFromFile(
 /**
  * Gets the raw data from a csv file, loaded by the user
  *
- * @param csvFile The csv file to be parsed
- * @returns The raw csv data in the form of a string
+ * @param {File} csvFile The csv file to be parsed
+ *
+ * @returns {Promise<string>} The raw csv data in the form of a string
  */
 function getRawDataFromFile(csvFile: File): Promise<string> {
   // Create and return a new promise of a transaction import
@@ -134,8 +136,9 @@ function getRawDataFromFile(csvFile: File): Promise<string> {
 /**
  * Tokenises a raw csv string into usable csv data
  *
- * @param rawData The raw contents from a csv file
- * @returns The contents converted into a usable array of string arrays
+ * @param {string} rawData The raw contents from a csv file
+ *
+ * @returns {Promise<string[][]>} The contents converted into a usable array of string arrays
  */
 function parseStringToCsvData(rawData: string): Promise<string[][]> {
   // Create a new promise of a string
@@ -159,8 +162,9 @@ function parseStringToCsvData(rawData: string): Promise<string[][]> {
 /**
  * Removes invalid lines from csv data
  *
- * @param csvData The csv data to be cleaned
- * @returns The cleaned csv data
+ * @param {string[][]} csvData The csv data to be cleaned
+ *
+ * @returns {string[][]} The cleaned csv data
  */
 function cleanData(csvData: string[][]): string[][] {
   // Filter the csv data line by line
@@ -173,8 +177,9 @@ function cleanData(csvData: string[][]): string[][] {
 /**
  * Gets the column indexes from raw csv data
  *
- * @param csvData The csv data to get the column indices from
- * @returns The column indices of the csv data
+ * @param {string[][]} csvData The csv data to get the column indices from
+ *
+ * @returns {ColumnIndexes} The column indices of the csv data
  */
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
@@ -205,12 +210,13 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
 /**
  * Splits csv data into a list of transactions. (Assumes the csv data has headers.)
  *
- * @param csvData The csv data to split into transactions
- * @param columnIndexes The column indices of the csv data
- * @param account The account that these transactions came from
- * @param importId The ID of the import these transactions belong to
- * @param useAmericanDates Whether to assume the dates are in American date format or not
- * @returns A list of new transactions
+ * @param {string[][]} csvData The csv data to split into transactions
+ * @param {ColumnIndexes} columnIndexes The column indices of the csv data
+ * @param {string} account The account that these transactions came from
+ * @param {string} importId The ID of the import these transactions belong to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
+ *
+ * @returns {Promise<Transaction[]>} A list of new transactions
  */
 async function getTransactions(
   csvData: string[][],
@@ -260,13 +266,13 @@ async function getTransactions(
 /**
  * Splits a line from csv data into a single transaction.
  *
- * @param line A line from the csv data to be parsed to a transaction
- * @param columnIndexes The column indices of the csv data
- * @param account The account connected to the current transaction
- * @param importId The ID of the import this transaction belongs to
- * @param useAmericanDates Whether to assume the dates are in American date format or not
+ * @param {string[]} line A line from the csv data to be parsed to a transaction
+ * @param {ColumnIndexes} columnIndexes The column indices of the csv data
+ * @param {string} account The account connected to the current transaction
+ * @param {string} importId The ID of the import this transaction belongs to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
  *
- * @returns A new transaction
+ * @returns {Promise<Transaction>} A new transaction
  */
 async function getTransactionFromLine(
   line: string[],
@@ -313,8 +319,9 @@ async function getTransactionFromLine(
 /**
  * Retrieves the category based on the merchant name
  *
- * @param merchantName The name of the merchant
- * @returns The predicted category.
+ * @param {string} merchantName The name of the merchant
+ *
+ * @returns {Promise<string>} The predicted category.
  */
 async function getCategory(merchantName: string): Promise<string> {
   // Random code just to make it not error
@@ -328,10 +335,10 @@ async function getCategory(merchantName: string): Promise<string> {
 /**
  * Attempts to parse a date string into a date object using the list of available date formats
  *
- * @param dateString The string to be parsed into a date object
- * @param useAmericanDates Whether to assume the dates are in American date format or not
+ * @param {string} dateString The string to be parsed into a date object
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
  *
- * @returns A parsed date object
+ * @returns {Date} A parsed date object
  */
 function tryParseDate(dateString: string, useAmericanDates: boolean): Date {
   // Get a list of usable dates, based on if the check box "Assume American Dates" was selected
@@ -357,9 +364,10 @@ function tryParseDate(dateString: string, useAmericanDates: boolean): Date {
 /**
  * Gets a list of indexes of transactions that are potentially duplicating the database
  *
- * @param account
- * @param transactions
- * @returns An array of indexes of the offending transactions
+ * @param {string} account
+ * @param {Transaction[]} transactions
+ *
+ * @returns {Promise<number[]>} An array of indexes of the offending transactions
  */
 async function getDupeIndexes(
   account: string,
