@@ -69,8 +69,8 @@ export default function Accounts() {
                 onChange={handleChange}
                 aria-label="Accounts-Tab-Panel"
               >
-                <Tab label="Transactions" {...a11yProps(0)} />
-                <Tab label="Import" {...a11yProps(1)} />
+                <Tab label="Expenses" {...a11yProps(0)} />
+                <Tab label="Import From Bank" {...a11yProps(1)} />
                 <Tab label="Import History" {...a11yProps(2)} />
               </Tabs>
             </Box>
