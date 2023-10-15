@@ -58,7 +58,6 @@ export default function EditCategories() {
     newCategoryList[selectedCategory].color = newCategoryColor;
     setCategoryList(newCategoryList);
     setOpenDialog(false);
-    console.log(newCategoryList[selectedCategory])
     // Store the updated category list in local storage
     saveCategory(newCategoryList[selectedCategory]);
   };
