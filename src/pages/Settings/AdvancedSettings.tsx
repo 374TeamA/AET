@@ -27,13 +27,13 @@ export default function EditAccounts() {
           <Typography variant="h5">Backup & Restore</Typography>
           <Box>
             <Typography>Back up all AET data to an external file</Typography>
-            <BackupButton></BackupButton>
+            <BackupButton />
           </Box>
           <Box sx={{ marginTop: "1rem" }}>
             <Typography>
               Clear current data and restore from a backup file
             </Typography>
-            <RestoreButton></RestoreButton>
+            <RestoreButton />
           </Box>
         </Box>
         <Box sx={{ width: "100%", p: 1, border: "1px solid lightgrey" }}>
