@@ -6,11 +6,12 @@ import {
   TooltipItem
 } from "chart.js";
 import { FlattenedTransaction } from "../types/transaction";
+import { GraphConfig } from "../types/graph";
 
 //TODO: All this code is likely to be changed soon so not gonna comment it
 export function generateGraph(
   transactions: FlattenedTransaction[],
-  type: string
+  graphConfig: GraphConfig
 ) {
   // Convert to dollars
   transactions.forEach((transaction) => {
@@ -19,14 +20,18 @@ export function generateGraph(
 
   // Decide how to process data based on type of graph
   let data: ChartData;
-  if (type == "pie" || type == "bar" || type == "polarArea") {
-    data = getDataByCategory(transactions);
+  if (
+    graphConfig.type == "pie" ||
+    graphConfig.type == "bar" ||
+    graphConfig.type == "polarArea"
+  ) {
+    data = getDataByCategory(transactions, graphConfig);
   } else {
-    data = getDataByDate(transactions);
+    data = getDataByDate(transactions, graphConfig);
   }
 
-  const chartType: ChartType = type as ChartType;
-  const options = getOptions(type);
+  const chartType: ChartType = graphConfig.type as ChartType;
+  const options = getOptions(graphConfig.type);
   // Config
   // TODO: set this to be dynamic for different graph types
   const config: ChartConfiguration = {
@@ -46,20 +51,73 @@ export function generateGraph(
  * @param {FlattenedTransaction[]} rawData
  * @return {ChartData} formatted ChartData object for ChartJS
  */
-function getDataByCategory(rawData: FlattenedTransaction[]) {
+function getDataByCategory(
+  rawData: FlattenedTransaction[],
+  graphConfig: GraphConfig
+): ChartData {
   const labels: string[] = [];
   const values: number[] = [];
+  const filteredData: FlattenedTransaction[] = [];
 
   for (let i = 0; i < rawData.length; i++) {
     const category: string = rawData[i].category;
 
-    if (!labels.includes(category)) {
-      labels.push(category);
-      values.push(0);
+    if (graphConfig.categories.includes(category)) {
+      if (!labels.includes(category)) {
+        labels.push(category);
+        values.push(0);
+      }
+
+      filteredData.push(rawData[i]);
+      const index: number = labels.indexOf(category);
+      values[index] += rawData[i].amount;
+    }
+  }
+
+  if (
+    (graphConfig.groupBy == "week" ||
+      graphConfig.groupBy == "month" ||
+      graphConfig.groupBy == "year") &&
+    graphConfig.type == "bar"
+  ) {
+    //handle it
+    let grouped: Record<string, FlattenedTransaction[]> = {};
+
+    if (graphConfig.groupBy == "week") {
+      grouped = groupObjectsByWeek(filteredData);
+    } else if (graphConfig.groupBy == "month") {
+      grouped = groupObjectsByMonth(filteredData);
+    } else {
+      //group by year
+      grouped = groupObjectsByYear(filteredData);
     }
 
-    const index: number = labels.indexOf(category);
-    values[index] += rawData[i].amount;
+    const datasets = [];
+
+    for (const [key, value] of Object.entries(grouped)) {
+      const categoryValues = [];
+      for (let i = 0; i < labels.length; i++) {
+        categoryValues.push(0);
+      }
+
+      for (let i = 0; i < value.length; i++) {
+        const category = value[i].category;
+        const index = labels.indexOf(category);
+        categoryValues[index] += value[i].amount;
+      }
+
+      datasets.push({
+        label: key,
+        data: categoryValues
+      });
+    }
+
+    const data: ChartData = {
+      labels: labels,
+      datasets: datasets
+    };
+
+    return data;
   }
 
   const data: ChartData = {
@@ -75,11 +133,85 @@ function getDataByCategory(rawData: FlattenedTransaction[]) {
   return data;
 }
 
+function groupObjectsByWeek(array: FlattenedTransaction[]) {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  array.forEach((item) => {
+    const date = new Date(item.date);
+    const weekStartDate = new Date(date);
+    weekStartDate.setDate(date.getDate() - ((date.getDay() + 6) % 7)); // Find the previous Monday
+    weekStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekStartDate.getDate() + 6); // Set the week's end to Sunday
+
+    const weekKey = `${"Week of "}${weekStartDate.getDate()} ${monthToString(
+      weekStartDate.getMonth()
+    )} ${weekStartDate.getFullYear()}`;
+
+    if (!grouped[weekKey]) {
+      grouped[weekKey] = [];
+    }
+
+    grouped[weekKey].push(item);
+  });
+
+  return grouped;
+}
+
+function groupObjectsByMonth(array: FlattenedTransaction[]) {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  array.forEach((item) => {
+    const date = new Date(item.date);
+    const monthStartDate = new Date(date);
+    monthStartDate.setDate(1); // Set to the first day of the month
+    monthStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    const monthKey = `${monthToLongString(
+      monthStartDate.getMonth()
+    )} ${monthStartDate.getFullYear()}`;
+
+    if (!grouped[monthKey]) {
+      grouped[monthKey] = [];
+    }
+
+    grouped[monthKey].push(item);
+  });
+
+  return grouped;
+}
+
+function groupObjectsByYear(array: FlattenedTransaction[]) {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  array.forEach((item) => {
+    const date = new Date(item.date);
+    const yearStartDate = new Date(date);
+    yearStartDate.setMonth(0, 1); // Set to the first day of the year
+    yearStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    const yearKey = `${yearStartDate.getFullYear()}`;
+
+    if (!grouped[yearKey]) {
+      grouped[yearKey] = [];
+    }
+
+    grouped[yearKey].push(item);
+  });
+
+  return grouped;
+}
+
 // TODO: rewrite all of this
 // It needs to handle multiple categories and show a line for each, along with a label
 // It needs to generate a date and populate it with $0 if no money was spent that day
-function getDataByDate(rawData: FlattenedTransaction[]) {
+function getDataByDate(
+  rawData: FlattenedTransaction[],
+  graphConfig: GraphConfig
+) {
   const categories: string[] = [];
+  const filteredData: FlattenedTransaction[] = [];
   const startDate: Date = rawData[0].date;
   const endDate: Date = rawData[rawData.length - 1].date;
 
@@ -94,8 +226,12 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
 
   // get all categories
   for (let i = 0; i < rawData.length; i++) {
-    if (!categories.includes(rawData[i].category)) {
-      categories.push(rawData[i].category);
+    if (graphConfig.categories.includes(rawData[i].category)) {
+      filteredData.push(rawData[i]);
+
+      if (!categories.includes(rawData[i].category)) {
+        categories.push(rawData[i].category);
+      }
     }
   }
 
@@ -119,12 +255,12 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       for (let j = 0; j < labels.length; j++) {
         const date = new Date(labels[j]);
         let total = 0;
-        for (let k = 0; k < rawData.length; k++) {
+        for (let k = 0; k < filteredData.length; k++) {
           if (
-            rawData[k].category == category &&
-            rawData[k].date.toDateString() == date.toDateString()
+            filteredData[k].category == category &&
+            filteredData[k].date.toDateString() == date.toDateString()
           ) {
-            total += rawData[k].amount;
+            total += filteredData[k].amount;
           }
         }
         categoryValues.push(total);
@@ -141,10 +277,10 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
       totalValues.push(0);
     }
 
-    for (let i = 0; i < rawData.length; i++) {
-      const date: string = rawData[i].date.toDateString();
+    for (let i = 0; i < filteredData.length; i++) {
+      const date: string = filteredData[i].date.toDateString();
       const index: number = labels.indexOf(date);
-      totalValues[index] += rawData[i].amount;
+      totalValues[index] += filteredData[i].amount;
     }
 
     datasets.push({
@@ -160,10 +296,10 @@ function getDataByDate(rawData: FlattenedTransaction[]) {
     return data;
   }
 
-  for (let i = 0; i < rawData.length; i++) {
-    const date: string = rawData[i].date.toDateString();
+  for (let i = 0; i < filteredData.length; i++) {
+    const date: string = filteredData[i].date.toDateString();
     const index: number = labels.indexOf(date);
-    values[index] += rawData[i].amount;
+    values[index] += filteredData[i].amount;
   }
 
   const data: ChartData = {
@@ -201,7 +337,7 @@ function getOptions(type: string) {
     plugins: {
       title: {
         display: true,
-        text: "Test"
+        text: "Bar Graph"
       },
       legend: {
         display: true
@@ -232,7 +368,7 @@ function getOptions(type: string) {
     plugins: {
       title: {
         display: true,
-        text: "Test"
+        text: "Pie Graph"
       },
       tooltip: {
         callbacks: {
@@ -259,7 +395,7 @@ function getOptions(type: string) {
     plugins: {
       title: {
         display: true,
-        text: "Test"
+        text: "Polar Area Graph"
       },
       tooltip: {
         callbacks: {
@@ -307,7 +443,7 @@ function getOptions(type: string) {
     plugins: {
       title: {
         display: true,
-        text: "Test"
+        text: "Line Graph"
       },
       tooltip: {
         callbacks: {
@@ -340,4 +476,40 @@ function getOptions(type: string) {
   } else {
     return lineOptions;
   }
+}
+
+function monthToString(month: number): string {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  return months[month];
+}
+
+function monthToLongString(month: number): string {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  return months[month];
 }

@@ -33,26 +33,10 @@ export default function ConfigureGraph({
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
-  const databaseAccounts = useContext(AccountContext); //useState<Account[]>(defaultAccounts);
-  const databaseCategories = useContext(CategoryContext); //useState<Category[]>(defaultCategories);
+  const [groupBy, setGroupBy] = useState<string>("day");
+  const databaseAccounts = useContext(AccountContext);
+  const databaseCategories = useContext(CategoryContext);
   const [lengthValue, setLengthValue] = useState(1);
-
-  // Fetch accounts and categories from the database when the component mounts
-  // useEffect(() => {
-  //   const accountPromise: Promise<Account[]> = getAccounts();
-  //   accountPromise.then((accounts) => {
-  //     const dbAccounts = accounts.map((account) => account.name);
-  //     setDatabaseAccount(dbAccounts);
-  //   });
-
-  //   const categoryPromise: Promise<Category[]> = getCategories();
-  //   categoryPromise.then((categories) => {
-  //     const dbCategories = categories.map((category) => category.name);
-  //     setDatabaseCategories(dbCategories);
-  //   });
-  // }, []);
-
-  //useEffect(() => {}, [categories, accounts]);
 
   /**
    * Function to add a selected account to the list of accounts
@@ -272,6 +256,15 @@ export default function ConfigureGraph({
   };
 
   /**
+   * Handle changes to the group by select
+   *
+   * @param e ChangeEvent for when the group by select is changed
+   */
+  const handleGroupByChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setGroupBy(e.target.value);
+  };
+
+  /**
    * Function to create the graph configuration and add it to the list of configurations
    */
   const createGraphConfig = () => {
@@ -329,15 +322,14 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories.map((category) => category.id),
+      categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: false,
       update: dynamicUpdate,
-      allTransactions: allTransactions
+      allTransactions: allTransactions,
+      groupBy: groupBy
     };
-
-    console.log(graphConfig);
 
     addGraphConfig(graphConfig);
     handleClose();
@@ -346,8 +338,6 @@ export default function ConfigureGraph({
   return (
     <div>
       <h1>Configure {type} Graph</h1>
-      {/* TODO: have an automatically updating graph */}
-      <canvas id="configureGraph"></canvas>
 
       {/* Account Selection */}
       <div id="accountPopupContainer">
@@ -516,8 +506,27 @@ export default function ConfigureGraph({
         </label>
       </div>
 
+      {type === "line" || type === "bar" ? (
+        <div>
+          <label htmlFor="grouped">
+            Group by
+            <select onChange={handleGroupByChange} id="grouped">
+              {type === "line" ? (
+                <option value="day">Day</option>
+              ) : (
+                <option value="none">None</option>
+              )}
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+              <option value="year">Year</option>
+            </select>
+          </label>
+        </div>
+      ) : null}
+
       {/* Add graph */}
       <button onClick={createGraphConfig}>Add Graph</button>
+      <button onClick={handleClose}>Cancel</button>
     </div>
   );
 }
