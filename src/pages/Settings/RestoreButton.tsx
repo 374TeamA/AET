@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { clearDatabase, importFromJson } from '../../database/backup_restore';
 import { connectToDatabase } from '../../database/initialisation';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { ConfirmationButton } from '../../components/ConfirmationButton';
 
 // Credit: https://chat.openai.com/share/981949f1-bb2a-4eec-bc21-e1445e543e39
 
@@ -55,9 +56,13 @@ export function RestoreButton() {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
-        Upload JSON
-      </Button>
+      <ConfirmationButton 
+      dialogTitle='Restore Data' 
+      dialogText='Restoring from a backup will overwrite ALL data in AET. Are you sure you want to do this?'
+      confirmText='Yes, I understand'
+      cancelText='Cancel'
+      onConfirm={handleOpen}
+      >Restore data</ConfirmationButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Upload JSON File</DialogTitle>
         <DialogContent>
