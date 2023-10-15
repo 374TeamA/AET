@@ -64,7 +64,7 @@ export function RestoreButton() {
       onConfirm={handleOpen}
       >Restore data</ConfirmationButton>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Upload JSON File</DialogTitle>
+        <DialogTitle>Upload Backup file</DialogTitle>
         <DialogContent>
           <input
             type="file"
@@ -89,7 +89,7 @@ export function RestoreButton() {
             Cancel
           </Button>
           <Button onClick={handleUpload} color="primary" disabled={!file}>
-            Upload
+            Restore
           </Button>
         </DialogActions>
       </Dialog>
