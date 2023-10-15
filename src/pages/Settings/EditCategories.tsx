@@ -59,7 +59,7 @@ export default function EditCategories() {
     setCategoryList(newCategoryList);
     setOpenDialog(false);
     // Store the updated category list in local storage
-    saveCategory(categoryList[selectedCategory]);
+    saveCategory(newCategoryList[selectedCategory]);
   };
 
   const addCategory = () => {
