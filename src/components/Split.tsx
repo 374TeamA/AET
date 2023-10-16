@@ -21,7 +21,7 @@ export default function Split({
     )
   );
   const [splits, setSplits] = useState<TransactionDetail[]>([]);
-  const [currentCategory, setCurrentCategory] = useState<string>("Default");
+  const [currentCategoryId, setCurrentCategoryId] = useState<string>("Un-Categorised");
   const [amount, setAmount] = useState<number>(total);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const handleClose = () => {
@@ -74,7 +74,8 @@ export default function Split({
               }
             }}
           />
-          <Select
+
+          <Select // TODO: merge this with the Category Picker in Item.tsx, and in the transactions table as well if possible (they all do more or less the same thing)
             // variant="contained"
             style={{
               width: "10rem",
@@ -82,26 +83,24 @@ export default function Split({
               margin: "2px",
               //make the background colour the selected item's colour
 
-              backgroundColor: `${categories.find(cat=>cat.name == currentCategory)?.color || "black"}`,
-              color: "white"
+              backgroundColor: `${categories.find(cat=>cat.id == currentCategoryId)?.color || "white"}`,
             }}
             onChange={(e) => {
-              setCurrentCategory(e.target.value);
+              setCurrentCategoryId(e.target.value);
             }}
             size="small"
-            value={currentCategory}
+            value={currentCategoryId}
           >
             <MenuItem
               style={{
-                backgroundColor: `${"black"}`,
-                color: "white"
+                backgroundColor: `${categories.find(cat=>cat.id == currentCategoryId)?.color || "white"}`,
               }}
-              value={currentCategory}
+              value={currentCategoryId}
             >
-              {currentCategory}
+              {categories.find(cat=>cat.id == currentCategoryId)?.name}
             </MenuItem>
             {categories.map((category, index) => {
-              if (category.id !== currentCategory) {
+              if (category.id !== currentCategoryId) {
                 return (
                   <MenuItem
                     key={index}
@@ -121,7 +120,7 @@ export default function Split({
               const newSplits = [...splits];
               newSplits.push({
                 amount: amount,
-                category: currentCategory
+                category: currentCategoryId
               });
               setSplits(newSplits);
               setTotal(total - amount);
@@ -147,7 +146,7 @@ export default function Split({
                     <td style={{ padding: "0.5rem" }}>
                       ${(split.amount / 100).toFixed(2)}
                     </td>
-                    <td>{split.category}</td>
+                    <td>{categories.find(cat=>cat.id==split.category)?.name}</td>
                   </tr>
                 );
               })}
@@ -165,7 +164,7 @@ export default function Split({
               if (total > 0) {
                 newTransaction.details.push({
                   amount: total,
-                  category: "Default"
+                  category: "Un-Categorised"
                 });
               }
               onClose(newTransaction);

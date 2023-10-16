@@ -15,7 +15,7 @@ function CategoryPicker(props: {
   index: number;
 }) {
   const categories = useContext(CategoryContext);
-  const [currentCategory, setCurrentCategory] = useState<string>(
+  const [currentCategoryId, setCurrentCategoryId] = useState<string>(
     props.transactionDetail.category
   );
   return (
@@ -38,14 +38,14 @@ function CategoryPicker(props: {
             fontSize: "0.9rem",
             margin: "2px",
             //make the background colour the selected item's colour
-            backgroundColor: `${categories.find(cat=>cat.name == currentCategory)?.color || "white"}`,
+            backgroundColor: `${categories.find(cat=>cat.id == currentCategoryId)?.color || "white"}`,
           }}
           onChange={(e) => {
-            setCurrentCategory(e.target.value);
+            setCurrentCategoryId(e.target.value);
             props.onChange(e,props.index);
           }}
           size="small"
-          value={currentCategory}
+          value={currentCategoryId}
         >
           <MenuItem
             style={{
@@ -55,20 +55,20 @@ function CategoryPicker(props: {
               //make the background colour the selected item's colour
 
               backgroundColor: `${
-                categories.find(cat=>cat.name == currentCategory)?.color|| "white"
+                categories.find(cat=>cat.id == currentCategoryId)?.color|| "white"
               }`,
             }}
-            value={currentCategory} 
+            value={currentCategoryId} 
           >
-            {currentCategory}
+            {categories.find(cat=>cat.id == currentCategoryId)?.name}
           </MenuItem>
           {categories.map((category, index) => {
-            if (category.name !== currentCategory) {
+            if (category.id !== currentCategoryId) {
               return (
                 <MenuItem
                   key={index}
                   style={{ backgroundColor: `${category.color}` }}
-                  value={category.name}
+                  value={category.id}
                 >
                   {category.name}
                 </MenuItem>
