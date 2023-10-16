@@ -51,25 +51,25 @@ export default function EditAccounts() {
   };
   const updateSelectedAccount = () => {
     if (accountList) {
-      // update the account name for the selected account
       const newAccountList = [...accountList];
+      if(selectedAccount == accountList.length) {
+        newAccountList.push({ name: "", id: uuidv4() });
+      }
+      // update the account name for the selected account
       newAccountList[selectedAccount].name = newAccountName;
       setAccountList(newAccountList);
       setEditDialogOpen(false);
-      accountList && saveAccount(accountList[selectedAccount]);
+      accountList && saveAccount(newAccountList[selectedAccount]);
     }
   };
 
   const addAccount = () => {
     // adds a account to the list
     if (accountList) {
-      const newAccountList = [...accountList];
-      newAccountList.push({ name: "", id: uuidv4() });
-      setAccountList(newAccountList);
       // allow the user to enter a name for the account:
       setEditDialogOpen(true);
       setNewAccountName("");
-      setSelectedAccount(newAccountList.length - 1);
+      setSelectedAccount(accountList.length); // this is out of bounds of the current accounts, so indicates adding a new item
     }
   };
 
@@ -80,7 +80,7 @@ export default function EditAccounts() {
         sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
       >
         <Typography variant="h6">Account List</Typography>
-        <Typography variant="body1">If you want to add a bank account to AET, add it here.</Typography>
+        <Typography variant="body1">Add your bank accounts to start importing transactions.</Typography>
         {/* Display an array of categories */}
         <List>
           {accountList &&

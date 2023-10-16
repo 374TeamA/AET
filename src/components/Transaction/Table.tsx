@@ -13,7 +13,7 @@ export default function Table({ transactions }: TableProps) {
         (detail) =>
           typeof detail === "object" &&
           (detail as { amount: number; category: string }).category !==
-            "Default"
+            "Un-Categorised" // id of uncategorised transactions
       )
     ) ?? []
   );
@@ -22,7 +22,7 @@ export default function Table({ transactions }: TableProps) {
       transaction.details.some(
         (detail) =>
           typeof detail === "object" &&
-          (detail as { amount: number; category: string }).category == "Default"
+          (detail as { amount: number; category: string }).category == "Un-Categorised"
       )
     ) ?? []
   );
