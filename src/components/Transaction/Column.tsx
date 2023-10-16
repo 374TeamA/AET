@@ -3,16 +3,12 @@ import Item from "./Item";
 interface ColumnProps {
   title: string;
   items: Transaction[];
-  categories: {
-    [key: string]: string;
-  };
   updateTransactions: (transaction: Transaction) => void;
 }
 
 export default function Column({
   title,
   items,
-  categories,
   updateTransactions
 }: ColumnProps) {
   return (
@@ -29,7 +25,6 @@ export default function Column({
       {items.map((transaction) => (
         <Item
           transaction={transaction}
-          categories={categories}
           updateTransactions={updateTransactions}
           key={transaction.id}
         />

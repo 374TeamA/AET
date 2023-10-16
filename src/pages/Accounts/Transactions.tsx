@@ -14,8 +14,7 @@ import { useParams } from "react-router-dom";
 import { Select, MenuItem } from "@mui/material";
 import { format } from "date-fns";
 import { Transaction } from "../../types/transaction";
-import { Category } from "../../types/category";
-import { CategoryContext } from "../../context/CategoryContext";
+import { CategoryContext} from "../../context/CategoryContext";
 import { saveTransaction } from "../../database/transactions";
 // TODO: Basic display for a list of transactions
 
@@ -33,23 +32,8 @@ interface FlatTransaction {
 export default function Transactions() {
   const params = useParams();
   const accountId: string | undefined = params.id;
-  const categoriesFromDB = useContext(CategoryContext);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [options, setOptions] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    console.log("Creating options");
-    //create a random colour for each category
-    const newCategoryColors: { [key: string]: string } = {};
-    categories.forEach((category) => {
-      newCategoryColors[category.name] = `#${Math.floor(
-        Math.random() * 16777215
-      ).toString(16)}`;
-    });
-    console.log(newCategoryColors);
-    setOptions(newCategoryColors);
-  }, [categories]);
 
   const [flatTransactions, setFlatTransactions] = useState<FlatTransaction[]>(
     []
@@ -74,10 +58,9 @@ export default function Transactions() {
       headerName: "Category",
       width: 200,
       renderCell: (params: GridCellParams) => (
-        <CustomSelectCell
+        <CategorySelector
           rowData={params.row as GridRowModel}
           defaultValue={params.value as string}
-          options={options}
           updateTransaction={updateTransaction}
         />
       )
@@ -88,11 +71,10 @@ export default function Transactions() {
     return format(new Date(date), "yyyy-MM-dd"); // Example format
   };
   useEffect(() => {
-    setCategories(categoriesFromDB);
     getAllTransactions(accountId as string).then((transactions) => {
       setTransactions(transactions);
     });
-  }, [accountId, categoriesFromDB]);
+  }, [accountId]);
 
   const updateTransaction = (updatedRow: GridRowModel) => {
     // Implement your update logic here, e.g., make an API request to update the data
@@ -131,73 +113,69 @@ export default function Transactions() {
     });
     setFlatTransactions(flatTransactions);
   }, [transactions]);
-  if (options) {
-    return (
-      <Box style={{ height: "100%", width: "86dvw", padding: "0px" }}>
-        {accountId != "undefined" ? (
-          <DataGrid columns={columns} rows={flatTransactions} />
-        ) : (
-          <p>Loading...</p>
-        )}
-      </Box>
-    );
-  } else {
-    return <p>Loading...</p>;
-  }
+  return (
+    <Box style={{ height: "100%", width: "86dvw", padding: "0px" }}>
+      {accountId != "undefined" ? (
+        <DataGrid columns={columns} rows={flatTransactions} />
+      ) : (
+        <p>Loading...</p>
+      )}
+    </Box>
+  );
 }
 
-const CustomSelectCell: React.FC<{
+const CategorySelector: React.FC<{
   rowData: GridRowModel;
   defaultValue: string;
   updateTransaction: (row: GridRowModel) => void;
-  options: { [key: string]: string };
-}> = ({ rowData, defaultValue, updateTransaction, options }) => {
-  const [selectedValue, setSelectedValue] = useState<string>(
-    rowData.customSelectValue
+}> = ({ rowData, defaultValue, updateTransaction }) => {
+  const [selectedCategory, setSelectedValue] = useState<string>(
+    defaultValue
   );
+  const categories = useContext(CategoryContext);
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
-    const newValue = event.target.value as string;
+    const newValue = event.target.value;
     // Update the DataGrid row data with the new value
     rowData.customSelectValue = newValue;
     setSelectedValue(newValue);
     // Call your update function here with the updated data
     updateTransaction(rowData);
   };
+  
+  console.log(selectedCategory);
+  console.log(defaultValue);
 
-  useEffect(() => {
-    console.log(options);
-  }, [options]);
-  //check if options has any keys
-  if (Object.keys(options).length === 0) {
+  if (categories.length === 0) {
     return <p>Loading...</p>;
   }
   return (
     <FormControl style={{ width: "100%" }}>
       <Select
-        defaultValue={defaultValue}
+        value={selectedCategory}
         onChange={handleSelectChange}
         style={{
-          backgroundColor: `${options[selectedValue || defaultValue]}`,
+          backgroundColor: `${categories.find(cat=>cat.name == selectedCategory)?.color || "white"}`,
           color: "black",
           width: "100%"
         }}
       >
-        <MenuItem
-          value={defaultValue}
-          style={{ backgroundColor: `${options[defaultValue] || "Black"}` }}
+        
+        <MenuItem // Default Menu Item
+          value={"Un-categorised"}
+          style={{ backgroundColor: `${ "white"}` }}
         >
-          {defaultValue}
+          {"Un-categorised"}
         </MenuItem>
-        {Object.keys(options).map((category, index) => {
-          if (category !== defaultValue) {
+        {categories.map((category, index) => {
+          if (category.id !== defaultValue) {
             return (
               <MenuItem
                 key={index}
-                style={{ backgroundColor: `${options[category]}` }}
-                value={category}
+                style={{ backgroundColor: `${category.color}` }}
+                value={category.name}
               >
-                {category}
+                {category.name}
               </MenuItem>
             );
           }
