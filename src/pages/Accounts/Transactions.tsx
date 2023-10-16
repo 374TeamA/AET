@@ -133,7 +133,7 @@ export default function Transactions() {
   }, [transactions]);
   if (options) {
     return (
-      <Box style={{ height: "77vh" }}>
+      <Box style={{ height: "100%", width: "86dvw", padding: "0px" }}>
         {accountId != "undefined" ? (
           <DataGrid columns={columns} rows={flatTransactions} />
         ) : (

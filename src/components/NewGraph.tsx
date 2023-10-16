@@ -4,6 +4,7 @@ import { generateGraph } from "../functions/generateGraph";
 import { GraphConfig } from "../types/graph";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 import { useEffect, useRef } from "react";
+import CustomButton from "./CustomButton";
 
 interface NewGraphProps {
   graphConfig: GraphConfig;
@@ -122,29 +123,33 @@ export default function NewGraph({
   }, [graphConfig, index, handleDeleteGraph]);
 
   return (
-    <div className="canvasContainer">
-      <h1>New Graph</h1>
+    <div>
+      {/* <h1>New Graph</h1> */}
 
       {/* Graph */}
-      <canvas id={`canvas${index}`} ref={canvasRef}></canvas>
+      <canvas
+        style={{ minHeight: "20rem" }}
+        id={`canvas${index}`}
+        ref={canvasRef}
+      ></canvas>
 
       {/* Delete Graph Button */}
-      <button
+      <CustomButton
         onClick={() => {
           handleDeleteGraph(index);
         }}
       >
         Delete Graph
-      </button>
+      </CustomButton>
 
       {/* Favourite Graph Button */}
-      <button
+      <CustomButton
         onClick={() => {
           handleFavourite(index);
         }}
       >
         {graphConfig.favourite ? "Un-Favourtie" : "Favourtie"}
-      </button>
+      </CustomButton>
     </div>
   );
 }
