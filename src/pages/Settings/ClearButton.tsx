@@ -1,9 +1,10 @@
-import { clearDatabase } from '../../database/backup_restore';
+import { clearDatabase, removeDatabases } from '../../database/backup_restore';
 import { connectToDatabase } from '../../database/initialisation';
 import { ConfirmationButton } from '../../components/ConfirmationButton';
 
 const clear = async () =>{
-    await clearDatabase(await connectToDatabase())
+    await clearDatabase(await connectToDatabase());
+    await removeDatabases();
     // do a full page reload - reset the app
     window.location.reload();
 }

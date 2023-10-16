@@ -98,7 +98,7 @@ export function exportToJson(idbDatabase:IDBDatabase) {
   }
   
   /**
-   * Clear a database
+   * Clear a database, but keep the format (tables, keys, etc)
    *
    * @param {IDBDatabase} idbDatabase The database to delete all data from
    * @return {Promise<void>}
@@ -125,4 +125,18 @@ export function exportToJson(idbDatabase:IDBDatabase) {
           })
       }
     })
+  }
+
+
+  /**
+   * Removes the database completely, rather than just wiping them. On page reload, this
+   * forces all databases to be rebuilt from scratch, and default categories added again, etc.
+   */
+  export async function removeDatabases(){
+      const dbs = await window.indexedDB.databases();
+      dbs.forEach(db => { 
+        if (db.name){
+          window.indexedDB.deleteDatabase(db.name)
+        } 
+      });
   }
