@@ -215,15 +215,6 @@ function getDataByDate(
   const startDate: Date = rawData[0].date;
   const endDate: Date = rawData[rawData.length - 1].date;
 
-  // populate array with dates between start and end (inclusive)
-  const dates: Date[] = [];
-  const currentDate: Date = new Date(startDate);
-
-  while (currentDate <= endDate) {
-    dates.push(new Date(currentDate));
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
   // get all categories
   for (let i = 0; i < rawData.length; i++) {
     if (graphConfig.categories.includes(rawData[i].category)) {
@@ -235,7 +226,81 @@ function getDataByDate(
     }
   }
 
-  // convert each date in the array into a string in the format "Month Day, Year"
+  // Handle grouping
+  if (graphConfig.groupBy !== "day") {
+    let grouped: Record<string, FlattenedTransaction[]> = {};
+    if (graphConfig.groupBy == "week") {
+      grouped = groupObjectsByWeek(filteredData);
+    } else if (graphConfig.groupBy == "month") {
+      grouped = groupObjectsByMonth(filteredData);
+    } else if (graphConfig.groupBy == "year") {
+      grouped = groupObjectsByYear(filteredData);
+    }
+
+    const datasets = [];
+
+    const labels: string[] = Object.keys(grouped);
+    const values: number[] = [];
+
+    for (let i = 0; i < labels.length; i++) {
+      values.push(0);
+    }
+
+    for (let i = 0; i < categories.length; i++) {
+      //
+      const category = categories[i];
+      const categoryValues = [];
+      for (let j = 0; j < labels.length; j++) {
+        let total = 0;
+        for (let k = 0; k < grouped[labels[j]].length; k++) {
+          if (grouped[labels[j]][k].category == category) {
+            total += grouped[labels[j]][k].amount;
+          }
+        }
+        categoryValues.push(total);
+      }
+
+      datasets.push({
+        label: category,
+        data: categoryValues,
+        pointStyle: false
+      });
+    }
+
+    if (categories.length > 1) {
+      for (let i = 0; i < labels.length; i++) {
+        let total = 0;
+        for (let j = 0; j < categories.length; j++) {
+          total += datasets[j].data[i];
+        }
+        values[i] = total;
+      }
+
+      datasets.push({
+        label: "Total",
+        data: values,
+        pointStyle: false
+      });
+    }
+
+    const data: ChartData = {
+      labels: labels,
+      datasets: datasets
+    };
+
+    return data;
+  }
+
+  // populate array with dates between start and end (inclusive)
+  const dates: Date[] = [];
+  const currentDate: Date = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    dates.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // convert each date in the array into a string in the format "Day Month Day, Year"
   const labels: string[] = [];
   dates.forEach((date) => {
     labels.push(date.toDateString());
@@ -316,7 +381,14 @@ function getDataByDate(
   return data;
 }
 
+/**
+ * Gets the options for the graph depending on the type
+ *
+ * @param {string} type Graph type as a string
+ * @returns {ChartOptions} The options for the graph depending on the type
+ */
 function getOptions(type: string) {
+  // Bar graph options
   const barOptions = {
     scales: {
       y: {
@@ -364,6 +436,7 @@ function getOptions(type: string) {
     }
   };
 
+  // Pie graph options
   const pieOptions = {
     plugins: {
       title: {
@@ -391,6 +464,7 @@ function getOptions(type: string) {
     }
   };
 
+  // Polar area graph options
   const polarOptions = {
     plugins: {
       title: {
@@ -419,6 +493,7 @@ function getOptions(type: string) {
     }
   };
 
+  // Line graph options
   const lineOptions = {
     scales: {
       y: {
@@ -467,6 +542,7 @@ function getOptions(type: string) {
     }
   };
 
+  // Returns the correct options based on the type of graph
   if (type == "bar") {
     return barOptions;
   } else if (type == "pie") {
@@ -478,6 +554,12 @@ function getOptions(type: string) {
   }
 }
 
+/**
+ * Gets the string representation of a month from its number in short form (e.g. 0 -> Jan)
+ *
+ * @param {number} month The month number
+ * @return {string} The string representation of the month
+ */
 function monthToString(month: number): string {
   const months = [
     "Jan",
@@ -496,6 +578,12 @@ function monthToString(month: number): string {
   return months[month];
 }
 
+/**
+ * Gets the string representation of a month from its number in long form (e.g. 0 -> January)
+ *
+ * @param {number} month The month number
+ * @return {string} The string representation of the month
+ */
 function monthToLongString(month: number): string {
   const months = [
     "January",
