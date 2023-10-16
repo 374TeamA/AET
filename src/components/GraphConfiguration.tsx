@@ -7,6 +7,13 @@ import { Account } from "../types/account";
 import { Category } from "../types/category";
 import { AccountContext } from "../context/AccountsContext";
 import { CategoryContext } from "../context/CategoryContext";
+import CustomButton from "./CustomButton";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+
+function capitalizeFirstLetter(str: string) {
+  if (str.length === 0) return str; // Handle empty string
+  return str[0].toUpperCase() + str.slice(1);
+}
 
 /**
  * Props for configuring the graph.
@@ -38,22 +45,26 @@ export default function ConfigureGraph({
   const databaseCategories = useContext(CategoryContext);
   const [lengthValue, setLengthValue] = useState(1);
 
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(
+    databaseAccounts && databaseAccounts[0]
+  );
+  const [selectedCategory, setSelectedCategory] = useState<Category>(
+    databaseCategories[0]
+  );
+
   /**
    * Function to add a selected account to the list of accounts
    */
   const addAccount = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addAccount"
-    ) as HTMLSelectElement;
+    // const selectElement: HTMLSelectElement = document.getElementById(
+    //   "addAccount"
+    // ) as HTMLSelectElement;
 
-    // Get the selected option
-    const selectedOption = selectElement.options[selectElement.selectedIndex];
-
+    // // Get the selected option
+    // const selectedOption = selectElement.options[selectElement.selectedIndex];
+    if (!selectedAccount) return;
     // Get the value of the selected option
-    const account: Account = {
-      id: selectedOption.value,
-      name: selectedOption.text
-    };
+    const account: Account = selectedAccount;
 
     // Add the account to the list of accounts if it doesn't already exist
     if (!accounts.some((a) => a.id === account.id)) {
@@ -88,17 +99,15 @@ export default function ConfigureGraph({
    * Function to add a selected category to the list of categories
    */
   const addCategory = () => {
-    const selectElement: HTMLSelectElement = document.getElementById(
-      "addCategories"
-    ) as HTMLSelectElement;
+    // const selectElement: HTMLSelectElement = document.getElementById(
+    //   "addCategories"
+    // ) as HTMLSelectElement;
 
-    // Get the selected option
-    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    // // Get the selected option
+    // const selectedOption = selectElement.options[selectElement.selectedIndex];
 
     // Get the value of the selected option
-    const category: Category | undefined = databaseCategories.find(
-      (c) => c.id === selectedOption.value
-    );
+    const category: Category | undefined = selectedCategory;
 
     // Add the category to the list of categories if it doesn't already exist
     if (category) {
@@ -276,8 +285,8 @@ export default function ConfigureGraph({
    *
    * @param e ChangeEvent for when the group by select is changed
    */
-  const handleGroupByChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setGroupBy(e.target.value);
+  const handleGroupByChange = (e: SelectChangeEvent<unknown>) => {
+    setGroupBy(e.target.value as string);
   };
 
   /**
@@ -341,7 +350,7 @@ export default function ConfigureGraph({
       categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
-      favourite: false,
+      favourite: 0,
       update: dynamicUpdate,
       allTransactions: allTransactions,
       groupBy: groupBy
@@ -353,118 +362,167 @@ export default function ConfigureGraph({
 
   return (
     <div>
-      <h1>Configure {type} Graph</h1>
+      <div className="popupHeader">
+        <h1 className="font-1-5-rem">
+          Configure {capitalizeFirstLetter(type)} Graph
+        </h1>
+      </div>
 
       {/* Account Selection */}
-      <div id="accountPopupContainer">
-        <h1>Select Accounts</h1>
+      <div
+        id="accountPopupContainer"
+        className="padding-0-5rem border-1px-solid-lightgrey border-radius-0-5rem margin-top-0-5rem"
+      >
+        <h1 style={{ fontSize: "1.2rem" }}>Select Accounts</h1>
         {/* List of accounts from database */}
+        <div className="display-flex justify-space-between padding-right-0-3rem">
+          <Select
+            id="addAccount"
+            defaultValue={databaseAccounts && databaseAccounts[0].id}
+            size="small"
+            onChange={(e) => {
+              const account: Account | undefined = databaseAccounts?.find(
+                (a) => a.id === e.target.value
+              );
+              setSelectedAccount(account ? account : null);
+            }}
+          >
+            {databaseAccounts &&
+              databaseAccounts.map((account: Account, index: number) => (
+                <MenuItem value={account.id} key={index}>
+                  {account.name}
+                </MenuItem>
+              ))}
+          </Select>
 
-        <select id="addAccount">
-          {databaseAccounts &&
-            databaseAccounts.map((account: Account, index: number) => (
-              <option value={account.id} key={index}>
-                {account.name}
-              </option>
-            ))}
-        </select>
-
-        <button onClick={addAccount}>Add Account</button>
-        <button onClick={addAllAccounts}>Add All Accounts</button>
-
+          <CustomButton onClick={addAccount}>Add Account</CustomButton>
+          <CustomButton onClick={addAllAccounts}>Add All</CustomButton>
+        </div>
         {/* List of selected accounts */}
         <ul>
           {accounts.map((item: Account, index) => (
             <li key={`account${index}`}>
-              {item.name}
-              <button onClick={() => deleteAccount(item)}>remove</button>
+              <div className="display-flex justify-space-between padding-0-2rem margin-0-2rem align-items-center">
+                {item.name}
+                <CustomButton onClick={() => deleteAccount(item)}>
+                  remove
+                </CustomButton>
+              </div>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Category Selection */}
-      <div id="categoryPopupContainer">
-        <h1>Select Categories</h1>
+      <div
+        id="categoryPopupContainer"
+        className="padding-0-5rem border-1px-solid-lightgrey border-radius-0-5rem margin-top-0-5rem"
+      >
+        <h1 className="font-1-2rem ">Select Categories</h1>
         {/* List of categories from database */}
-        <select id="addCategories">
-          {databaseCategories.map((category: Category, index: number) => (
-            <option value={category.id} key={index}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+        <div className="display-flex justify-space-between padding-right-0-3rem">
+          <Select
+            id="addCategories"
+            defaultValue={databaseCategories[0].id}
+            size="small"
+            onChange={(e) => {
+              const category: Category | undefined = databaseCategories.find(
+                (c) => c.id === e.target.value
+              );
+              setSelectedCategory(category ? category : databaseCategories[0]);
+            }}
+          >
+            {databaseCategories.map((category: Category, index: number) => (
+              <MenuItem value={category.id} key={index}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
 
-        <button onClick={addCategory}>Add Category</button>
-        <button onClick={addAllCategories}>Add All Categories</button>
+          <CustomButton onClick={addCategory}>Add Category</CustomButton>
+          <CustomButton onClick={addAllCategories}>Add All</CustomButton>
+        </div>
 
         {/* List of selected categories */}
         <ul>
           {categories.map((item: Category, index) => (
-            <li key={`category${index}`}>
-              {item.name}
-              <button onClick={() => deleteCategory(item)}>X</button>
+            <li key={`category${index}`} style={{ margin: "0px" }}>
+              <div className="display-flex justify-space-between padding-0-2rem margin-0-2rem align-items-center">
+                <p style={{ paddingLeft: "0.5rem" }}>{item.name}</p>
+                <CustomButton onClick={() => deleteCategory(item)}>
+                  Remove
+                </CustomButton>
+              </div>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Date Range Selection */}
-      <div id="dateRangePopupContainer">
-        <h1>Select Date Range</h1>
-        <div>
-          <label htmlFor="startDatePopup">Start Date:</label>
-          <input
-            type="date"
-            id="startDatePopup"
-            value={startDate}
-            onChange={handleStartDateChange}
-          />
+      <div
+        id="dateRangePopupContainer"
+        className="padding-0-5rem border-1px-solid-lightgrey border-radius-0-5rem margin-top-0-5rem"
+      >
+        <h1 className="font-1-2rem ">Select Date Range</h1>
+        <div className="display-flex justify-space-between padding-0-5rem">
+          <div>
+            <label htmlFor="startDatePopup">Start Date:</label>
+            <input
+              type="date"
+              id="startDatePopup"
+              value={startDate}
+              onChange={handleStartDateChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="endDatePopup">End Date:</label>
+            <input
+              type="date"
+              id="endDatePopup"
+              value={endDate}
+              onChange={handleEndDateChange}
+            />
+          </div>
         </div>
+        <div className="display-flex justify-space-evenly">
+          {/* Automatically set dates for 7 days from today */}
+          <CustomButton
+            id="days7Popup"
+            onClick={() => {
+              handleDays(7);
+            }}
+          >
+            7 Days
+          </CustomButton>
 
-        <div>
-          <label htmlFor="endDatePopup">End Date:</label>
-          <input
-            type="date"
-            id="endDatePopup"
-            value={endDate}
-            onChange={handleEndDateChange}
-          />
+          {/* Automatically set dates for 31 days from today */}
+          <CustomButton
+            id="days14Popup"
+            onClick={() => {
+              handleDays(14);
+            }}
+          >
+            14 Days
+          </CustomButton>
+
+          {/* Automatically set dates for 31 days from today */}
+          <CustomButton
+            id="days31Popup"
+            onClick={() => {
+              handleDays(31);
+            }}
+          >
+            1 month
+          </CustomButton>
         </div>
-
-        {/* Automatically set dates for 7 days from today */}
-        <button
-          id="days7Popup"
-          onClick={() => {
-            handleDays(7);
-          }}
-        >
-          7 Days
-        </button>
-
-        {/* Automatically set dates for 31 days from today */}
-        <button
-          id="days14Popup"
-          onClick={() => {
-            handleDays(14);
-          }}
-        >
-          14 Days
-        </button>
-
-        {/* Automatically set dates for 31 days from today */}
-        <button
-          id="days31Popup"
-          onClick={() => {
-            handleDays(31);
-          }}
-        >
-          1 month
-        </button>
       </div>
 
       {/* Additional Options */}
-      <div id="additionalOptionsPopupContainer">
+      <div
+        id="additionalOptionsPopupContainer"
+        className="padding-0-5rem border-1px-solid-lightgrey border-radius-0-5rem margin-top-0-5rem"
+      >
         <label
           id="allTransactionsPopupContainer"
           htmlFor="allTransactionsPopup"
@@ -520,29 +578,37 @@ export default function ConfigureGraph({
             <option value="year">Years</option>
           </select>
         </label>
+
+        {type === "line" || type === "bar" ? (
+          <div className="margin-0-5rem">
+            <label htmlFor="grouped">
+              Group by:
+              <Select
+                size="small"
+                onChange={(e) => {
+                  handleGroupByChange(e);
+                }}
+                id="grouped"
+                defaultValue={type === "line" ? "day" : "none"}
+              >
+                {type === "line" ? (
+                  <MenuItem value="day">Day</MenuItem>
+                ) : (
+                  <MenuItem value="none">None</MenuItem>
+                )}
+                <MenuItem value="week">Week</MenuItem>
+                <MenuItem value="month">Month</MenuItem>
+                <MenuItem value="year">Year</MenuItem>
+              </Select>
+            </label>
+          </div>
+        ) : null}
       </div>
-
-      {type === "line" || type === "bar" ? (
-        <div>
-          <label htmlFor="grouped">
-            Group by
-            <select onChange={handleGroupByChange} id="grouped">
-              {type === "line" ? (
-                <option value="day">Day</option>
-              ) : (
-                <option value="none">None</option>
-              )}
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-            </select>
-          </label>
-        </div>
-      ) : null}
-
       {/* Add graph */}
-      <button onClick={createGraphConfig}>Add Graph</button>
-      <button onClick={handleClose}>Cancel</button>
+      <div className="padding-0-5rem">
+        <CustomButton onClick={createGraphConfig}>Add Graph</CustomButton>
+        <CustomButton onClick={handleClose}>Cancel</CustomButton>
+      </div>
     </div>
   );
 }

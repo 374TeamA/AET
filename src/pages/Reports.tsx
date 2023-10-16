@@ -16,6 +16,7 @@ import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
 import NewGraph from "../components/NewGraph";
+import Tooltip from "@mui/material/Tooltip";
 
 /**
  * Report component. Includes all reporting/exporting aspects
@@ -49,7 +50,11 @@ export default function Reports() {
 
   const handleFavouriteGraph = (index: number) => {
     const newConfigs = graphConfigs;
-    newConfigs[index].favourite = !newConfigs[index].favourite;
+    if (newConfigs[index].favourite == 0) {
+      newConfigs[index].favourite = 1;
+    } else {
+      newConfigs[index].favourite = 0;
+    }
     setGraphConfigs([...newConfigs]);
     saveGraph(newConfigs[index]);
   };
@@ -137,15 +142,66 @@ export default function Reports() {
   // Return ------------------------------------------------------------------------------------------------------------------------
   return (
     <div id="reports-container" className="content">
-      {/*TODO: Jake to fix UI*/}
-      <div id="newGraphSelector" className="canvasContainer">
-        <canvas onClick={handleOpenPopup} id="bar"></canvas>
-        <canvas onClick={handleOpenPopup} id="line"></canvas>
-        <canvas onClick={handleOpenPopup} id="pie"></canvas>
-        <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
-      </div>
+      {graphConfigs.length > 0 && (
+        <div>
+          <h1 className="font-1-5-rem">My Graphs</h1>
+          {/* Popup to handle configuration of new graph */}
 
-      {/* Popup to handle configuration of new graph */}
+          <div
+            id="canvasContainerAll"
+            className="canvasContainer"
+            style={{ marginBottom: "0.5rem" }}
+          >
+            {graphConfigs.map((config, index) => (
+              <NewGraph
+                key={JSON.stringify(graphConfigs[index])}
+                graphConfig={config}
+                index={index}
+                handleDeleteGraph={handleDeleteGraph}
+                handleFavourite={handleFavouriteGraph}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {/*TODO: Jake to fix UI*/}
+      <div>
+        <h1 className="font-1-5-rem">Add a new graph</h1>
+        <div
+          id="newGraphSelector"
+          className="canvasContainer"
+          style={{ height: "80rem" }}
+        >
+          <Tooltip title="Click to add a bar graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="bar"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a line graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="line"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a pie graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="pie"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a polar area graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="polarArea"
+            ></canvas>
+          </Tooltip>
+        </div>
+      </div>
       <div id="configureGraphPopupContainer">
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <ConfigureGraph
@@ -154,18 +210,6 @@ export default function Reports() {
             addGraphConfig={addGraphConfig}
           />
         </CustomPopup>
-      </div>
-
-      <div id="canvasContainerAll" className="canvasContainer">
-        {graphConfigs.map((config, index) => (
-          <NewGraph
-            key={JSON.stringify(graphConfigs[index])}
-            graphConfig={config}
-            index={index}
-            handleDeleteGraph={handleDeleteGraph}
-            handleFavourite={handleFavouriteGraph}
-          />
-        ))}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 import { AccountsProvider } from "./context/AccountsContext.tsx";
 import { CategoryProvider } from "./context/CategoryContext.tsx";
 import Root from "./layout/Root.tsx";
+import "./styles/main.css";
 //import { BrowserRouter as Router } from "react-router-dom";
 import Routers from "./Routes.tsx";
 //import { Account } from "./types/account.ts";

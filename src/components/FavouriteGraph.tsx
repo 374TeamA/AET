@@ -4,32 +4,25 @@ import { generateGraph } from "../functions/generateGraph";
 import { GraphConfig } from "../types/graph";
 import { Transaction, FlattenedTransaction } from "../types/transaction";
 import { useEffect, useRef } from "react";
-import CustomButton from "./CustomButton";
 
-interface NewGraphProps {
+interface FavouriteGraphProps {
   graphConfig: GraphConfig;
   index: number;
-  handleDeleteGraph: (index: number) => void;
-  handleFavourite: (index: number) => void;
 }
 
 /**
- * New Graph Component which has a graph
+ * Favourite Graph Component which has a graph
  *
  * @export NewGraph component
  * @param {NewGraphProps} {
- *   handleDeleteGraph,
  *   graphConfig,
  *   index,
- *   handleFavourite
  * }
  */
-export default function NewGraph({
-  handleDeleteGraph,
+export default function FavouriteGraph({
   graphConfig,
-  index,
-  handleFavourite
-}: NewGraphProps) {
+  index
+}: FavouriteGraphProps) {
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart | null>(null);
@@ -120,36 +113,12 @@ export default function NewGraph({
         // Log the error
         console.error("Error fetching transactions: " + error);
       });
-  }, [graphConfig, index, handleDeleteGraph]);
+  }, [graphConfig, index]);
 
   return (
-    <div>
-      {/* <h1>New Graph</h1> */}
-
+    <div className="canvasContainer">
       {/* Graph */}
-      <canvas
-        style={{ minHeight: "15rem" }}
-        id={`canvas${index}`}
-        ref={canvasRef}
-      ></canvas>
-
-      {/* Delete Graph Button */}
-      <CustomButton
-        onClick={() => {
-          handleDeleteGraph(index);
-        }}
-      >
-        Delete Graph
-      </CustomButton>
-
-      {/* Favourite Graph Button */}
-      <CustomButton
-        onClick={() => {
-          handleFavourite(index);
-        }}
-      >
-        {graphConfig.favourite ? "Un-Favourtie" : "Favourtie"}
-      </CustomButton>
+      <canvas id={`canvas${index}`} ref={canvasRef}></canvas>
     </div>
   );
 }

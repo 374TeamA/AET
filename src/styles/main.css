@@ -1,0 +1,29 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+table th {
+  text-align: left;
+}
+
+table td {
+  text-align: left;
+}
+
+table th,
+table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  border: 1px solid lightgrey;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: #ddd;
+}
+
+/* Path: src/styles/main.css */

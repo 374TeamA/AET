@@ -40,7 +40,7 @@ li.selected {
 
 .sidebar {
   width: 10dvw;
-  min-width: 200px;
+  min-width: 10dvw;
   height: 88dvh;
   position: inherit;
   background-color: #ffffff;
