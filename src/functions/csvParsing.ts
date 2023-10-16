@@ -317,23 +317,23 @@ async function getTransactionFromLine(
 /**
  * Retrieves the merchant ID and category ID based on the merchant name
  *
- * @param {string} merchantName The name of the merchant
+ * @param {string} merchantId The name of the merchant
  *
  * @returns {Promise<Merchant>}
  */
-async function getMerchantFromName(merchantName: string): Promise<Merchant> {
+async function getMerchantFromName(merchantId: string): Promise<Merchant> {
   // Get the list of merchants from the database
   const merchants: Merchant[] = await getMerchants();
 
   // Look for a merchant in the database that matches
   let merchant: Merchant | undefined = merchants.find(
-    (merchant) => merchant.name === merchantName
+    (merchant) => merchant.id === merchantId
   );
 
   // If a matching merchant wasn't found
   if (!merchant) {
     // Make one
-    merchant = { id: uuidv4(), name: merchantName, category: "Un-Categorised" }; // TODO: Use the ID of the Un-Categorised category
+    merchant = { id: merchantId, category: "Un-Categorised" }; // TODO: Use the ID of the Un-Categorised category
 
     // Save it to the database
     saveMerchant(merchant);
