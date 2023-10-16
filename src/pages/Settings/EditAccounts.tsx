@@ -80,7 +80,7 @@ export default function EditAccounts() {
         sx={{ padding: 2, minWidth: "200px", maxWidth: "50dvw" }}
       >
         <Typography variant="h6">Account List</Typography>
-        <Typography variant="body1">If you want to add a bank account to AET, add it here.</Typography>
+        <Typography variant="body1">Add your bank accounts to start importing transactions.</Typography>
         {/* Display an array of categories */}
         <List>
           {accountList &&

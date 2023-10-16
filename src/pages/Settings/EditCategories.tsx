@@ -85,6 +85,7 @@ export default function EditCategories() {
         {/* Display an array of categories */}
         <List>
           {categoryList.map((category: Category, index: number) => (
+            category.id == "Un-Categorised" ? undefined : // Don't show the uncategorised category, but show everything else
             <ListItem
               sx={{ backgroundColor: category.color, m: 1, p: 0 }}
               key={index}
