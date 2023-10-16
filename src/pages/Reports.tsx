@@ -16,6 +16,7 @@ import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
 import NewGraph from "../components/NewGraph";
+import Tooltip from "@mui/material/Tooltip";
 
 /**
  * Report component. Includes all reporting/exporting aspects
@@ -142,29 +143,39 @@ export default function Reports() {
   return (
     <div id="reports-container" className="content">
       {/*TODO: Jake to fix UI*/}
+      <h1>Add a new graph</h1>
       <div id="newGraphSelector" className="canvasContainer">
-        <canvas
-          style={{ maxWidth: "24%" }}
-          onClick={handleOpenPopup}
-          id="bar"
-        ></canvas>
-        <canvas
-          style={{ maxWidth: "24%" }}
-          onClick={handleOpenPopup}
-          id="line"
-        ></canvas>
-        <canvas
-          style={{ maxWidth: "24%" }}
-          onClick={handleOpenPopup}
-          id="pie"
-        ></canvas>
-        <canvas
-          style={{ maxWidth: "24%" }}
-          onClick={handleOpenPopup}
-          id="polarArea"
-        ></canvas>
+        <Tooltip title="Click to add a bar graph">
+          <canvas
+            style={{ maxWidth: "23%" }}
+            onClick={handleOpenPopup}
+            id="bar"
+          ></canvas>
+        </Tooltip>
+        <Tooltip title="Click to add a line graph">
+          <canvas
+            style={{ maxWidth: "23%" }}
+            onClick={handleOpenPopup}
+            id="line"
+          ></canvas>
+        </Tooltip>
+        <Tooltip title="Click to add a pie graph">
+          <canvas
+            style={{ maxWidth: "23%" }}
+            onClick={handleOpenPopup}
+            id="pie"
+          ></canvas>
+        </Tooltip>
+        <Tooltip title="Click to add a polar area graph">
+          <canvas
+            style={{ maxWidth: "23%" }}
+            onClick={handleOpenPopup}
+            id="polarArea"
+          ></canvas>
+        </Tooltip>
       </div>
 
+      <h1>My Graphs</h1>
       {/* Popup to handle configuration of new graph */}
       <div id="configureGraphPopupContainer">
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>

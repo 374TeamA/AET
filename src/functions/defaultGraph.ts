@@ -1,9 +1,4 @@
-import {
-  ChartConfiguration,
-  ChartData,
-  ChartOptions,
-  TooltipItem
-} from "chart.js";
+import { ChartConfiguration, ChartData, ChartOptions } from "chart.js";
 
 /**
  * Generates the default configuration for a bar graph.
@@ -52,53 +47,40 @@ export function defaultBarGraph(): ChartConfiguration {
   // Options for the bar graph, including scales, title, legend, and tooltip settings.
   const barOptions: ChartOptions = {
     scales: {
-      y: {
-        beginAtZero: true,
+      x: {
+        grid: {
+          drawTicks: false
+        },
         ticks: {
-          // Custom tick formatting for values greater than or equal to 1000.
-          callback: function (value: string | number): string {
-            if (typeof value === "number" && value >= 1000) {
-              return (
-                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              );
-            } else if (typeof value === "string" && parseInt(value) >= 1000) {
-              return (
-                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              );
-            } else {
-              return "$" + value;
-            }
-          }
+          display: false
+        }
+      },
+      y: {
+        grid: {
+          drawTicks: false
+        },
+        ticks: {
+          display: false
         }
       }
+    },
+    layout: {
+      padding: 20
     },
     plugins: {
       title: {
         display: true,
-        text: "Spending for March" // Title text for the graph.
+        text: "Bar Graph", // Title text for the graph.
+        font: {
+          size: 20,
+          weight: "normal"
+        }
       },
       legend: {
-        display: false // Hide the legend.
+        display: false
       },
       tooltip: {
-        callbacks: {
-          // Custom tooltip label formatting as currency (USD).
-          label: function (context: TooltipItem<"bar">) {
-            let label = context.dataset.label || "";
-
-            if (label) {
-              label += ": ";
-            }
-
-            if (context.parsed.y !== null) {
-              label += new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD"
-              }).format(context.parsed.y);
-            }
-            return label;
-          }
-        }
+        enabled: false
       }
     }
   };
@@ -158,57 +140,40 @@ export function defaultLineGraph(): ChartConfiguration {
   // Options for the line graph, including scales, title, legend, and tooltip settings.
   const lineOptions: ChartOptions = {
     scales: {
-      y: {
-        beginAtZero: true,
+      x: {
+        grid: {
+          drawTicks: false
+        },
         ticks: {
-          // Custom tick formatting for values greater than or equal to 1000.
-          callback: function (value: string | number): string {
-            if (typeof value === "number" && value >= 1000) {
-              return (
-                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              );
-            } else if (typeof value === "string" && parseInt(value) >= 1000) {
-              return (
-                "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              );
-            } else {
-              return "$" + value;
-            }
-          }
+          display: false
+        }
+      },
+      y: {
+        grid: {
+          drawTicks: false
+        },
+        ticks: {
+          display: false
         }
       }
     },
-    interaction: {
-      mode: "index",
-      intersect: false
+    layout: {
+      padding: 20
     },
     plugins: {
       title: {
         display: true,
-        text: "Spending for a week for Food and Clothing" // Title text for the graph.
+        text: "Line Graph", // Title text for the graph.
+        font: {
+          size: 20,
+          weight: "normal"
+        }
       },
       legend: {
-        display: true // Show the legend.
+        display: false
       },
       tooltip: {
-        callbacks: {
-          // Custom tooltip label formatting as currency (USD).
-          label: function (context: TooltipItem<"line">) {
-            let label = context.dataset.label || "";
-
-            if (label) {
-              label += ": ";
-            }
-
-            if (context.parsed.y !== null) {
-              label += new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD"
-              }).format(context.parsed.y);
-            }
-            return label;
-          }
-        }
+        enabled: false
       }
     }
   };
@@ -267,32 +232,23 @@ export function defaultPieGraph(): ChartConfiguration {
 
   // Options for the pie graph, including title, legend, and tooltip settings.
   const pieOptions: ChartOptions = {
+    layout: {
+      padding: 20
+    },
     plugins: {
       title: {
         display: true,
-        text: "Spending for March" // Title text for the graph.
+        text: "Pie Graph", // Title text for the graph.
+        font: {
+          size: 20,
+          weight: "normal"
+        }
       },
       legend: {
-        display: false // Hide the legend.
+        display: false
       },
       tooltip: {
-        callbacks: {
-          // Custom tooltip label formatting as currency (USD).
-          label: function (context: TooltipItem<"pie">) {
-            let label = context.dataset.label || "";
-
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed !== null) {
-              label += new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD"
-              }).format(context.parsed);
-            }
-            return label;
-          }
-        }
+        enabled: false
       }
     }
   };
@@ -352,33 +308,33 @@ export function defaultPolarGraph(): ChartConfiguration {
 
   // Options for the polar area graph, including title, legend, and tooltip settings.
   const polarOptions: ChartOptions = {
+    scales: {
+      r: {
+        grid: {
+          drawTicks: false
+        },
+        ticks: {
+          display: false
+        }
+      }
+    },
+    layout: {
+      padding: 20
+    },
     plugins: {
       title: {
         display: true,
-        text: "Spending for March" // Title text for the graph.
+        text: "Pie Graph", // Title text for the graph.
+        font: {
+          size: 20,
+          weight: "normal"
+        }
       },
       legend: {
-        display: false // Hide the legend.
+        display: false
       },
       tooltip: {
-        callbacks: {
-          // Custom tooltip label formatting as currency (USD).
-          label: function (context: TooltipItem<"polarArea">) {
-            let label = context.dataset.label || "";
-
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed.r !== null) {
-              label += new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD"
-              }).format(context.parsed.r);
-            }
-
-            return label;
-          }
-        }
+        enabled: false
       }
     }
   };
