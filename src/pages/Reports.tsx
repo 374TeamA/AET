@@ -142,41 +142,66 @@ export default function Reports() {
   // Return ------------------------------------------------------------------------------------------------------------------------
   return (
     <div id="reports-container" className="content">
-      {/*TODO: Jake to fix UI*/}
-      <h1>Add a new graph</h1>
-      <div id="newGraphSelector" className="canvasContainer">
-        <Tooltip title="Click to add a bar graph">
-          <canvas
-            style={{ maxWidth: "23%" }}
-            onClick={handleOpenPopup}
-            id="bar"
-          ></canvas>
-        </Tooltip>
-        <Tooltip title="Click to add a line graph">
-          <canvas
-            style={{ maxWidth: "23%" }}
-            onClick={handleOpenPopup}
-            id="line"
-          ></canvas>
-        </Tooltip>
-        <Tooltip title="Click to add a pie graph">
-          <canvas
-            style={{ maxWidth: "23%" }}
-            onClick={handleOpenPopup}
-            id="pie"
-          ></canvas>
-        </Tooltip>
-        <Tooltip title="Click to add a polar area graph">
-          <canvas
-            style={{ maxWidth: "23%" }}
-            onClick={handleOpenPopup}
-            id="polarArea"
-          ></canvas>
-        </Tooltip>
-      </div>
+      {graphConfigs.length > 0 && (
+        <div>
+          <h1 className="font-1-5-rem">My Graphs</h1>
+          {/* Popup to handle configuration of new graph */}
 
-      <h1>My Graphs</h1>
-      {/* Popup to handle configuration of new graph */}
+          <div
+            id="canvasContainerAll"
+            className="canvasContainer"
+            style={{ marginBottom: "0.5rem" }}
+          >
+            {graphConfigs.map((config, index) => (
+              <NewGraph
+                key={JSON.stringify(graphConfigs[index])}
+                graphConfig={config}
+                index={index}
+                handleDeleteGraph={handleDeleteGraph}
+                handleFavourite={handleFavouriteGraph}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {/*TODO: Jake to fix UI*/}
+      <div>
+        <h1 className="font-1-5-rem">Add a new graph</h1>
+        <div
+          id="newGraphSelector"
+          className="canvasContainer"
+          style={{ height: "80rem" }}
+        >
+          <Tooltip title="Click to add a bar graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="bar"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a line graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="line"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a pie graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="pie"
+            ></canvas>
+          </Tooltip>
+          <Tooltip title="Click to add a polar area graph">
+            <canvas
+              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              onClick={handleOpenPopup}
+              id="polarArea"
+            ></canvas>
+          </Tooltip>
+        </div>
+      </div>
       <div id="configureGraphPopupContainer">
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <ConfigureGraph
@@ -185,18 +210,6 @@ export default function Reports() {
             addGraphConfig={addGraphConfig}
           />
         </CustomPopup>
-      </div>
-
-      <div id="canvasContainerAll" className="canvasContainer">
-        {graphConfigs.map((config, index) => (
-          <NewGraph
-            key={JSON.stringify(graphConfigs[index])}
-            graphConfig={config}
-            index={index}
-            handleDeleteGraph={handleDeleteGraph}
-            handleFavourite={handleFavouriteGraph}
-          />
-        ))}
       </div>
     </div>
   );
