@@ -55,16 +55,17 @@ export default function ConfigureGraph({
       name: selectedOption.text
     };
 
+    // Add the account to the list of accounts if it doesn't already exist
     if (!accounts.some((a) => a.id === account.id)) {
       setAccounts([...accounts, account]);
     }
   };
 
-  // TODO: fix this
   /**
    * Function to add all unadded accounts to the list of accounts
    */
   const addAllAccounts = () => {
+    // add any accounts from database accounts that arent already in accounts (so there are no duplicates)
     if (databaseAccounts) {
       const uniqueAccounts = databaseAccounts.filter(
         (account) => !accounts.some((a) => a.id === account.id)
@@ -79,6 +80,7 @@ export default function ConfigureGraph({
    * @param {Account} account index of account to delete
    */
   const deleteAccount = (account: Account) => {
+    // Remove the account from the list of accounts
     setAccounts(accounts.filter((a) => a !== account));
   };
 
@@ -98,6 +100,7 @@ export default function ConfigureGraph({
       (c) => c.id === selectedOption.value
     );
 
+    // Add the category to the list of categories if it doesn't already exist
     if (category) {
       if (!categories.some((c) => c.id === category.id)) {
         setCategories([...categories, category]);
@@ -124,6 +127,7 @@ export default function ConfigureGraph({
    * @param {number} category index of category to delete
    */
   const deleteCategory = (category: Category) => {
+    // Remove the category from the list of categories
     setCategories(categories.filter((c) => c !== category));
   };
 
@@ -147,6 +151,7 @@ export default function ConfigureGraph({
     setEndDate(newDate);
   };
 
+  // TODO: Jake this needs to be fixed so it actually handles a month correctly
   /**
    * Function to set the date range to a specific number of days
    *
@@ -167,6 +172,8 @@ export default function ConfigureGraph({
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleAllTransactionsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // Get the date range popup container and the dynamic update popup container
+    // TODO: This could probably be changed to use refs instead of getElementById
     const dateRangePopupContainer: HTMLDivElement = document.getElementById(
       "dateRangePopupContainer"
     ) as HTMLDivElement;
@@ -175,6 +182,7 @@ export default function ConfigureGraph({
         "dynamicUpdatePopupContainer"
       ) as HTMLLabelElement;
 
+    // If the checkbox is ticked, disable the date range and dynamic update options and vice versa
     if (e.target.checked) {
       setAllTransactions(true);
       dateRangePopupContainer.style.display = "none";
@@ -192,6 +200,8 @@ export default function ConfigureGraph({
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleDynamicUpdateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // Get the date range popup container and the all transactions popup container
+    // TODO: This could probably be changed to use refs instead of getElementById
     const dateRangePopupContainer: HTMLDivElement = document.getElementById(
       "dateRangePopupContainer"
     ) as HTMLDivElement;
@@ -204,6 +214,7 @@ export default function ConfigureGraph({
         "dynamicUpdateConfigurationContainer"
       ) as HTMLLabelElement;
 
+    // If the checkbox is ticked, disable the date range and all transactions options and vice versa
     if (e.target.checked) {
       setDynamicUpdate(true);
       dateRangePopupContainer.style.display = "none";
@@ -221,6 +232,8 @@ export default function ConfigureGraph({
    * Function to handle changes to either options for the Graph Configuration when the graph should update automatically
    */
   const handleDynamicUpdateConfiguration = () => {
+    // Get the length and unit elements
+    // TODO: This could probably be changed to use refs instead of getElementById
     const lengthElement: HTMLInputElement = document.getElementById(
       "dynamicUpdateConfiguration"
     ) as HTMLInputElement;
@@ -228,11 +241,14 @@ export default function ConfigureGraph({
       "dynamicUpdateConfigurationSelect"
     ) as HTMLSelectElement;
 
+    // Get the length and unit values
     const length: number = parseInt(lengthElement.value);
     const unit: string = unitElement.options[unitElement.selectedIndex].value;
 
     setLengthValue(length);
 
+    // Set the length of days based on the unit
+    // TODO: Jake this needs to be changed to handle months correctly
     if (unit === "day") {
       setLengthOfDays(length);
     } else if (unit === "week") {

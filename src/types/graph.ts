@@ -1,5 +1,6 @@
 import { ChartType } from "chart.js";
 
+// Graph config type
 export type GraphConfig = {
   id: string;
   startDate: Date;

@@ -8,7 +8,14 @@ import {
 import { FlattenedTransaction } from "../types/transaction";
 import { GraphConfig } from "../types/graph";
 
-//TODO: All this code is likely to be changed soon so not gonna comment it
+/**
+ * Takes an array of FlattenedTransaction objects and converts them into a ChartData object.
+ *
+ * @export generateGraph function
+ * @param {FlattenedTransaction[]} transactions Array of FlattenedTransaction objects that need to be processed
+ * @param {GraphConfig} graphConfig GraphConfig object that contains the graph type, categories, and any other relevant information
+ * @return {*} ChartConfiguration object for ChartJS
+ */
 export function generateGraph(
   transactions: FlattenedTransaction[],
   graphConfig: GraphConfig
@@ -25,22 +32,26 @@ export function generateGraph(
     graphConfig.type == "bar" ||
     graphConfig.type == "polarArea"
   ) {
+    // Pie, bar, and polar area graphs are grouped by category
     data = getDataByCategory(transactions, graphConfig);
   } else {
+    // Line graphs are grouped by date
     data = getDataByDate(transactions, graphConfig);
   }
 
+  // Chart type
   const chartType: ChartType = graphConfig.type as ChartType;
+
+  // Chart options
   const options = getOptions(graphConfig.type);
-  // Config
-  // TODO: set this to be dynamic for different graph types
+
+  // Chart configuration
   const config: ChartConfiguration = {
     type: chartType,
     data: data,
     options: options as ChartOptions
   };
 
-  console.log(config);
   return config;
 }
 
@@ -48,73 +59,89 @@ export function generateGraph(
  * Takes an array of FlattenedTransaction objects and converts them into a ChartData object.
  * Transactions are separated into categories, with each category totalling the amount from each relevant transaction.
  *
- * @param {FlattenedTransaction[]} rawData
+ * @param {FlattenedTransaction[]} rawData Array of FlattenedTransaction objects that need to be processed
+ * @param {GraphConfig} graphConfig GraphConfig object that contains the graph type, categories, and any other relevant information
  * @return {ChartData} formatted ChartData object for ChartJS
  */
 function getDataByCategory(
   rawData: FlattenedTransaction[],
   graphConfig: GraphConfig
 ): ChartData {
+  // Variables
   const categories: string[] = [];
   const values: number[] = [];
   const filteredData: FlattenedTransaction[] = [];
 
+  // Get all categories
   for (let i = 0; i < rawData.length; i++) {
     const category: string = rawData[i].category;
 
+    // If the category is in the list of categories, add it to the filtered data
     if (graphConfig.categories.includes(category)) {
+      // If the category is not in the list of categories, add it to the list of categories and initialize its value to 0
       if (!categories.includes(category)) {
         categories.push(category);
         values.push(0);
       }
 
+      // Add the transaction to the filtered data
       filteredData.push(rawData[i]);
       const index: number = categories.indexOf(category);
       values[index] += rawData[i].amount;
     }
   }
 
+  // Handle grouping if not the default "day" option and the graph type is bar
   if (
     (graphConfig.groupBy == "week" ||
       graphConfig.groupBy == "month" ||
       graphConfig.groupBy == "year") &&
     graphConfig.type == "bar"
   ) {
-    //handle it
+    // Group the transactions by week, month, or year
     let grouped: Record<string, FlattenedTransaction[]> = {};
 
+    // Group by week, month, or year
     if (graphConfig.groupBy == "week") {
       grouped = groupObjectsByWeek(filteredData);
     } else if (graphConfig.groupBy == "month") {
       grouped = groupObjectsByMonth(filteredData);
     } else {
-      //group by year
       grouped = groupObjectsByYear(filteredData);
     }
 
+    // Create datasets
     const datasets = [];
-
     const labels: string[] = Object.keys(grouped);
     const values: number[] = [];
 
+    // Initialize values array
     for (let i = 0; i < labels.length; i++) {
       values.push(0);
     }
 
+    // Create a dataset for each category
     for (let i = 0; i < categories.length; i++) {
-      //
+      // Get the category
       const category = categories[i];
       const categoryValues = [];
+
+      // Get the total amount for each date range (week, month, year)
       for (let j = 0; j < labels.length; j++) {
         let total = 0;
+
+        // Iterate through each transaction in the date range
         for (let k = 0; k < grouped[labels[j]].length; k++) {
           if (grouped[labels[j]][k].category == category) {
             total += grouped[labels[j]][k].amount;
           }
         }
+
+        // Add the total amount to the array
         categoryValues.push(total);
       }
 
+      // Add the dataset to the datasets array
       datasets.push({
         label: category,
         data: categoryValues,
@@ -122,15 +149,23 @@ function getDataByCategory(
       });
     }
 
+    // If there is more than 1 category, create a dataset for the total amount
     if (categories.length > 1) {
+      // Get the total amount for each date range (week, month, year)
       for (let i = 0; i < labels.length; i++) {
         let total = 0;
+
+        // Iterate through each category
         for (let j = 0; j < categories.length; j++) {
+          // Add the total amount for the category to the total amount for the date range
           total += datasets[j].data[i];
         }
+
+        // Add the total amount to the values array
         values[i] = total;
       }
 
+      // Add the dataset to the datasets array
       datasets.push({
         label: "Total",
         data: values,
@@ -138,6 +173,7 @@ function getDataByCategory(
       });
     }
 
+    // Create the ChartData object
     const data: ChartData = {
       labels: labels,
       datasets: datasets
@@ -159,89 +195,24 @@ function getDataByCategory(
   return data;
 }
 
-function groupObjectsByWeek(array: FlattenedTransaction[]) {
-  const grouped: Record<string, FlattenedTransaction[]> = {};
-
-  array.forEach((item) => {
-    const date = new Date(item.date);
-    const weekStartDate = new Date(date);
-    weekStartDate.setDate(date.getDate() - ((date.getDay() + 6) % 7)); // Find the previous Monday
-    weekStartDate.setHours(0, 0, 0, 0); // Set time to midnight
-
-    const weekEndDate = new Date(weekStartDate);
-    weekEndDate.setDate(weekStartDate.getDate() + 6); // Set the week's end to Sunday
-
-    const weekKey = `${"Week of "}${weekStartDate.getDate()} ${monthToString(
-      weekStartDate.getMonth()
-    )} ${weekStartDate.getFullYear()}`;
-
-    if (!grouped[weekKey]) {
-      grouped[weekKey] = [];
-    }
-
-    grouped[weekKey].push(item);
-  });
-
-  return grouped;
-}
-
-function groupObjectsByMonth(array: FlattenedTransaction[]) {
-  const grouped: Record<string, FlattenedTransaction[]> = {};
-
-  array.forEach((item) => {
-    const date = new Date(item.date);
-    const monthStartDate = new Date(date);
-    monthStartDate.setDate(1); // Set to the first day of the month
-    monthStartDate.setHours(0, 0, 0, 0); // Set time to midnight
-
-    const monthKey = `${monthToLongString(
-      monthStartDate.getMonth()
-    )} ${monthStartDate.getFullYear()}`;
-
-    if (!grouped[monthKey]) {
-      grouped[monthKey] = [];
-    }
-
-    grouped[monthKey].push(item);
-  });
-
-  return grouped;
-}
-
-function groupObjectsByYear(array: FlattenedTransaction[]) {
-  const grouped: Record<string, FlattenedTransaction[]> = {};
-
-  array.forEach((item) => {
-    const date = new Date(item.date);
-    const yearStartDate = new Date(date);
-    yearStartDate.setMonth(0, 1); // Set to the first day of the year
-    yearStartDate.setHours(0, 0, 0, 0); // Set time to midnight
-
-    const yearKey = `${yearStartDate.getFullYear()}`;
-
-    if (!grouped[yearKey]) {
-      grouped[yearKey] = [];
-    }
-
-    grouped[yearKey].push(item);
-  });
-
-  return grouped;
-}
-
-// TODO: rewrite all of this
-// It needs to handle multiple categories and show a line for each, along with a label
-// It needs to generate a date and populate it with $0 if no money was spent that day
+/**
+ * Gets the data for the graph by date. This function is called when the graph type is not pie, bar, or polar area.
+ *
+ * @param rawData Array of FlattenedTransaction objects that need to be processed
+ * @param graphConfig GraphConfig object that contains the graph type, categories, and any other relevant information
+ * @returns {ChartData} formatted ChartData object for ChartJS
+ */
 function getDataByDate(
   rawData: FlattenedTransaction[],
   graphConfig: GraphConfig
-) {
+): ChartData {
+  // Variables
   const categories: string[] = [];
   const filteredData: FlattenedTransaction[] = [];
   const startDate: Date = rawData[0].date;
   const endDate: Date = rawData[rawData.length - 1].date;
 
-  // get all categories
+  // Get all categories
   for (let i = 0; i < rawData.length; i++) {
     if (graphConfig.categories.includes(rawData[i].category)) {
       filteredData.push(rawData[i]);
@@ -252,9 +223,11 @@ function getDataByDate(
     }
   }
 
-  // Handle grouping
+  // Handle grouping if not the default "day" option
   if (graphConfig.groupBy !== "day") {
     let grouped: Record<string, FlattenedTransaction[]> = {};
+
+    // Group by week, month, or year
     if (graphConfig.groupBy == "week") {
       grouped = groupObjectsByWeek(filteredData);
     } else if (graphConfig.groupBy == "month") {
@@ -263,19 +236,23 @@ function getDataByDate(
       grouped = groupObjectsByYear(filteredData);
     }
 
+    // Create datasets
     const datasets = [];
-
     const labels: string[] = Object.keys(grouped);
     const values: number[] = [];
 
+    // Initialize values array
     for (let i = 0; i < labels.length; i++) {
       values.push(0);
     }
 
+    // Create a dataset for each category
     for (let i = 0; i < categories.length; i++) {
-      //
+      // Get the category
       const category = categories[i];
       const categoryValues = [];
+
+      // Get the total amount for each date range (week, month, year)
       for (let j = 0; j < labels.length; j++) {
         let total = 0;
         for (let k = 0; k < grouped[labels[j]].length; k++) {
@@ -286,6 +263,7 @@ function getDataByDate(
         categoryValues.push(total);
       }
 
+      // Add the dataset to the datasets array
       datasets.push({
         label: category,
         data: categoryValues,
@@ -293,7 +271,9 @@ function getDataByDate(
       });
     }
 
+    // If there is more than 1 category, create a dataset for the total amount
     if (categories.length > 1) {
+      // Get the total amount for each date range (week, month, year)
       for (let i = 0; i < labels.length; i++) {
         let total = 0;
         for (let j = 0; j < categories.length; j++) {
@@ -302,6 +282,7 @@ function getDataByDate(
         values[i] = total;
       }
 
+      // Add the dataset to the datasets array
       datasets.push({
         label: "Total",
         data: values,
@@ -309,6 +290,7 @@ function getDataByDate(
       });
     }
 
+    // Create the ChartData object
     const data: ChartData = {
       labels: labels,
       datasets: datasets
@@ -321,6 +303,7 @@ function getDataByDate(
   const dates: Date[] = [];
   const currentDate: Date = new Date(startDate);
 
+  // add each date to the array
   while (currentDate <= endDate) {
     dates.push(new Date(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
@@ -332,76 +315,77 @@ function getDataByDate(
     labels.push(date.toDateString());
   });
 
+  // initialize values array
   const values: number[] = [];
   for (let i = 0; i < labels.length; i++) {
     values.push(0);
   }
 
-  if (categories.length > 1) {
-    // More than 1 category
-    const datasets = [];
-    for (let i = 0; i < categories.length; i++) {
-      const category = categories[i];
-      const categoryValues = [];
-      for (let j = 0; j < labels.length; j++) {
-        const date = new Date(labels[j]);
-        let total = 0;
-        for (let k = 0; k < filteredData.length; k++) {
-          if (
-            filteredData[k].category == category &&
-            filteredData[k].date.toDateString() == date.toDateString()
-          ) {
-            total += filteredData[k].amount;
-          }
+  // create a dataset for each category
+  const datasets = [];
+
+  for (let i = 0; i < categories.length; i++) {
+    // get the category
+    const category = categories[i];
+    const categoryValues = [];
+
+    // get the total amount for each date
+    for (let j = 0; j < labels.length; j++) {
+      // convert the label back into a date object
+      const date = new Date(labels[j]);
+      let total = 0;
+
+      // get the total amount for the date and category
+      for (let k = 0; k < filteredData.length; k++) {
+        if (
+          filteredData[k].category == category &&
+          filteredData[k].date.toDateString() == date.toDateString()
+        ) {
+          total += filteredData[k].amount;
         }
-        categoryValues.push(total);
       }
-      datasets.push({
-        label: category,
-        data: categoryValues,
-        pointStyle: false
-      });
+
+      // add the total amount to the array
+      categoryValues.push(total);
     }
 
+    // add the dataset to the datasets array
+    datasets.push({
+      label: category,
+      data: categoryValues,
+      pointStyle: false
+    });
+  }
+
+  // if there is more than 1 category, create a dataset for the total amount
+  if (categories.length > 1) {
+    // get the total amount for each date
     const totalValues: number[] = [];
+
+    // initialize values array
     for (let i = 0; i < labels.length; i++) {
       totalValues.push(0);
     }
 
+    // get the total amount for each date
     for (let i = 0; i < filteredData.length; i++) {
       const date: string = filteredData[i].date.toDateString();
       const index: number = labels.indexOf(date);
       totalValues[index] += filteredData[i].amount;
     }
 
+    // add the dataset to the datasets array
     datasets.push({
       label: "Total",
       data: totalValues,
       pointStyle: false
     });
-
-    const data: ChartData = {
-      labels: labels,
-      datasets: datasets
-    };
-    return data;
   }
 
-  for (let i = 0; i < filteredData.length; i++) {
-    const date: string = filteredData[i].date.toDateString();
-    const index: number = labels.indexOf(date);
-    values[index] += filteredData[i].amount;
-  }
-
+  // create the ChartData object
   const data: ChartData = {
     labels: labels,
-    datasets: [
-      {
-        label: categories[0],
-        data: values,
-        pointStyle: false
-      }
-    ]
+    datasets: datasets
   };
 
   return data;
@@ -626,4 +610,113 @@ function monthToLongString(month: number): string {
     "December"
   ];
   return months[month];
+}
+
+/**
+ * Groups an array of FlattenedTransaction objects by week. The week starts on Monday and ends on Sunday.
+ *
+ * @param {FlattenedTransaction[]} array Array of FlattenedTransaction objects
+ * @return {Record<string, FlattenedTransaction[]>} Object with keys as the week and values as an array of FlattenedTransaction objects
+ */
+function groupObjectsByWeek(
+  array: FlattenedTransaction[]
+): Record<string, FlattenedTransaction[]> {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  // Iterate through each transaction
+  array.forEach((item) => {
+    // Get the date of the transaction
+    const date = new Date(item.date);
+    const weekStartDate = new Date(date);
+    weekStartDate.setDate(date.getDate() - ((date.getDay() + 6) % 7)); // Find the previous Monday
+    weekStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekStartDate.getDate() + 6); // Set the week's end to Sunday
+
+    // Create the key for the week
+    const weekKey = `${"Week of "}${weekStartDate.getDate()} ${monthToString(
+      weekStartDate.getMonth()
+    )} ${weekStartDate.getFullYear()}`;
+
+    // If the key doesn't exist, create it
+    if (!grouped[weekKey]) {
+      grouped[weekKey] = [];
+    }
+
+    // Add the transaction to the week
+    grouped[weekKey].push(item);
+  });
+
+  return grouped;
+}
+
+/**
+ * Groups an array of FlattenedTransaction objects by month. The month starts on the first day of the month.
+ *
+ * @param {FlattenedTransaction[]} array Array of FlattenedTransaction objects
+ * @return {Record<string, FlattenedTransaction[]>} Object with keys as the month and values as an array of FlattenedTransaction objects
+ */
+function groupObjectsByMonth(
+  array: FlattenedTransaction[]
+): Record<string, FlattenedTransaction[]> {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  // Iterate through each transaction
+  array.forEach((item) => {
+    // Get the date of the transaction
+    const date = new Date(item.date);
+    const monthStartDate = new Date(date);
+    monthStartDate.setDate(1); // Set to the first day of the month
+    monthStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    // Create the key for the month
+    const monthKey = `${monthToLongString(
+      monthStartDate.getMonth()
+    )} ${monthStartDate.getFullYear()}`;
+
+    // If the key doesn't exist, create it
+    if (!grouped[monthKey]) {
+      grouped[monthKey] = [];
+    }
+
+    // Add the transaction to the month
+    grouped[monthKey].push(item);
+  });
+
+  return grouped;
+}
+
+/**
+ * Groups an array of FlattenedTransaction objects by year. The year starts on January 1st.
+ *
+ * @param {FlattenedTransaction[]} array Array of FlattenedTransaction objects
+ * @return {Record<string, FlattenedTransaction[]>} Object with keys as the year and values as an array of FlattenedTransaction objects
+ */
+function groupObjectsByYear(
+  array: FlattenedTransaction[]
+): Record<string, FlattenedTransaction[]> {
+  const grouped: Record<string, FlattenedTransaction[]> = {};
+
+  // Iterate through each transaction
+  array.forEach((item) => {
+    // Get the date of the transaction
+    const date = new Date(item.date);
+    const yearStartDate = new Date(date);
+    yearStartDate.setMonth(0, 1); // Set to the first day of the year
+    yearStartDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    // Create the key for the year
+    const yearKey = `${yearStartDate.getFullYear()}`;
+
+    // If the key doesn't exist, create it
+    if (!grouped[yearKey]) {
+      grouped[yearKey] = [];
+    }
+
+    // Add the transaction to the year
+    grouped[yearKey].push(item);
+  });
+
+  return grouped;
 }
