@@ -4,7 +4,7 @@ import { useEffect, useContext, useState } from "react";
 import "../styles/nav.css";
 import { NavLink, useLocation } from "react-router-dom";
 import { AccountContext } from "../context/AccountsContext";
-import { Divider, Typography } from "@mui/material";
+import { Divider } from "@mui/material";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -79,9 +79,17 @@ export default function Sidebar() {
           </li>
           <Divider />
           <div>
-            <Typography variant="overline" sx={{ p: 2, mt: 4 }}>
+            <div
+              style={{
+                textAlign: "center",
+                fontWeight: "350",
+                borderBottom: "1px solid lightgrey",
+                marginTop: "1rem",
+                marginBottom: "0.5rem"
+              }}
+            >
               Bank Accounts
-            </Typography>
+            </div>
           </div>
           {accounts &&
             accounts.map((account) => {
@@ -102,9 +110,17 @@ export default function Sidebar() {
               );
             })}
           <div>
-            <Typography variant="overline" sx={{ p: 2, mt: 2 }}>
+            <div
+              style={{
+                textAlign: "center",
+                fontWeight: "350",
+                borderBottom: "1px solid lightgrey",
+                marginTop: "1rem",
+                marginBottom: "0.5rem"
+              }}
+            >
               Other Expenses
-            </Typography>
+            </div>
           </div>
           <li className={location.pathname.includes("CASH") ? "selected" : ""}>
             <NavLink
