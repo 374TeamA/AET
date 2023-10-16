@@ -9,7 +9,7 @@ export type GraphConfig = {
   categories: string[];
   accounts: string[];
   type: ChartType;
-  favourite: boolean;
+  favourite: number;
   update: boolean;
   allTransactions: boolean;
   groupBy: string;

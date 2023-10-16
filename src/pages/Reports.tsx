@@ -49,7 +49,11 @@ export default function Reports() {
 
   const handleFavouriteGraph = (index: number) => {
     const newConfigs = graphConfigs;
-    newConfigs[index].favourite = !newConfigs[index].favourite;
+    if (newConfigs[index].favourite == 0) {
+      newConfigs[index].favourite = 1;
+    } else {
+      newConfigs[index].favourite = 0;
+    }
     setGraphConfigs([...newConfigs]);
     saveGraph(newConfigs[index]);
   };
