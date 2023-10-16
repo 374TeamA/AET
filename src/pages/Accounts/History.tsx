@@ -74,7 +74,7 @@ export default function History() {
         });
         setImportTotals(newImpTotals);
       });
-  }, []);
+  }, [accountId, imports]);
   const columns: GridColDef[] = [
     {
       field: "delete",
