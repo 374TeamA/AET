@@ -118,7 +118,7 @@ export default function History() {
     }
   ];
   return (
-    <Box style={{ height: "77vh" }}>
+    <Box style={{ height: "100%", width: "86dvw" }}>
       <DataGrid columns={columns} rows={importTotals} />
     </Box>
   );

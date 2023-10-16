@@ -42,90 +42,111 @@ export default function Sidebar() {
       sidebar.classList.toggle("open");
     }
   };
-
-  return (
-    <div className="sidebar">
-      <button className="hamburger" onClick={toggleSidebar}>
-        &#9776;
-      </button>
-      <ul className="navbar">
-        <li className={location.pathname === "/" ? "selected" : ""}>
-          <NavLink
-            onClick={toggleIfMobile}
-            style={{ width: "100%", display: "block" }}
-            to="/"
-          >
-            Dashboard
-          </NavLink>
-        </li>
-        <Divider />
-        <div>
-          <Typography variant="overline" sx={{ p: 2 ,mt:4}}>
-            Bank Accounts
-          </Typography>
-        </div>
-        {accounts &&
-          accounts.map((account) => {
-            return (
-              <li
-                className={
-                  location.pathname.includes(account.id) ? "selected" : ""
-                }
-                key={account.id}
-              >
-                <NavLink
-                  style={{ width: "100%", display: "block" }}
-                  to={`/accounts/${account.id}`}>
+  if (!accounts || accounts?.length === 0) {
+    return (
+      <div className="sidebar">
+        <button className="hamburger" onClick={toggleSidebar}>
+          &#9776;
+        </button>
+        <ul className="navbar">
+          <li className={location.pathname === "/" ? "selected" : ""}>
+            <NavLink
+              onClick={toggleIfMobile}
+              style={{ width: "100%", display: "block" }}
+              to="/"
+            >
+              Dashboard
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+    );
+  } else if (accounts && accounts.length != 0) {
+    return (
+      <div className="sidebar">
+        <button className="hamburger" onClick={toggleSidebar}>
+          &#9776;
+        </button>
+        <ul className="navbar">
+          <li className={location.pathname === "/" ? "selected" : ""}>
+            <NavLink
+              onClick={toggleIfMobile}
+              style={{ width: "100%", display: "block" }}
+              to="/"
+            >
+              Dashboard
+            </NavLink>
+          </li>
+          <Divider />
+          <div>
+            <Typography variant="overline" sx={{ p: 2, mt: 4 }}>
+              Bank Accounts
+            </Typography>
+          </div>
+          {accounts &&
+            accounts.map((account) => {
+              return (
+                <li
+                  className={
+                    location.pathname.includes(account.id) ? "selected" : ""
+                  }
+                  key={account.id}
+                >
+                  <NavLink
+                    style={{ width: "100%", display: "block" }}
+                    to={`/accounts/${account.id}`}
+                  >
                     {account.name}
-                </NavLink>
-            </li>
-          );
-        })}
-        <div>
-          <Typography variant="overline" sx={{ p: 2 ,mt:2}}>
-            Other Expenses
-          </Typography>
-        </div>
-        <li
+                  </NavLink>
+                </li>
+              );
+            })}
+          <div>
+            <Typography variant="overline" sx={{ p: 2, mt: 2 }}>
+              Other Expenses
+            </Typography>
+          </div>
+          <li className={location.pathname.includes("CASH") ? "selected" : ""}>
+            <NavLink
+              style={{ width: "100%", display: "block" }}
+              to={`/accounts/CASH`}
+            >
+              Manual Entry
+            </NavLink>
+          </li>
+        </ul>
+        <div className="bottom-links">
+          <ul>
+            <li
               className={
-                location.pathname.includes("CASH") ? "selected" : ""
+                location.pathname.includes("reports") ? "selected" : ""
               }
             >
               <NavLink
+                onClick={toggleIfMobile}
                 style={{ width: "100%", display: "block" }}
-                to={`/accounts/CASH`}
+                to="/reports"
               >
-                Manual Entry
+                Reports
               </NavLink>
             </li>
-      </ul>
-      <div className="bottom-links">
-        <ul>
-          <li
-            className={location.pathname.includes("reports") ? "selected" : ""}
-          >
-            <NavLink
-              onClick={toggleIfMobile}
-              style={{ width: "100%", display: "block" }}
-              to="/reports"
+            <li
+              className={
+                location.pathname.includes("settings") ? "selected" : ""
+              }
             >
-              Reports
-            </NavLink>
-          </li>
-          <li
-            className={location.pathname.includes("settings") ? "selected" : ""}
-          >
-            <NavLink
-              onClick={toggleIfMobile}
-              style={{ width: "100%", display: "block" }}
-              to="/settings"
-            >
-              Settings
-            </NavLink>
-          </li>
-          {/* Add more links for other routes */}
-        </ul>
+              <NavLink
+                onClick={toggleIfMobile}
+                style={{ width: "100%", display: "block" }}
+                to="/settings"
+              >
+                Settings
+              </NavLink>
+            </li>
+            {/* Add more links for other routes */}
+          </ul>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }

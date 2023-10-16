@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import { Select, MenuItem } from "@mui/material";
 import { format } from "date-fns";
 import { Transaction } from "../../types/transaction";
-import { CategoryContext} from "../../context/CategoryContext";
+import { CategoryContext } from "../../context/CategoryContext";
 import { saveTransaction } from "../../database/transactions";
 // TODO: Basic display for a list of transactions
 
@@ -33,7 +33,6 @@ export default function Transactions() {
   const params = useParams();
   const accountId: string | undefined = params.id;
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
 
   const [flatTransactions, setFlatTransactions] = useState<FlatTransaction[]>(
     []
@@ -129,9 +128,7 @@ const CategorySelector: React.FC<{
   defaultValue: string;
   updateTransaction: (row: GridRowModel) => void;
 }> = ({ rowData, defaultValue, updateTransaction }) => {
-  const [selectedCategory, setSelectedValue] = useState<string>(
-    defaultValue
-  );
+  const [selectedCategory, setSelectedValue] = useState<string>(defaultValue);
   const categories = useContext(CategoryContext);
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
@@ -142,7 +139,7 @@ const CategorySelector: React.FC<{
     // Call your update function here with the updated data
     updateTransaction(rowData);
   };
-  
+
   console.log(selectedCategory);
   console.log(defaultValue);
 
@@ -152,18 +149,20 @@ const CategorySelector: React.FC<{
   return (
     <FormControl style={{ width: "100%" }}>
       <Select
-        value={selectedCategory}
+        value={selectedCategory == "" ? "Un-categorised" : selectedCategory}
         onChange={handleSelectChange}
         style={{
-          backgroundColor: `${categories.find(cat=>cat.name == selectedCategory)?.color || "white"}`,
+          backgroundColor: `${
+            categories.find((cat) => cat.name == selectedCategory)?.color ||
+            "white"
+          }`,
           color: "black",
           width: "100%"
         }}
       >
-        
         <MenuItem // Default Menu Item
           value={"Un-categorised"}
-          style={{ backgroundColor: `${ "white"}` }}
+          style={{ backgroundColor: `${"white"}` }}
         >
           {"Un-categorised"}
         </MenuItem>
