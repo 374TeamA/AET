@@ -27,11 +27,11 @@ function CategoryPicker(props: {
   isSplit?: boolean;
 }) {
   const categories = useContext(CategoryContext);
-  const [currentCategory, setCurrentCategory] = useState<string>(
+  const [currentCategoryId, setCurrentCategoryId] = useState<string>(
     props.transactionDetail.category
   );
   const [auto, setAuto] = useState<boolean>(
-    currentCategory != "Un-Categorised"
+    currentCategoryId != "Un-Categorised"
   );
   return (
     <div
@@ -45,71 +45,54 @@ function CategoryPicker(props: {
       <div style={{ width: "15%" }}>
         <p>${(props.transactionDetail.amount / 100).toFixed(2)}</p>
       </div>
-      <div style={{ display: "block" }}>
-        <div>
-          <Select
-            // variant="contained"
+      <div>
+        <Select
+          style={{
+            width: "10rem",
+            fontSize: "0.9rem",
+            margin: "2px",
+            //make the background colour the selected item's colour
+            backgroundColor: `${
+              categories.find((cat) => cat.id == currentCategoryId)?.color ||
+              "white"
+            }`
+          }}
+          onChange={(e) => {
+            setCurrentCategoryId(e.target.value);
+            props.onChange(e, props.index);
+          }}
+          size="small"
+          value={currentCategoryId}
+        >
+          <MenuItem
             style={{
               width: "10rem",
               fontSize: "0.9rem",
               margin: "2px",
               //make the background colour the selected item's colour
               backgroundColor: `${
-                categories.find((cat) => cat.name == currentCategory)?.color ||
+                categories.find((cat) => cat.id == currentCategoryId)?.color ||
                 "white"
               }`
             }}
-            onChange={(e) => {
-              setCurrentCategory(e.target.value);
-              props.onChange(e, props.index, auto);
-            }}
-            size="small"
-            value={currentCategory}
+            value={currentCategoryId}
           >
-            <MenuItem
-              style={{
-                width: "10rem",
-                fontSize: "0.9rem",
-                margin: "2px",
-                //make the background colour the selected item's colour
-
-                backgroundColor: `${
-                  categories.find((cat) => cat.name == currentCategory)
-                    ?.color || "white"
-                }`
-              }}
-              value={currentCategory}
-            >
-              {currentCategory}
-            </MenuItem>
-            {categories.map((category, index) => {
-              if (category.name !== currentCategory) {
-                return (
-                  <MenuItem
-                    key={index}
-                    style={{ backgroundColor: `${category.color}` }}
-                    value={category.name}
-                  >
-                    {category.name}
-                  </MenuItem>
-                );
-              }
-            })}
-          </Select>
-        </div>
-        {!props.isSplit && (
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={auto}
-                onChange={() => {
-                  setAuto(!auto);
-                }}
-              />
+            {categories.find((cat) => cat.id == currentCategoryId)?.name}
+          </MenuItem>
+          {categories.map((category, index) => {
+            if (category.id !== currentCategoryId) {
+              return (
+                <MenuItem
+                  key={index}
+                  style={{ backgroundColor: `${category.color}` }}
+                  value={category.id}
+                >
+                  {category.name}
+                </MenuItem>
+              );
             }
-            label="Auto-Categorise"
-          />
-        )}
+          })}
+        </Select>
       </div>
     </div>
   );

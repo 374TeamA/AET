@@ -15,7 +15,7 @@ export default function Table({ transactions }: TableProps) {
         (detail) =>
           typeof detail === "object" &&
           (detail as { amount: number; category: string }).category !==
-            "Un-Categorised"
+            "Un-Categorised" // id of uncategorised transactions
       )
     ) ?? []
   );

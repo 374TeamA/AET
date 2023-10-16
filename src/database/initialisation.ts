@@ -1,3 +1,5 @@
+import { Category } from "../types/category";
+
 /**
  * Connects to the indexedDB database.
  *
@@ -34,6 +36,53 @@ export function connectToDatabase(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("Categories")) {
         const tOS = db.createObjectStore("Categories", { keyPath: "id" });
         tOS.createIndex("name", "name", { unique: true });
+        console.log("Updating!");
+        // Additionally, add the default categories.
+        const defaultCategories: Category[] = [
+          {
+            id:"Un-Categorised",
+            name:"Un-Categorised",
+            color:"#FFFFFF"
+          },
+          {
+            id:"id1",
+            name:"Rent",
+            color:"#ffcc99"
+          },
+          {
+            id:"id2",
+            name:"Utilities",
+            color:"#ff99cc"
+          },
+          {
+            id:"id3",
+            name:"Food",
+            color: "#cc99ff"
+          },
+          {
+            id:"id4",
+            name:"Transport",
+            color: "#99ccff"
+          },
+          {
+            id:"id5",
+            name:"Entertainment",
+            color: "#66ccff"
+          },
+          {
+            id:"id6",
+            name:"Health",
+            color: "#99ffcc"
+          },
+          {
+            id:"id2",
+            name:"Clothing",
+            color: "#ccff99"
+          }
+        ]
+        defaultCategories.forEach(cat=>{
+          tOS.put(cat)
+        })
       }
 
       if (!db.objectStoreNames.contains("Merchants")) {
