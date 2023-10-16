@@ -128,19 +128,21 @@ const CategorySelector: React.FC<{
   defaultValue: string;
   updateTransaction: (row: GridRowModel) => void;
 }> = ({ rowData, defaultValue, updateTransaction }) => {
-  const [selectedCategory, setSelectedValue] = useState<string>(defaultValue);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    defaultValue
+  );
   const categories = useContext(CategoryContext);
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const newValue = event.target.value;
     // Update the DataGrid row data with the new value
     rowData.customSelectValue = newValue;
-    setSelectedValue(newValue);
+    setSelectedCategoryId(newValue);
     // Call your update function here with the updated data
     updateTransaction(rowData);
   };
-
-  console.log(selectedCategory);
+  
+  console.log(selectedCategoryId);
   console.log(defaultValue);
 
   if (categories.length === 0) {
@@ -149,35 +151,24 @@ const CategorySelector: React.FC<{
   return (
     <FormControl style={{ width: "100%" }}>
       <Select
-        value={selectedCategory == "" ? "Un-categorised" : selectedCategory}
+        value={selectedCategoryId}
         onChange={handleSelectChange}
         style={{
-          backgroundColor: `${
-            categories.find((cat) => cat.name == selectedCategory)?.color ||
-            "white"
-          }`,
+          backgroundColor: `${categories.find(cat=>cat.id == selectedCategoryId)?.color || "white"}`,
           color: "black",
           width: "100%"
         }}
       >
-        <MenuItem // Default Menu Item
-          value={"Un-categorised"}
-          style={{ backgroundColor: `${"white"}` }}
-        >
-          {"Un-categorised"}
-        </MenuItem>
         {categories.map((category, index) => {
-          if (category.id !== defaultValue) {
-            return (
-              <MenuItem
-                key={index}
-                style={{ backgroundColor: `${category.color}` }}
-                value={category.name}
-              >
-                {category.name}
-              </MenuItem>
-            );
-          }
+          return (
+            <MenuItem
+              key={index}
+              style={{ backgroundColor: `${category.color}` }}
+              value={category.id}
+            >
+              {category.name}
+            </MenuItem>
+          );
         })}
       </Select>
     </FormControl>
