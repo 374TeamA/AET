@@ -324,7 +324,7 @@ export function defaultPolarGraph(): ChartConfiguration {
     plugins: {
       title: {
         display: true,
-        text: "Pie Graph", // Title text for the graph.
+        text: "Polar Graph", // Title text for the graph.
         font: {
           size: 20,
           weight: "normal"
