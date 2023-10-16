@@ -350,7 +350,7 @@ export default function ConfigureGraph({
       categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
-      favourite: false,
+      favourite: 0,
       update: dynamicUpdate,
       allTransactions: allTransactions,
       groupBy: groupBy
