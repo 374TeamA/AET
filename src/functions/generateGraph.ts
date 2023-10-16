@@ -55,7 +55,7 @@ function getDataByCategory(
   rawData: FlattenedTransaction[],
   graphConfig: GraphConfig
 ): ChartData {
-  const labels: string[] = [];
+  const categories: string[] = [];
   const values: number[] = [];
   const filteredData: FlattenedTransaction[] = [];
 
@@ -63,13 +63,13 @@ function getDataByCategory(
     const category: string = rawData[i].category;
 
     if (graphConfig.categories.includes(category)) {
-      if (!labels.includes(category)) {
-        labels.push(category);
+      if (!categories.includes(category)) {
+        categories.push(category);
         values.push(0);
       }
 
       filteredData.push(rawData[i]);
-      const index: number = labels.indexOf(category);
+      const index: number = categories.indexOf(category);
       values[index] += rawData[i].amount;
     }
   }
@@ -94,21 +94,47 @@ function getDataByCategory(
 
     const datasets = [];
 
-    for (const [key, value] of Object.entries(grouped)) {
-      const categoryValues = [];
-      for (let i = 0; i < labels.length; i++) {
-        categoryValues.push(0);
-      }
+    const labels: string[] = Object.keys(grouped);
+    const values: number[] = [];
 
-      for (let i = 0; i < value.length; i++) {
-        const category = value[i].category;
-        const index = labels.indexOf(category);
-        categoryValues[index] += value[i].amount;
+    for (let i = 0; i < labels.length; i++) {
+      values.push(0);
+    }
+
+    for (let i = 0; i < categories.length; i++) {
+      //
+      const category = categories[i];
+      const categoryValues = [];
+      for (let j = 0; j < labels.length; j++) {
+        let total = 0;
+        for (let k = 0; k < grouped[labels[j]].length; k++) {
+          if (grouped[labels[j]][k].category == category) {
+            total += grouped[labels[j]][k].amount;
+          }
+        }
+        categoryValues.push(total);
       }
 
       datasets.push({
-        label: key,
-        data: categoryValues
+        label: category,
+        data: categoryValues,
+        pointStyle: false
+      });
+    }
+
+    if (categories.length > 1) {
+      for (let i = 0; i < labels.length; i++) {
+        let total = 0;
+        for (let j = 0; j < categories.length; j++) {
+          total += datasets[j].data[i];
+        }
+        values[i] = total;
+      }
+
+      datasets.push({
+        label: "Total",
+        data: values,
+        pointStyle: false
       });
     }
 
@@ -121,7 +147,7 @@ function getDataByCategory(
   }
 
   const data: ChartData = {
-    labels: labels,
+    labels: categories,
     datasets: [
       {
         label: "Total",
