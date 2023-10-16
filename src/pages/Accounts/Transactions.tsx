@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import { Select, MenuItem } from "@mui/material";
 import { format } from "date-fns";
 import { Transaction } from "../../types/transaction";
-import { CategoryContext} from "../../context/CategoryContext";
+import { CategoryContext } from "../../context/CategoryContext";
 import { saveTransaction } from "../../database/transactions";
 // TODO: Basic display for a list of transactions
 
@@ -33,7 +33,6 @@ export default function Transactions() {
   const params = useParams();
   const accountId: string | undefined = params.id;
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
 
   const [flatTransactions, setFlatTransactions] = useState<FlatTransaction[]>(
     []

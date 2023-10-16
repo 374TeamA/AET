@@ -128,7 +128,7 @@ export default function NewGraph({
 
       {/* Graph */}
       <canvas
-        style={{ minHeight: "20rem" }}
+        style={{ minHeight: "15rem" }}
         id={`canvas${index}`}
         ref={canvasRef}
       ></canvas>
