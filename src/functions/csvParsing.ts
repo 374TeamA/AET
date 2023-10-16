@@ -279,12 +279,12 @@ async function getTransactionFromLine(
   importId: string,
   useAmericanDates: boolean
 ): Promise<Transaction> {
-  // Get the date, merchant, and amount from the line
+  // Get the date, merchant name, and amount from the line
   const date: Date = tryParseDate(
     line[columnIndexes.dateIndex],
     useAmericanDates
   );
-  const merchant: string = line[columnIndexes.merchantIndex];
+  const merchantName: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
   // If the amount is positive or $0, throw an error
@@ -295,11 +295,11 @@ async function getTransactionFromLine(
 
   // Create a hash from the amount, date, and merchant
   const hash: string = sha256(
-    `${date.toString()}${merchant}${amount}`
+    `${date.toString()}${merchantName}${amount}`
   ).toString();
 
   // Get the predicted category for the transaction
-  const category: string = await getCategory(merchant);
+  const merchant: Merchant = await getMerchantFromName(merchantName);
 
   // Create and return a new transaction from the retrieved data
   return {
@@ -308,20 +308,20 @@ async function getTransactionFromLine(
     account: account,
     hash: hash,
     date: date,
-    merchant: merchant,
+    merchant: merchant.id,
     totalAmount: amount,
-    details: [{ amount: amount, category: category }]
+    details: [{ amount: amount, category: merchant.category }]
   } as Transaction;
 }
 
 /**
- * Retrieves the category based on the merchant name
+ * Retrieves the merchant ID and category ID based on the merchant name
  *
  * @param {string} merchantName The name of the merchant
  *
- * @returns {Promise<string>} The predicted category.
+ * @returns {Promise<Merchant>}
  */
-async function getCategory(merchantName: string): Promise<string> {
+async function getMerchantFromName(merchantName: string): Promise<Merchant> {
   // Get the list of merchants from the database
   const merchants: Merchant[] = await getMerchants();
 
@@ -333,14 +333,14 @@ async function getCategory(merchantName: string): Promise<string> {
   // If a matching merchant wasn't found
   if (!merchant) {
     // Make one
-    merchant = { name: merchantName, category: "Un-Categorised" };
+    merchant = { id: uuidv4(), name: merchantName, category: "Un-Categorised" }; // TODO: Use the ID of the Un-Categorised category
 
     // Save it to the database
     saveMerchant(merchant);
   }
 
   // Return the merchant's category
-  return merchant.category;
+  return merchant;
 }
 
 /**
