@@ -1,8 +1,10 @@
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Transaction } from "../../types/transaction";
 import "./Table.css";
 import Column from "./Column";
 import { saveTransaction } from "../../database/transactions";
+import { Merchant } from "../../types/merchant";
+import { saveMerchant } from "../../database/merchants";
 interface TableProps {
   transactions: Transaction[] | undefined;
 }
@@ -22,7 +24,8 @@ export default function Table({ transactions }: TableProps) {
       transaction.details.some(
         (detail) =>
           typeof detail === "object" &&
-          (detail as { amount: number; category: string }).category == "Un-Categorised"
+          (detail as { amount: number; category: string }).category ==
+            "Un-Categorised"
       )
     ) ?? []
   );
@@ -42,11 +45,18 @@ export default function Table({ transactions }: TableProps) {
     }
   }, [categorised, transactions]);
 
-  const updateTransactions = (transaction: Transaction) => {
+  const updateTransactions = (transaction: Transaction, auto?: boolean) => {
     //remove transaction from uncategorized and add it to categorized
     console.log(`Updating transaction ${transaction.id}`);
     const newUncategorized = [...uncategorised];
     const newCategorized = [...categorised];
+    if (transaction.details.length == 1 && auto) {
+      const newMerchant: Merchant = {
+        id: transaction.merchant,
+        category: transaction.details[0].category
+      };
+      saveMerchant(newMerchant);
+    }
     const index = newUncategorized.findIndex(
       (item) => item.id === transaction.id
     );
@@ -68,7 +78,6 @@ export default function Table({ transactions }: TableProps) {
   useEffect(() => {
     //console.log(importData);
   }, []);
-
 
   return (
     <div className="display-flex">

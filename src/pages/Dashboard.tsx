@@ -3,7 +3,7 @@ import CustomPopup from "../components/Popup";
 import { useState, useContext, useEffect } from "react";
 import { AccountContext } from "../context/AccountsContext";
 import "../styles/dashboard.css";
-import HelpDialog from "../components/HelpDialog";
+// import HelpDialog from "../components/HelpDialog";
 import { Account } from "../types/account";
 import EditAccounts from "./Settings/EditAccounts";
 import EditCategories from "./Settings/EditCategories";
@@ -123,7 +123,9 @@ export default function Dashboard() {
           }`
         }}
       >
-        <button onClick={handleOpenPopup}>Open Popup</button>
+        {accounts != null && accounts.length == 0 && (
+          <button onClick={handleOpenPopup}>Open Popup</button>
+        )}
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <Typography variant="h5"> Welcome to AET!</Typography>
           <Typography sx={{ p: 2 }}>
@@ -139,19 +141,21 @@ export default function Dashboard() {
             </Grid>
           </Grid>
         </CustomPopup>
-        <HelpDialog title="This is a help option">
+        {/* <HelpDialog title="This is a help option">
           <p>
             Help text goes here. You can add as much or as little as you like,
             or even add more react components inside if you really like. Great
             fun.<br></br> Might be a good idea to make a similar sort of popup
             component for other parts of the app?
           </p>
-        </HelpDialog>
+        </HelpDialog> */}
 
         {/* Display favourite graphs */}
-        <div id="favouriteGraphs">
+        <div id="favouriteGraphs" style={{ display: "flex", flexWrap: "wrap" }}>
           {favouriteGraphs.map((graph, index) => (
-            <FavouriteGraph graphConfig={graph} index={index} />
+            <div style={{ minHeight: "33dvh" }}>
+              <FavouriteGraph graphConfig={graph} index={index} />
+            </div>
           ))}
         </div>
       </div>

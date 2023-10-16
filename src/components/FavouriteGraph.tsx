@@ -118,7 +118,11 @@ export default function FavouriteGraph({
   return (
     <div className="canvasContainer">
       {/* Graph */}
-      <canvas id={`canvas${index}`} ref={canvasRef}></canvas>
+      <canvas
+        id={`canvas${index}`}
+        style={{ maxWidth: "40vw", minHeight: "30dvh" }}
+        ref={canvasRef}
+      ></canvas>
     </div>
   );
 }
