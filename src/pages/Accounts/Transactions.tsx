@@ -160,13 +160,6 @@ const CategorySelector: React.FC<{
           width: "100%"
         }}
       >
-        
-        <MenuItem // Default Menu Item
-          value={"Un-categorised"}
-          style={{ backgroundColor: `${ "white"}` }}
-        >
-          {"Un-categorised"}
-        </MenuItem>
         {categories.map((category, index) => {
           if (category.id !== defaultValue) {
             return (
