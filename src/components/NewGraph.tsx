@@ -143,7 +143,7 @@ export default function NewGraph({
           handleFavourite(index);
         }}
       >
-        {graphConfig.favourite ? "Un-Favourtie" : "Favourtie"}
+        {graphConfig.favourite ? "Un-Favourite" : "Favourite"}
       </button>
     </div>
   );
