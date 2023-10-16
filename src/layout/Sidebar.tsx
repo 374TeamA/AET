@@ -59,9 +59,11 @@ export default function Sidebar() {
           </NavLink>
         </li>
         <Divider />
-        <Typography variant="h6" sx={{ p: 2 }}>
-          Accounts
-        </Typography>
+        <div>
+          <Typography variant="overline" sx={{ p: 2 ,mt:4}}>
+            Bank Accounts
+          </Typography>
+        </div>
         {accounts &&
           accounts.map((account) => {
             return (
@@ -79,6 +81,11 @@ export default function Sidebar() {
             </li>
           );
         })}
+        <div>
+          <Typography variant="overline" sx={{ p: 2 ,mt:2}}>
+            Other Expenses
+          </Typography>
+        </div>
         <li
               className={
                 location.pathname.includes("CASH") ? "selected" : ""
