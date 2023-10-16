@@ -132,7 +132,7 @@ const CategorySelector: React.FC<{
   defaultValue: string;
   updateTransaction: (row: GridRowModel) => void;
 }> = ({ rowData, defaultValue, updateTransaction }) => {
-  const [selectedValue, setSelectedValue] = useState<string>(
+  const [selectedCategory, setSelectedValue] = useState<string>(
     defaultValue
   );
   const categories = useContext(CategoryContext);
@@ -146,7 +146,7 @@ const CategorySelector: React.FC<{
     updateTransaction(rowData);
   };
   
-  console.log(selectedValue);
+  console.log(selectedCategory);
   console.log(defaultValue);
 
   if (categories.length === 0) {
@@ -155,10 +155,10 @@ const CategorySelector: React.FC<{
   return (
     <FormControl style={{ width: "100%" }}>
       <Select
-        value={selectedValue}
+        value={selectedCategory}
         onChange={handleSelectChange}
         style={{
-          backgroundColor: `${categories.find(cat=>cat.name == selectedValue)?.color || "white"}`,
+          backgroundColor: `${categories.find(cat=>cat.name == selectedCategory)?.color || "white"}`,
           color: "black",
           width: "100%"
         }}

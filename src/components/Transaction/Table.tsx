@@ -1,14 +1,12 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState} from "react";
 import { Transaction } from "../../types/transaction";
 import "./Table.css";
 import Column from "./Column";
 import { saveTransaction } from "../../database/transactions";
-import { CategoryContext } from "../../context/CategoryContext";
 interface TableProps {
   transactions: Transaction[] | undefined;
 }
 export default function Table({ transactions }: TableProps) {
-  const categories = useContext(CategoryContext);
   const [categorised, setCategorised] = useState<Transaction[]>(
     transactions?.filter((transaction) =>
       transaction.details.some(
@@ -28,10 +26,6 @@ export default function Table({ transactions }: TableProps) {
       )
     ) ?? []
   );
-  //generate a new random colour for each category
-  const [categoryColors, setCategoryColors] = useState<{
-    [key: string]: string;
-  }>({});
 
   useEffect(() => {
     //save the import to the database
@@ -67,29 +61,18 @@ export default function Table({ transactions }: TableProps) {
     //console.log(importData);
   }, []);
 
-  useEffect(() => {
-    const newCategoryColors: { [key: string]: string } = {};
-    categories.forEach((category) => {
-      newCategoryColors[category.name] = `#${Math.floor(
-        Math.random() * 16777215
-      ).toString(16)}`;
-    });
-    setCategoryColors(newCategoryColors);
-  }, [categories]);
 
   return (
     <div className="display-flex">
       <Column
         title="Categorised"
         items={categorised}
-        categories={categoryColors}
         updateTransactions={updateTransactions}
       />
       {/* Categorised transactions list */}
       <Column
         title="Un-categorised"
         items={uncategorised}
-        categories={categoryColors}
         updateTransactions={updateTransactions}
       />
       {/* Un-Categorised transactions list */}

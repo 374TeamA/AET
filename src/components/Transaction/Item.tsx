@@ -1,19 +1,17 @@
 import { Button, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { Transaction, TransactionDetail } from "../../types/transaction";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CategoryContext } from "../../context/CategoryContext";
 interface ItemProps {
   transaction: Transaction;
-  categories: {
-    [key: string]: string;
-  };
   updateTransactions: (transaction: Transaction) => void;
 }
 
 function CategoryPicker(props: {
   transactionDetail: TransactionDetail;
-  categories: { [key: string]: string };
   onChange: (e: SelectChangeEvent<string>) => void;
 }) {
+  const categories = useContext(CategoryContext);
   const [currentCategory, setCurrentCategory] = useState<string>(
     props.transactionDetail.category
   );
@@ -37,9 +35,7 @@ function CategoryPicker(props: {
             fontSize: "0.9rem",
             margin: "2px",
             //make the background colour the selected item's colour
-
-            backgroundColor: `${props.categories[currentCategory] || "black"}`,
-            color: "white"
+            backgroundColor: `${categories.find(cat=>cat.name == currentCategory)?.color || "white"}`,
           }}
           onChange={(e) => {
             setCurrentCategory(e.target.value);
@@ -51,23 +47,22 @@ function CategoryPicker(props: {
           <MenuItem
             style={{
               backgroundColor: `${
-                props.categories[currentCategory] || "black"
+                categories.find(cat=>cat.name == currentCategory)?.color|| "white"
               }`,
-              color: "white"
             }}
             value={currentCategory}
           >
             {currentCategory}
           </MenuItem>
-          {Object.keys(props.categories).map((category, index) => {
-            if (category !== currentCategory) {
+          {categories.map((category, index) => {
+            if (category.name !== currentCategory) {
               return (
                 <MenuItem
                   key={index}
-                  style={{ backgroundColor: `${props.categories[category]}` }}
-                  value={category}
+                  style={{ backgroundColor: `${category.color}` }}
+                  value={category.name}
                 >
-                  {category}
+                  {category.name}
                 </MenuItem>
               );
             }
@@ -86,10 +81,8 @@ function CategoryPicker(props: {
 
 export default function Item({
   transaction,
-  categories,
   updateTransactions
 }: ItemProps) {
-  //const categories = React.useContext(CategoryContext);
 
   const handleCategoryChange = (e: SelectChangeEvent<string>) => {
     // Store the update in the database.
@@ -129,7 +122,6 @@ export default function Item({
           <CategoryPicker
             key={index}
             transactionDetail={detail}
-            categories={categories}
             onChange={handleCategoryChange}
           ></CategoryPicker>
         ))}
