@@ -1,10 +1,9 @@
 // import React from 'react'
 // TODO: Makayla will create some react components to generate charts from an array of transactions
 import Chart from "chart.js/auto";
-import { useState, ChangeEvent, useEffect, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 // import { generateGraph } from "../functions/generateGraph";
 import "../styles/reports.css";
-import Group from "../components/Group";
 import { useTitle } from "../hooks/UseTitle";
 import CustomPopup from "../components/Popup";
 import {
@@ -13,15 +12,10 @@ import {
   defaultPieGraph,
   defaultPolarGraph
 } from "../functions/defaultGraph";
-//import CustomPopup from "../components/Popup";
 import ConfigureGraph from "../components/GraphConfiguration";
 import { GraphConfig } from "../types/graph";
 import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
-// import { FlattenedTransaction, Transaction } from "../types/transaction";
-// import { getAllTransactions } from "../database/transactions";
-// import { generateGraph } from "../functions/generateGraph";
 import NewGraph from "../components/NewGraph";
-// import { GraphConfig } from "../types/graph";
 
 /**
  * Report component. Includes all reporting/exporting aspects
@@ -31,33 +25,8 @@ export default function Reports() {
   useTitle("Reports");
 
   // Variables
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [graphConfigs, setGraphConfigs] = useState<GraphConfig[]>([]);
-
-  // const createGraph = () => {
-  //   // Get a reference to the select element
-  //   const selectElement: HTMLSelectElement = document.getElementById(
-  //     "typeSelection"
-  //   ) as HTMLSelectElement;
-
-  //   // Get the selected option
-  //   const selectedOption = selectElement.options[selectElement.selectedIndex];
-
-  //   // Get the value of the selected option
-  //   const type: string = selectedOption.value;
-
-  //   const recieved = generateGraph(type);
-
-  //   const canvas: HTMLCanvasElement = document.createElement("canvas");
-  //   const canvasContainer: HTMLDivElement = document.getElementById(
-  //     "canvasContainer"
-  //   ) as HTMLDivElement;
-  //   canvasContainer.appendChild(canvas);
-  //   setCanvases([...canvases, canvas]);
-  //   new Chart(canvas, recieved);
-  // };
 
   // Adding New Graphs -----------------------------------------------------------------------------------------------------
   /**
@@ -71,8 +40,6 @@ export default function Reports() {
     saveGraph(graphConfig);
   };
 
-  // TODO: get this function to run whenever the graphConfigs is updated
-
   const handleDeleteGraph = (index: number) => {
     const newConfigs = [...graphConfigs];
     const removed = newConfigs.splice(index, 1);
@@ -81,16 +48,12 @@ export default function Reports() {
   };
 
   const handleFavouriteGraph = (index: number) => {
-    //do things
-    console.log(index, "Update Favourties");
-
     const newConfigs = graphConfigs;
     newConfigs[index].favourite = !newConfigs[index].favourite;
     setGraphConfigs([...newConfigs]);
     saveGraph(newConfigs[index]);
   };
 
-  useEffect(() => {}, [graphConfigs]);
   /**
    * React hook that triggers an effect when the component mounts
    * This is fine
@@ -100,71 +63,7 @@ export default function Reports() {
     getGraphs().then((graphs) => {
       setGraphConfigs([...graphs]);
     });
-
-    console.log("done");
   }, []);
-
-  // Exporting Functionality -----------------------------------------------------------------------------------------------
-  /**
-   * React hook that triggers an effect when `startDate` or `endDate` changes.
-   */
-  useEffect(() => {}, [startDate, endDate]);
-
-  /**
-   * Placeholder function for exporting transactions.
-   */
-  const handleExportTransactions = () => {
-    throw new Error("Function not implemented.");
-  };
-
-  /**
-   * Exports a graph as a PNG image.
-   *
-   * @param {string} graphID - The ID of the HTML canvas element containing the graph.
-   */
-  const handleExportGraph = (graphID: string) => {
-    const canvas: HTMLCanvasElement = document.getElementById(
-      graphID
-    ) as HTMLCanvasElement;
-    const dataURL = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.download = "graph.png";
-    link.href = dataURL;
-    link.click();
-  };
-
-  /**
-   * Event handler for changes in the start date input field.
-   *
-   * @param {ChangeEvent<HTMLInputElement>} event - The change event from the input field.
-   */
-  const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newDate: string = event.target.value;
-    setStartDate(newDate);
-  };
-
-  /**
-   * Event handler for changes in the end date input field.
-   *
-   * @param {ChangeEvent<HTMLInputElement>} event - The change event from the input field.
-   */
-  const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newDate: string = event.target.value;
-    setEndDate(newDate);
-  };
-
-  /**
-   * Sets the start and end dates based on a given number of days from today.
-   *
-   * @param {number} days - The number of days to go back from today.
-   */
-  const handleDays = (days: number) => {
-    const today: Date = new Date();
-    const startDate: Date = new Date();
-    startDate.setDate(today.getDate() - days);
-    setStartDate(startDate.toISOString().split("T")[0]);
-    setEndDate(today.toISOString().split("T")[0]);
-  };
 
   /**
    * Use effect to initialize the charts when the component mounts.
@@ -238,65 +137,12 @@ export default function Reports() {
   // Return ------------------------------------------------------------------------------------------------------------------------
   return (
     <div id="reports-container" className="content">
-      <Group label="Export">
-        <div>
-          <label htmlFor="startDate">Start Date:</label>
-          <input
-            type="date"
-            id="startDate"
-            value={startDate}
-            onChange={handleStartDateChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="endDate">End Date:</label>
-          <input
-            type="date"
-            id="endDate"
-            value={endDate}
-            onChange={handleEndDateChange}
-          />
-        </div>
-        <button
-          onClick={() => {
-            handleDays(7);
-          }}
-        >
-          7 Days
-        </button>
-        <button
-          onClick={() => {
-            handleDays(14);
-          }}
-        >
-          14 Days
-        </button>
-        <button
-          onClick={() => {
-            handleDays(31);
-          }}
-        >
-          1 month
-        </button>
-        <label htmlFor="allTransactions" className="custom-checkbox">
-          All Transactions
-          <input type="checkbox" id="allTransactions" />
-          <span className="checkmark"></span>
-        </label>
-        <button onClick={handleExportTransactions}>Export CSV</button>
-        <button onClick={() => handleExportGraph("pieGraph")}>
-          Export Graph
-        </button>
-      </Group>
-
       {/*TODO: Jake to fix UI*/}
-      <div id="newGraphContainer">
-        <div className="canvasContainer">
-          <canvas onClick={handleOpenPopup} id="bar"></canvas>
-          <canvas onClick={handleOpenPopup} id="line"></canvas>
-          <canvas onClick={handleOpenPopup} id="pie"></canvas>
-          <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
-        </div>
+      <div id="newGraphSelector" className="canvasContainer">
+        <canvas onClick={handleOpenPopup} id="bar"></canvas>
+        <canvas onClick={handleOpenPopup} id="line"></canvas>
+        <canvas onClick={handleOpenPopup} id="pie"></canvas>
+        <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
       </div>
 
       {/* Popup to handle configuration of new graph */}

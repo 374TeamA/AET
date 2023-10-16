@@ -1,8 +1,6 @@
-//import React from "react";
-
 import { ChartType } from "chart.js";
-import { FlattenedTransaction } from "./transaction";
 
+// Graph config type
 export type GraphConfig = {
   id: string;
   startDate: Date;
@@ -14,10 +12,5 @@ export type GraphConfig = {
   favourite: boolean;
   update: boolean;
   allTransactions: boolean;
-};
-
-export type GraphData = {
-  graphConfig: GraphConfig;
-  data: FlattenedTransaction[];
-  canvasID: string;
+  groupBy: string;
 };

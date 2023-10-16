@@ -6,7 +6,7 @@ import { parse as dateParse } from "date-fns";
 import sha256 from "crypto-js/sha256";
 import { v4 as uuidv4 } from "uuid";
 
-/*
+/**
  * This is a list of valid merchant column names from the main five banks:
  *
  * ANZ: Details
@@ -17,27 +17,34 @@ import { v4 as uuidv4 } from "uuid";
  */
 const merchantTitles: string[] = ["Details", "Payee", "OP name", "Other Party"];
 
-/*
- * This is a list of valid date formats from the main five banks:
- *
- * ANZ: dd/MM/yyyy
- * ASB: yyyy/MM/dd
- * BNZ: dd/MM/yyyy
- * Kiwibank: dd-MM-yyyy
- * Westpac: dd/MM/yyyy
- */
-const dateFormats: string[] = ["dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
+/** A list of European date formats compatible with AET CSV parsing */
+const euDateFormats: string[] = [
+  "dd/MM/yyyy", // Used by ANZ, BNZ, and Westpac
+  "dd-MM-yyyy" // Used by Kiwibank
+];
+
+/** A list of American date formats compatible with AET CSV parsing */
+const usDateFormats: string[] = ["MM/dd/yyyy", "MM-dd-yyyy"];
+
+/** A list of universal date formats compatible with AET CSV parsing */
+const uniDateFormats: string[] = [
+  "yyyy/MM/dd", // Used by ASB
+  "yyyy-MM-dd"
+];
 
 /**
  * Reads a csv bank statement line by line and generates an import of valid expense transactions, and a list of indexes of transactions duplicated in the database
  *
  * @param {File} csvFile A csv bank statement file loaded in by the user
  * @param {string} account The account to link the import to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
+ *
  * @returns {Promise<{import: Import; transactions: Transaction[]; dupeIndexes: number[];}>} An import object from the valid expense transactions from the bank statement, and the indexes of any transactions duplicated in the database
  */
 export async function generateImportFromFile(
   csvFile: File,
-  account: string
+  account: string,
+  useAmericanDates: boolean
 ): Promise<{
   import: Import;
   transactions: Transaction[];
@@ -58,7 +65,7 @@ export async function generateImportFromFile(
   // Generate a new import ID
   const importId: string = uuidv4();
 
-  // Create a new import with the list of transactions
+  // Generate a new import
   const newImport: Import = {
     id: importId,
     importDate: new Date(),
@@ -66,11 +73,12 @@ export async function generateImportFromFile(
   };
 
   // Split the data into a list of transactions
-  const transactions: Transaction[] = getTransactions(
+  const transactions: Transaction[] = await getTransactions(
     csvData,
     columnIndexes,
     account,
-    importId
+    importId,
+    useAmericanDates
   );
 
   // Get a list of the indexes of any new transactions that are duplicated in the database
@@ -87,8 +95,9 @@ export async function generateImportFromFile(
 /**
  * Gets the raw data from a csv file, loaded by the user
  *
- * @param csvFile The csv file to be parsed
- * @returns The raw csv data in the form of a string
+ * @param {File} csvFile The csv file to be parsed
+ *
+ * @returns {Promise<string>} The raw csv data in the form of a string
  */
 function getRawDataFromFile(csvFile: File): Promise<string> {
   // Create and return a new promise of a transaction import
@@ -127,8 +136,9 @@ function getRawDataFromFile(csvFile: File): Promise<string> {
 /**
  * Tokenises a raw csv string into usable csv data
  *
- * @param rawData The raw contents from a csv file
- * @returns The contents converted into a usable array of string arrays
+ * @param {string} rawData The raw contents from a csv file
+ *
+ * @returns {Promise<string[][]>} The contents converted into a usable array of string arrays
  */
 function parseStringToCsvData(rawData: string): Promise<string[][]> {
   // Create a new promise of a string
@@ -152,8 +162,9 @@ function parseStringToCsvData(rawData: string): Promise<string[][]> {
 /**
  * Removes invalid lines from csv data
  *
- * @param csvData The csv data to be cleaned
- * @returns The cleaned csv data
+ * @param {string[][]} csvData The csv data to be cleaned
+ *
+ * @returns {string[][]} The cleaned csv data
  */
 function cleanData(csvData: string[][]): string[][] {
   // Filter the csv data line by line
@@ -166,8 +177,9 @@ function cleanData(csvData: string[][]): string[][] {
 /**
  * Gets the column indexes from raw csv data
  *
- * @param csvData The csv data to get the column indices from
- * @returns The column indices of the csv data
+ * @param {string[][]} csvData The csv data to get the column indices from
+ *
+ * @returns {ColumnIndexes} The column indices of the csv data
  */
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
@@ -198,18 +210,21 @@ function getColumnIndexes(csvData: string[][]): ColumnIndexes {
 /**
  * Splits csv data into a list of transactions. (Assumes the csv data has headers.)
  *
- * @param csvData The csv data to split into transactions
- * @param columnIndexes The column indices of the csv data
- * @param account The account that these transactions came from
- * @param importId The ID of the import these transactions belong to
- * @returns A list of new transactions
+ * @param {string[][]} csvData The csv data to split into transactions
+ * @param {ColumnIndexes} columnIndexes The column indices of the csv data
+ * @param {string} account The account that these transactions came from
+ * @param {string} importId The ID of the import these transactions belong to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
+ *
+ * @returns {Promise<Transaction[]>} A list of new transactions
  */
-function getTransactions(
+async function getTransactions(
   csvData: string[][],
   columnIndexes: ColumnIndexes,
   account: string,
-  importId: string
-): Transaction[] {
+  importId: string,
+  useAmericanDates: boolean
+): Promise<Transaction[]> {
   // Create a new list of transactions populate
   //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
@@ -220,11 +235,18 @@ function getTransactions(
     //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
-    // Try to create a new transaction from the current line and push it to the list of transactions
     try {
-      transactions.push(
-        getTransactionFromLine(line, columnIndexes, account, importId)
+      // Try to create a new transaction from the current line
+      const transaction: Transaction = await getTransactionFromLine(
+        line,
+        columnIndexes,
+        account,
+        importId,
+        useAmericanDates
       );
+
+      // Push the new transaction to the list of transactions
+      transactions.push(transaction);
     } catch (error) {
       console.error(`Error parsing line ${i}: ${(error as Error).message}`);
     }
@@ -244,21 +266,26 @@ function getTransactions(
 /**
  * Splits a line from csv data into a single transaction.
  *
- * @param line A line from the csv data to be parsed to a transaction
- * @param columnIndexes The column indices of the csv data
- * @param account The account connected to the current transaction
- * @param importId The ID of the import this transaction belongs to
+ * @param {string[]} line A line from the csv data to be parsed to a transaction
+ * @param {ColumnIndexes} columnIndexes The column indices of the csv data
+ * @param {string} account The account connected to the current transaction
+ * @param {string} importId The ID of the import this transaction belongs to
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
  *
- * @returns A new transaction
+ * @returns {Promise<Transaction>} A new transaction
  */
-function getTransactionFromLine(
+async function getTransactionFromLine(
   line: string[],
   columnIndexes: ColumnIndexes,
   account: string,
-  importId: string
-): Transaction {
+  importId: string,
+  useAmericanDates: boolean
+): Promise<Transaction> {
   // Get the date, merchant, and amount from the line
-  const date: Date = parseDate(line[columnIndexes.dateIndex]);
+  const date: Date = tryParseDate(
+    line[columnIndexes.dateIndex],
+    useAmericanDates
+  );
   const merchant: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
@@ -273,6 +300,9 @@ function getTransactionFromLine(
     `${date.toString()}${merchant}${amount}`
   ).toString();
 
+  // Get the predicted category for the transaction
+  const category: string = await getCategory(merchant);
+
   // Create and return a new transaction from the retrieved data
   return {
     id: uuidv4(),
@@ -282,17 +312,40 @@ function getTransactionFromLine(
     date: date,
     merchant: merchant,
     totalAmount: amount,
-    details: [{ amount: amount, category: "Default" }]
+    details: [{ amount: amount, category: category }]
   } as Transaction;
+}
+
+/**
+ * Retrieves the category based on the merchant name
+ *
+ * @param {string} merchantName The name of the merchant
+ *
+ * @returns {Promise<string>} The predicted category.
+ */
+async function getCategory(merchantName: string): Promise<string> {
+  // Random code just to make it not error
+  if (merchantName !== "") {
+    return Promise.resolve("Default");
+  } else {
+    return Promise.reject(new Error("This should not happen."));
+  }
 }
 
 /**
  * Attempts to parse a date string into a date object using the list of available date formats
  *
- * @param dateString The string to be parsed into a date object
- * @returns A parsed date object
+ * @param {string} dateString The string to be parsed into a date object
+ * @param {boolean} useAmericanDates Whether to assume the dates are in American date format or not
+ *
+ * @returns {Date} A parsed date object
  */
-function parseDate(dateString: string): Date {
+function tryParseDate(dateString: string, useAmericanDates: boolean): Date {
+  // Get a list of usable dates, based on if the check box "Assume American Dates" was selected
+  const dateFormats = uniDateFormats.concat(
+    useAmericanDates ? usDateFormats : euDateFormats
+  );
+
   // Try to parse the date using one of the available formats
   //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
@@ -311,9 +364,10 @@ function parseDate(dateString: string): Date {
 /**
  * Gets a list of indexes of transactions that are potentially duplicating the database
  *
- * @param account
- * @param transactions
- * @returns An array of indexes of the offending transactions
+ * @param {string} account
+ * @param {Transaction[]} transactions
+ *
+ * @returns {Promise<number[]>} An array of indexes of the offending transactions
  */
 async function getDupeIndexes(
   account: string,

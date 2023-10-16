@@ -12,19 +12,17 @@ export default function ImportTransaction() {
   >(undefined);
   const params = useParams();
   const accountId = params.id;
-  const [popup, setPopup] = React.useState(false);
-  const processCSV = async (file: File) => {
-    setPopup(true);
-    if (file) {
-      // TODO: properly format the csv parser and its returns
-      // TODO: Link importing to an account
-      const importWithDupeIndexes = await generateImportFromFile(file, "test");
-      console.log(importWithDupeIndexes);
 
-      // give each transaction an account ID
-      importWithDupeIndexes.transactions.forEach((transaction) => {
-        transaction.account = accountId as string;
-      });
+  const processCSV = async (file: File) => {
+    if (file) {
+      // Generate a list of transactions linked to an account, along with import data and dupe indexes
+      if (!accountId) return;
+      const importWithDupeIndexes = await generateImportFromFile(
+        file,
+        accountId,
+        false
+      );
+      console.log(importWithDupeIndexes);
 
       //console.log(importWithDupeIndexes.import);
       setTransactions(importWithDupeIndexes.transactions);
