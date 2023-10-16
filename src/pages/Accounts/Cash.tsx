@@ -41,14 +41,14 @@ export default function Cash(){
     return (
         <>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h4" sx={{p:1}}>Cash Transactions</Typography>
-                <HelpDialog title="Cash Transactions">
+                <Typography variant="h4" sx={{p:1}}>Manual Entry</Typography>
+                <HelpDialog title="Manual Entry">
                     To record your spending using cash, enter the date, description, amount, and category. Press "Add" to save your new entry.
                     <br/>
                     Your list of previously added transactions will be shown below. 
                 </HelpDialog>
             </Stack>
-            <Typography>Record spending outside of a bank account, such as when you pay for something with physical cash.</Typography>
+            <Typography>Record spending outside of a bank account, such as when you pay for something using cash.</Typography>
             <br></br>
             <Typography>Add an item:</Typography>
             <Grid container spacing={2} sx={{p:2}} justifyContent="center" alignItems="center">

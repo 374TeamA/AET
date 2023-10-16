@@ -43,6 +43,7 @@ export default function EditCategories() {
 
   const displayEditDialog = (index: number) => {
     setNewCategoryName(categoryList[index].name); // initialise textbox to old category name
+    setNewCategoryColor(categoryList[index].color);
     setSelectedCategory(index);
     setOpenDialog(true);
   };
@@ -59,7 +60,7 @@ export default function EditCategories() {
     setCategoryList(newCategoryList);
     setOpenDialog(false);
     // Store the updated category list in local storage
-    saveCategory(categoryList[selectedCategory]);
+    saveCategory(newCategoryList[selectedCategory]);
   };
 
   const addCategory = () => {
@@ -117,8 +118,12 @@ export default function EditCategories() {
         <Dialog open={openDialog} sx={{p:5}}>
           <Box sx={{p:5}}>
             <Typography variant="h6">Edit category</Typography>
-            <TextField variant="outlined" label="Category Name" sx={{width:"100%"}} value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e?.target.value)} />
+            <TextField variant="filled" 
+              label="Enter Category Name" 
+              sx={{width:"100%",backgroundColor:newCategoryColor}} 
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e?.target.value)} 
+              />
             <MuiColorInput label="Colour" value={newCategoryColor} sx={{width:"100%",mt:1}} onChange={(c)=>setNewCategoryColor(c)}></MuiColorInput>
             <Button onClick={()=>{setOpenDialog(false)}}>Cancel</Button>
             <Button onClick={updateSelectedCategory}>Save</Button>
