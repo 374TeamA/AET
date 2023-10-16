@@ -122,26 +122,35 @@ export function defaultLineGraph(): ChartConfiguration {
   // Data for the line graph, including labels, datasets, and styling.
   const data: ChartData = {
     labels: [
-      "01/01/2023",
-      "02/01/2023",
-      "03/01/2023",
-      "04/01/2023",
-      "05/01/2023",
-      "06/01/2023",
-      "07/01/2023"
+      "Sun Jan 01 2023",
+      "Mon Jan 02 2023",
+      "Tue Jan 03 2023",
+      "Wed Jan 04 2023",
+      "Thu Jan 05 2023",
+      "Fri Jan 06 2023",
+      "Sat Jan 07 2023"
     ],
     datasets: [
       {
-        label: "Spending for Food",
+        label: "Food",
         data: [40, 13, 5, 0, 54, 193, 72],
         borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.2)"
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        pointStyle: false
       },
       {
-        label: "Spending for Clothing",
+        label: "Clothing",
         data: [15, 30, 0, 0, 23, 67, 28],
         borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)"
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        pointStyle: false
+      },
+      {
+        label: "Total",
+        data: [55, 43, 5, 0, 77, 260, 100],
+        borderColor: "rgb(153, 102, 255)",
+        backgroundColor: "rgba(153, 102, 255, 0.2)",
+        pointStyle: false
       }
     ]
   };
@@ -168,6 +177,10 @@ export function defaultLineGraph(): ChartConfiguration {
           }
         }
       }
+    },
+    interaction: {
+      mode: "index",
+      intersect: false
     },
     plugins: {
       title: {
