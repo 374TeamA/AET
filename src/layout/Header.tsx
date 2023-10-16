@@ -1,4 +1,5 @@
-// import React from 'react'
+import logo from "../../img/holistic_finance_original_logo.png"
+// https://vitejs.dev/guide/assets.html#static-asset-handling
 
 export default function Header() {
   return (
@@ -6,7 +7,7 @@ export default function Header() {
       <img
         alt="logo"
         className="logo"
-        src="./holistic_finance_original_logo.png"
+        src={logo}
       />
       <p
         className="title"
