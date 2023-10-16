@@ -5,7 +5,7 @@ import { deleteTransaction, getTransactionsByImport } from "./transactions";
 /**
  * Gets all imports saved to the database.
  *
- * @returns {Import[]} An array of imports
+ * @returns {Promise<Import[]>} An array of imports
  */
 export async function getImports(): Promise<Import[]> {
   const db = await connectToDatabase();
@@ -28,7 +28,7 @@ export async function getImports(): Promise<Import[]> {
  * Gets all imports by account saved to the database.
  *
  * @param id The id of the account
- * @returns {Import[]} An array of imports
+ * @returns {Promise<Import[]>} An array of imports
  */
 export async function getImportsByAccount(id: string): Promise<Import[]> {
   const db = await connectToDatabase();
@@ -52,7 +52,7 @@ export async function getImportsByAccount(id: string): Promise<Import[]> {
  * Saves an import to the database.
  *
  * @param i The import to be saved
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveImport(i: Import): Promise<boolean> {
   const db = await connectToDatabase();
@@ -75,7 +75,7 @@ export async function saveImport(i: Import): Promise<boolean> {
  * Deletes an import from the database.
  *
  * @param id The id of the import to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteImport(id: string): Promise<boolean> {
   const db = await connectToDatabase();

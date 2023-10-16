@@ -1,7 +1,7 @@
 /**
  * Deletes the database.
  *
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export function deleteDatabase(): Promise<boolean> {
   return new Promise((resolve, reject) => {

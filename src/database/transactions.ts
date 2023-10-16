@@ -5,7 +5,7 @@ import { connectToDatabase } from "./initialisation";
  * Gets all transactions for the account.
  *
  * @param acc The id of the account
- * @returns {Transaction[]} An array of transactions
+ * @returns {Promise<Transaction[]>} An array of transactions
  */
 export async function getAllTransactions(acc: string): Promise<Transaction[]> {
   const db = await connectToDatabase();
@@ -31,7 +31,7 @@ export async function getAllTransactions(acc: string): Promise<Transaction[]> {
  * @param acc The id of the account
  * @param startDate The from date
  * @param endDate The to date
- * @returns {Transaction[]} An array of transactions
+ * @returns {Promise<Transaction[]>} An array of transactions
  */
 export async function getTransactions(
   acc: string,
@@ -59,7 +59,7 @@ export async function getTransactions(
  * Gets all transactions for the import.
  *
  * @param imp The id of the import
- * @returns {Transaction[]} An array of transactions
+ * @returns {Promise<Transaction[]>} An array of transactions
  */
 export async function getTransactionsByImport(
   imp: string
@@ -86,7 +86,7 @@ export async function getTransactionsByImport(
  *
  * @param t The transaction to be saved
  * @param acc The account to save the transaction to
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveTransaction(t: Transaction): Promise<boolean> {
   const db = await connectToDatabase();
@@ -110,7 +110,7 @@ export async function saveTransaction(t: Transaction): Promise<boolean> {
  *
  * @param id The id of the transaction to be deleted
  * @param acc The account of the transaction to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteTransaction(id: string): Promise<boolean> {
   const db = await connectToDatabase();
@@ -134,7 +134,7 @@ export async function deleteTransaction(id: string): Promise<boolean> {
  *
  * @param string The hash to check for
  * @param string The id of the account
- * @returns {boolean} True if the hash exists, false if it doesn't
+ * @returns {Promise<boolean>} True if the hash exists, false if it doesn't
  */
 export async function checkForDuplicate(
   acc: string,

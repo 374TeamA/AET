@@ -1,7 +1,7 @@
 /**
  * Connects to the indexedDB database.
  *
- * @returns {IDBDatabase} A database connection
+ * @returns {Promise<IDBDatabase>} A database connection
  */
 export function connectToDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

@@ -6,7 +6,7 @@ import { connectToDatabase } from "./initialisation";
 /**
  * Gets all accounts saved to the database.
  *
- * @returns {Account[]} An array of accounts
+ * @returns {Promise<Account[]>} An array of accounts
  */
 export async function getAccounts(): Promise<Account[]> {
   const db = await connectToDatabase();
@@ -28,7 +28,7 @@ export async function getAccounts(): Promise<Account[]> {
  * Saves an account to the database.
  *
  * @param acc The account to be saved
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveAccount(acc: Account): Promise<boolean> {
   const db = await connectToDatabase();
@@ -51,7 +51,7 @@ export async function saveAccount(acc: Account): Promise<boolean> {
  * Deletes an account and all transactions under that account from the database.
  *
  * @param id The id of the account to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteAccount(id: string): Promise<boolean> {
   const db = await connectToDatabase();

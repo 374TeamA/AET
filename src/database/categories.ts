@@ -4,7 +4,7 @@ import { connectToDatabase } from "./initialisation";
 /**
  * Gets all categories saved to the database.
  *
- * @returns {Category[]} An array of categories
+ * @returns {Promise<Category[]>} An array of categories
  */
 export async function getCategories(): Promise<Category[]> {
   const db = await connectToDatabase();
@@ -27,7 +27,7 @@ export async function getCategories(): Promise<Category[]> {
  * Saves a category to the database. If the category already exists it will be updated.
  *
  * @param c The category to be saved
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveCategory(c: Category): Promise<boolean> {
   const db = await connectToDatabase();
@@ -50,7 +50,7 @@ export async function saveCategory(c: Category): Promise<boolean> {
  * Deletes a category from the database.
  *
  * @param id The id of the category to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteCategory(id: string): Promise<boolean> {
   const db = await connectToDatabase();

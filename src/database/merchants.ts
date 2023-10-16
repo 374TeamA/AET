@@ -4,7 +4,7 @@ import { connectToDatabase } from "./initialisation";
 /**
  * Gets all merchants saved to the database.
  *
- * @returns {Merchant[]} An array of merchants
+ * @returns {Promise<Merchant[]>} An array of merchants
  */
 export async function getMerchants(): Promise<Merchant[]> {
   const db = await connectToDatabase();
@@ -27,7 +27,7 @@ export async function getMerchants(): Promise<Merchant[]> {
  * Gets all merchants saved to the database.
  *
  * @param id The id of the merchant
- * @returns {Merchant[]} An array of merchants
+ * @returns {Promise<Merchant[]>} An array of merchants
  */
 export async function getMerchant(id: string): Promise<Merchant[]> {
   const db = await connectToDatabase();
@@ -50,7 +50,7 @@ export async function getMerchant(id: string): Promise<Merchant[]> {
  * Saves a merchant to the database. If the merchant already exists it will be updated.
  *
  * @param m The merchant to be saved
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveMerchant(m: Merchant): Promise<boolean> {
   const db = await connectToDatabase();
@@ -73,7 +73,7 @@ export async function saveMerchant(m: Merchant): Promise<boolean> {
  * Deletes a merchant from the database.
  *
  * @param id The id of the merchant to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteMerchant(id: string): Promise<boolean> {
   const db = await connectToDatabase();

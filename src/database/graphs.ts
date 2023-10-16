@@ -4,7 +4,7 @@ import { connectToDatabase } from "./initialisation";
 /**
  * Gets all favourited graphs saved to the database.
  *
- * @returns {GraphConfig[]} An array of graphs
+ * @returns {Promise<GraphConfig[]>} An array of graphs
  */
 export async function getFavouriteGraphs(): Promise<GraphConfig[]> {
   const db = await connectToDatabase();
@@ -27,7 +27,7 @@ export async function getFavouriteGraphs(): Promise<GraphConfig[]> {
 /**
  * Gets all graphs saved to the database.
  *
- * @returns {GraphConfig[]} An array of graphs
+ * @returns {Promise<GraphConfig[]>} An array of graphs
  */
 export async function getGraphs(): Promise<GraphConfig[]> {
   const db = await connectToDatabase();
@@ -50,7 +50,7 @@ export async function getGraphs(): Promise<GraphConfig[]> {
  * Saves a graph to the database. If the graph already exists it will be updated.
  *
  * @param g The graph to be saved
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function saveGraph(g: GraphConfig): Promise<boolean> {
   const db = await connectToDatabase();
@@ -73,7 +73,7 @@ export async function saveGraph(g: GraphConfig): Promise<boolean> {
  * Deletes a graph from the database.
  *
  * @param id The id of the graph to be deleted
- * @returns {boolean} True on success, false on error
+ * @returns {Promise<boolean>} True on success, false on error
  */
 export async function deleteGraph(id: string): Promise<boolean> {
   const db = await connectToDatabase();
