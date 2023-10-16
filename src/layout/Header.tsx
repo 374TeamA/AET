@@ -6,7 +6,7 @@ export default function Header() {
       <img
         alt="logo"
         className="logo"
-        src="../holistic_finance_original_logo.png"
+        src="./holistic_finance_original_logo.png"
       />
       <p
         className="title"
