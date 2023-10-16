@@ -32,8 +32,8 @@ interface FlatTransaction {
 
 export default function Transactions() {
   const params = useParams();
-  const categoriesFromDB = useContext(CategoryContext);
   const accountId: string | undefined = params.id;
+  const categoriesFromDB = useContext(CategoryContext);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [options, setOptions] = useState<{ [key: string]: string }>({});
@@ -133,7 +133,7 @@ export default function Transactions() {
   }, [transactions]);
   if (options) {
     return (
-      <Box style={{ height: "77vh" }}>
+      <Box style={{ height: "100%", width: "86dvw", padding: "0px" }}>
         {accountId != "undefined" ? (
           <DataGrid columns={columns} rows={flatTransactions} />
         ) : (

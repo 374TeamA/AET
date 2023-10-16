@@ -28,16 +28,13 @@ function CustomTabPanel(props: TabPanelProps) {
       {...other}
       style={{ height: "100%" }}
     >
-      {value === index && (
-        <Box sx={{ p: 3, height: "100%" }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 1, height: "80dvh" }}>{children}</Box>}
     </div>
   );
 }
 
-function a11yProps(index: number) { // Accessibility props (A11y is shorthand)
+function a11yProps(index: number) {
+  // Accessibility props (A11y is shorthand)
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`
@@ -52,16 +49,15 @@ export default function Accounts() {
     setValue(newValue);
   };
 
-  
-
   return (
     <div className="content">
       <Box sx={{ width: "100%", height: "90%" }}>
-        {(accountId == "CASH") ? ( // When it is the cash screen
+        {accountId == "CASH" ? ( // When it is the cash screen
           <>
             <Cash></Cash>
           </>
-        ) : ( // When it is not the cash screen
+        ) : (
+          // When it is not the cash screen
           <>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs

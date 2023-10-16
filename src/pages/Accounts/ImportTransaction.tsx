@@ -31,7 +31,6 @@ export default function ImportTransaction() {
       // transactions get saved in Table.tsx
     }
   };
-
   return (
     <div>
       <CSVUploader onUpload={processCSV} />
