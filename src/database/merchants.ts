@@ -26,16 +26,15 @@ export async function getMerchants(): Promise<Merchant[]> {
 /**
  * Gets all merchants saved to the database.
  *
- * @param m The name of the merchant
+ * @param m The id of the merchant
  * @returns {Merchant[]} An array of merchants
  */
-export async function getMerchantByName(m: string): Promise<Merchant[]> {
+export async function getMerchant(id: string): Promise<Merchant[]> {
   const db = await connectToDatabase();
   return new Promise((resolve, reject) => {
     const dbt = db.transaction("Merchants", "readonly");
     const tos = dbt.objectStore("Merchants");
-    const ind = tos.index("name");
-    const req = ind.getAll(IDBKeyRange.only(m));
+    const req = tos.getAll(id);
 
     req.onsuccess = function () {
       if (req.result !== undefined) {
