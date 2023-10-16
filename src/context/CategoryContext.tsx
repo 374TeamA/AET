@@ -36,6 +36,7 @@ export const CategoryUpdaterContext = createContext<
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<CategoryList>([]);
   useEffect(() => {
+    console.log("Getting categories");
     getCategories().then(setCategories);
   }, []);
 

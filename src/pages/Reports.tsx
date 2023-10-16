@@ -49,7 +49,11 @@ export default function Reports() {
 
   const handleFavouriteGraph = (index: number) => {
     const newConfigs = graphConfigs;
-    newConfigs[index].favourite = !newConfigs[index].favourite;
+    if (newConfigs[index].favourite == 0) {
+      newConfigs[index].favourite = 1;
+    } else {
+      newConfigs[index].favourite = 0;
+    }
     setGraphConfigs([...newConfigs]);
     saveGraph(newConfigs[index]);
   };
@@ -139,10 +143,26 @@ export default function Reports() {
     <div id="reports-container" className="content">
       {/*TODO: Jake to fix UI*/}
       <div id="newGraphSelector" className="canvasContainer">
-        <canvas onClick={handleOpenPopup} id="bar"></canvas>
-        <canvas onClick={handleOpenPopup} id="line"></canvas>
-        <canvas onClick={handleOpenPopup} id="pie"></canvas>
-        <canvas onClick={handleOpenPopup} id="polarArea"></canvas>
+        <canvas
+          style={{ maxWidth: "24%" }}
+          onClick={handleOpenPopup}
+          id="bar"
+        ></canvas>
+        <canvas
+          style={{ maxWidth: "24%" }}
+          onClick={handleOpenPopup}
+          id="line"
+        ></canvas>
+        <canvas
+          style={{ maxWidth: "24%" }}
+          onClick={handleOpenPopup}
+          id="pie"
+        ></canvas>
+        <canvas
+          style={{ maxWidth: "24%" }}
+          onClick={handleOpenPopup}
+          id="polarArea"
+        ></canvas>
       </div>
 
       {/* Popup to handle configuration of new graph */}

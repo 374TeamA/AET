@@ -114,7 +114,7 @@ export default function Transactions() {
     setFlatTransactions(flatTransactions);
   }, [transactions]);
   return (
-    <Box style={{ height: "77vh" }}>
+    <Box style={{ height: "100%", width: "86dvw", padding: "0px" }}>
       {accountId != "undefined" ? (
         <DataGrid columns={columns} rows={flatTransactions} />
       ) : (
@@ -122,7 +122,6 @@ export default function Transactions() {
       )}
     </Box>
   );
-
 }
 
 const CategorySelector: React.FC<{

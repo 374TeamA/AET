@@ -3,9 +3,6 @@
   flex-wrap: wrap !important;
 }
 
-#reports-container {
-}
-
 .canvasContainer > canvas {
   margin: 0.5rem;
   border-radius: 5px;
@@ -15,6 +12,64 @@
   max-width: 25dvw;
   box-shadow: 0 1px 1px 1px rgb(0, 0, 0, 0.3);
   /* transition: cubic-bezier(0.895, 0.03, 0.685, 0.22) 0.2s; */
+}
+
+.popupHeader {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid lightgrey;
+}
+
+.font-1-5-rem {
+  font-size: 1.5rem;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.font-1-2rem {
+  font-size: 1.2rem;
+}
+
+.padding-0-5rem {
+  padding: 0.5rem;
+}
+
+.padding-right-0-3rem {
+  padding-right: 0.3rem;
+}
+.padding-left-0-5rem {
+  padding-left: 0.5rem;
+}
+
+.justify-space-between {
+  justify-content: space-between;
+}
+.align-items-center {
+  align-items: center;
+}
+.padding-0-2rem {
+  padding: 0.2rem;
+}
+
+.margin-0-5rem {
+  margin: 0.5rem;
+}
+.justify-space-evenly {
+  justify-content: space-evenly;
+}
+.border-1px-solid-lightgrey {
+  border: 1px solid lightgrey;
+}
+
+.margin-top-0-5rem {
+  margin-top: 0.5rem;
+}
+
+.border-radius-0-5rem {
+  border-radius: 0.5rem;
 }
 
 .canvasContainer > canvas:hover {

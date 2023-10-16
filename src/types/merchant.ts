@@ -1,5 +1,5 @@
 /* Used to store merchant information */
 export type Merchant = {
-  name: string;
+  id: string;
   category: string;
 };

@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import "./csvuploader.css";
 interface Props {
-  onUpload: (file:File) => void;
+  onUpload: (file: File) => void;
 }
 
 export default function CSVUploader({ onUpload }: Props) {
@@ -22,7 +22,7 @@ export default function CSVUploader({ onUpload }: Props) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
+    console.log("Popup!");
     const file = e.dataTransfer.files?.[0];
     if (file) {
       onUpload(file);
@@ -36,19 +36,21 @@ export default function CSVUploader({ onUpload }: Props) {
   };
 
   return (
-    <div
-      className="file-upload-button"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      onClick={openFileDialog}
-    >
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleFileSelect}
-      />
-      <span className="upload-input">Drag file here, Or Click to Upload</span>
-    </div>
+    <>
+      <div
+        className="file-upload-button"
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onClick={openFileDialog}
+      >
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleFileSelect}
+        />
+        <span className="upload-input">Drag file here, Or Click to Upload</span>
+      </div>
+    </>
   );
 }
