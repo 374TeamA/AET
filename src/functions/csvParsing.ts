@@ -1,5 +1,7 @@
 import { getAllTransactions } from "../database/transactions.ts";
+import { getMerchants, saveMerchant } from "../database/merchants.ts";
 import { Transaction, Import } from "../types/transaction.ts";
+import { Merchant } from "../types/merchant.ts";
 import { ColumnIndexes } from "../types/csvParsing.ts";
 import { parse as csvParse } from "csv-parse/browser/esm";
 import { parse as dateParse } from "date-fns";
@@ -184,10 +186,8 @@ function cleanData(csvData: string[][]): string[][] {
 function getColumnIndexes(csvData: string[][]): ColumnIndexes {
   // Get the header of the csv data
   const header: string[] = csvData[0];
-  //const header: string[] = csvData[0];
 
   // Get the column indices from the header
-  //const columnIndexes: ColumnIndexes = {
   const columnIndexes: ColumnIndexes = {
     amountIndex: header.indexOf("Amount"),
     dateIndex: header.indexOf("Date"),
@@ -226,13 +226,11 @@ async function getTransactions(
   useAmericanDates: boolean
 ): Promise<Transaction[]> {
   // Create a new list of transactions populate
-  //const transactions: Transaction[] = [];
   const transactions: Transaction[] = [];
 
   // For each line after the header in csvData
   for (let i: number = 1; i < csvData.length; i++) {
     // Get the current line of data
-    //const line: string[] = csvData[i];
     const line: string[] = csvData[i];
 
     try {
@@ -253,7 +251,7 @@ async function getTransactions(
   }
 
   // If no valid "expense" transactions were made, throw an error
-  if (transactions.length == 0) {
+  if (transactions.length === 0) {
     throw new Error(
       "No valid expense transactions were found in this bank statement."
     );
@@ -281,12 +279,12 @@ async function getTransactionFromLine(
   importId: string,
   useAmericanDates: boolean
 ): Promise<Transaction> {
-  // Get the date, merchant, and amount from the line
+  // Get the date, merchant name, and amount from the line
   const date: Date = tryParseDate(
     line[columnIndexes.dateIndex],
     useAmericanDates
   );
-  const merchant: string = line[columnIndexes.merchantIndex];
+  const merchantName: string = line[columnIndexes.merchantIndex];
   let amount: number = parseFloat(line[columnIndexes.amountIndex]);
 
   // If the amount is positive or $0, throw an error
@@ -297,11 +295,11 @@ async function getTransactionFromLine(
 
   // Create a hash from the amount, date, and merchant
   const hash: string = sha256(
-    `${date.toString()}${merchant}${amount}`
+    `${date.toString()}${merchantName}${amount}`
   ).toString();
 
   // Get the predicted category for the transaction
-  const category: string = await getCategory(merchant);
+  const merchant: Merchant = await getMerchantFromName(merchantName);
 
   // Create and return a new transaction from the retrieved data
   return {
@@ -310,26 +308,39 @@ async function getTransactionFromLine(
     account: account,
     hash: hash,
     date: date,
-    merchant: merchant,
+    merchant: merchant.id,
     totalAmount: amount,
-    details: [{ amount: amount, category: category }]
+    details: [{ amount: amount, category: merchant.category }]
   } as Transaction;
 }
 
 /**
- * Retrieves the category based on the merchant name
+ * Retrieves the merchant ID and category ID based on the merchant name
  *
  * @param {string} merchantName The name of the merchant
  *
- * @returns {Promise<string>} The predicted category.
+ * @returns {Promise<Merchant>}
  */
-async function getCategory(merchantName: string): Promise<string> {
-  // Random code just to make it not error
-  if (merchantName !== "") {
-    return Promise.resolve("Default");
-  } else {
-    return Promise.reject(new Error("This should not happen."));
+async function getMerchantFromName(merchantName: string): Promise<Merchant> {
+  // Get the list of merchants from the database
+  const merchants: Merchant[] = await getMerchants();
+
+  // Look for a merchant in the database that matches
+  let merchant: Merchant | undefined = merchants.find(
+    (merchant) => merchant.name === merchantName
+  );
+
+  // If a matching merchant wasn't found
+  if (!merchant) {
+    // Make one
+    merchant = { id: uuidv4(), name: merchantName, category: "Un-Categorised" }; // TODO: Use the ID of the Un-Categorised category
+
+    // Save it to the database
+    saveMerchant(merchant);
   }
+
+  // Return the merchant's category
+  return merchant;
 }
 
 /**
@@ -347,7 +358,6 @@ function tryParseDate(dateString: string, useAmericanDates: boolean): Date {
   );
 
   // Try to parse the date using one of the available formats
-  //const date: Date | undefined = dateFormats
   const date: Date | undefined = dateFormats
     .map((format) => dateParse(dateString, format, new Date()))
     .find((parsedDate) => !isNaN(parsedDate.getTime()));
