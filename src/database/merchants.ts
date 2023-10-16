@@ -26,7 +26,7 @@ export async function getMerchants(): Promise<Merchant[]> {
 /**
  * Gets all merchants saved to the database.
  *
- * @param m The id of the merchant
+ * @param id The id of the merchant
  * @returns {Merchant[]} An array of merchants
  */
 export async function getMerchant(id: string): Promise<Merchant[]> {
