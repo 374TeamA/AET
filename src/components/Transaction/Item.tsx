@@ -1,41 +1,53 @@
 import { Button, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { Transaction, TransactionDetail } from "../../types/transaction";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CategoryContext } from "../../context/CategoryContext";
 import Split from "../Split";
 import { saveTransaction } from "../../database/transactions";
 interface ItemProps {
   transaction: Transaction;
-  categories: {
-    [key: string]: string;
-  };
   updateTransactions: (transaction: Transaction) => void;
 }
 
 function CategoryPicker(props: {
   transactionDetail: TransactionDetail;
-  categories: { [key: string]: string };
-  onChange: (e: SelectChangeEvent<string>, index: number) => void;
+  onChange: (e: SelectChangeEvent<string>,index:number) => void;
   index: number;
 }) {
+  const categories = useContext(CategoryContext);
   const [currentCategory, setCurrentCategory] = useState<string>(
     props.transactionDetail.category
   );
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}
-      >
-        <div style={{ width: "15%" }}>
-          <p>${(props.transactionDetail.amount / 100).toFixed(2)}</p>
-        </div>
-        <div>
-          <Select
-            // variant="contained"
+    <div
+    style={{
+      display: "flex",
+      width: "100%",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }}
+    >
+      <div style={{ width: "15%" }}>
+        <p>${(props.transactionDetail.amount / 100).toFixed(2)}</p>
+      </div>
+      <div>
+        <Select
+          // variant="contained"
+          style={{
+            width: "10rem",
+            fontSize: "0.9rem",
+            margin: "2px",
+            //make the background colour the selected item's colour
+            backgroundColor: `${categories.find(cat=>cat.name == currentCategory)?.color || "white"}`,
+          }}
+          onChange={(e) => {
+            setCurrentCategory(e.target.value);
+            props.onChange(e,props.index);
+          }}
+          size="small"
+          value={currentCategory}
+        >
+          <MenuItem
             style={{
               width: "10rem",
               fontSize: "0.9rem",
@@ -43,53 +55,37 @@ function CategoryPicker(props: {
               //make the background colour the selected item's colour
 
               backgroundColor: `${
-                props.categories[currentCategory] || "black"
+                categories.find(cat=>cat.name == currentCategory)?.color|| "white"
               }`,
-              color: "white"
             }}
-            onChange={(e) => {
-              setCurrentCategory(e.target.value);
-              props.onChange(e, props.index);
-            }}
-            size="small"
-            value={currentCategory}
+            value={currentCategory} 
           >
-            <MenuItem
-              style={{
-                backgroundColor: `${
-                  props.categories[currentCategory] || "black"
-                }`,
-                color: "white"
-              }}
-              value={currentCategory}
-            >
-              {currentCategory}
-            </MenuItem>
-            {Object.keys(props.categories).map((category, index) => {
-              if (category !== currentCategory) {
-                return (
-                  <MenuItem
-                    key={index}
-                    style={{ backgroundColor: `${props.categories[category]}` }}
-                    value={category}
-                  >
-                    {category}
-                  </MenuItem>
-                );
-              }
-            })}
-          </Select>
-        </div>
+            {currentCategory}
+          </MenuItem>
+          {categories.map((category, index) => {
+            if (category.name !== currentCategory) {
+              return (
+                <MenuItem
+                  key={index}
+                  style={{ backgroundColor: `${category.color}` }}
+                  value={category.name}
+                >
+                  {category.name}
+                </MenuItem>
+              );
+            }
+          })}
+        </Select>
       </div>
-    </>
+    </div>
   );
 }
 
 export default function Item({
   transaction,
-  categories,
   updateTransactions
 }: ItemProps) {
+
   //const categories = React.useContext(CategoryContext);
   const [splitMenuOpen, setSplitMenuOpen] = useState(false);
   const [itemTransaction, setItemTransaction] =
@@ -127,7 +123,6 @@ export default function Item({
         <Split
           transaction={itemTransaction}
           onClose={handleClose}
-          categories={categories}
         />
       )}
       <div
@@ -160,7 +155,6 @@ export default function Item({
                 index={index}
                 key={index}
                 transactionDetail={detail}
-                categories={categories}
                 onChange={handleCategoryChange}
               ></CategoryPicker>
             ))}

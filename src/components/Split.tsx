@@ -1,20 +1,17 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { Transaction, TransactionDetail } from "../types/transaction";
 import CustomPopup from "./Popup";
 import { Button, MenuItem, Select, TextField } from "@mui/material";
+import { CategoryContext } from "../context/CategoryContext";
 
 export default function Split({
   transaction,
   onClose,
-  categories
 }: {
   transaction: Transaction;
   onClose: (transaction: Transaction) => void;
-  categories: {
-    [key: string]: string;
-  };
 }) {
-  //   const categories = useContext(CategoryContext);
+  const categories = useContext(CategoryContext);
   const [isOpen, setIsOpen] = useState(true);
   const [total, setTotal] = useState<number>(
     transaction.details.reduce(
@@ -85,7 +82,7 @@ export default function Split({
               margin: "2px",
               //make the background colour the selected item's colour
 
-              backgroundColor: `${categories[currentCategory] || "black"}`,
+              backgroundColor: `${categories.find(cat=>cat.name == currentCategory)?.color || "black"}`,
               color: "white"
             }}
             onChange={(e) => {
@@ -96,22 +93,22 @@ export default function Split({
           >
             <MenuItem
               style={{
-                backgroundColor: `${categories[currentCategory] || "black"}`,
+                backgroundColor: `${"black"}`,
                 color: "white"
               }}
               value={currentCategory}
             >
               {currentCategory}
             </MenuItem>
-            {Object.keys(categories).map((category, index) => {
-              if (category !== currentCategory) {
+            {categories.map((category, index) => {
+              if (category.id !== currentCategory) {
                 return (
                   <MenuItem
                     key={index}
-                    style={{ backgroundColor: `${categories[category]}` }}
-                    value={category}
+                    style={{ backgroundColor: `${category.color}` }}
+                    value={category.id}
                   >
-                    {category}
+                    {category.name}
                   </MenuItem>
                 );
               }
