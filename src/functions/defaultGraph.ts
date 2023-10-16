@@ -65,7 +65,7 @@ export function defaultBarGraph(): ChartConfiguration {
       }
     },
     layout: {
-      padding: 20
+      padding: 10
     },
     plugins: {
       title: {
@@ -158,7 +158,7 @@ export function defaultLineGraph(): ChartConfiguration {
       }
     },
     layout: {
-      padding: 20
+      padding: 10
     },
     plugins: {
       title: {
@@ -233,7 +233,7 @@ export function defaultPieGraph(): ChartConfiguration {
   // Options for the pie graph, including title, legend, and tooltip settings.
   const pieOptions: ChartOptions = {
     layout: {
-      padding: 20
+      padding: 10
     },
     plugins: {
       title: {
@@ -319,7 +319,7 @@ export function defaultPolarGraph(): ChartConfiguration {
       }
     },
     layout: {
-      padding: 20
+      padding: 10
     },
     plugins: {
       title: {
