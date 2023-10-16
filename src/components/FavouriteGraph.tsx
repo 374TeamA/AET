@@ -117,8 +117,6 @@ export default function FavouriteGraph({
 
   return (
     <div className="canvasContainer">
-      <h1>New Graph</h1>
-
       {/* Graph */}
       <canvas id={`canvas${index}`} ref={canvasRef}></canvas>
     </div>
