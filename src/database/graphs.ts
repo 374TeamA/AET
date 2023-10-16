@@ -12,7 +12,7 @@ export async function getFavouriteGraphs(): Promise<GraphConfig[]> {
     const dbt = db.transaction("Graphs", "readonly");
     const tos = dbt.objectStore("Graphs");
     const ind = tos.index("favourite");
-    const req = ind.getAll(IDBKeyRange.only(true));
+    const req = ind.getAll(IDBKeyRange.only(1));
 
     req.onsuccess = function () {
       if (req.result !== undefined) {
