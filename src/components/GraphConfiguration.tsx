@@ -33,26 +33,10 @@ export default function ConfigureGraph({
   const [dynamicUpdate, setDynamicUpdate] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
-  const databaseAccounts = useContext(AccountContext); //useState<Account[]>(defaultAccounts);
-  const databaseCategories = useContext(CategoryContext); //useState<Category[]>(defaultCategories);
+  const [groupBy, setGroupBy] = useState<string>("day");
+  const databaseAccounts = useContext(AccountContext);
+  const databaseCategories = useContext(CategoryContext);
   const [lengthValue, setLengthValue] = useState(1);
-
-  // Fetch accounts and categories from the database when the component mounts
-  // useEffect(() => {
-  //   const accountPromise: Promise<Account[]> = getAccounts();
-  //   accountPromise.then((accounts) => {
-  //     const dbAccounts = accounts.map((account) => account.name);
-  //     setDatabaseAccount(dbAccounts);
-  //   });
-
-  //   const categoryPromise: Promise<Category[]> = getCategories();
-  //   categoryPromise.then((categories) => {
-  //     const dbCategories = categories.map((category) => category.name);
-  //     setDatabaseCategories(dbCategories);
-  //   });
-  // }, []);
-
-  //useEffect(() => {}, [categories, accounts]);
 
   /**
    * Function to add a selected account to the list of accounts
@@ -71,16 +55,17 @@ export default function ConfigureGraph({
       name: selectedOption.text
     };
 
+    // Add the account to the list of accounts if it doesn't already exist
     if (!accounts.some((a) => a.id === account.id)) {
       setAccounts([...accounts, account]);
     }
   };
 
-  // TODO: fix this
   /**
    * Function to add all unadded accounts to the list of accounts
    */
   const addAllAccounts = () => {
+    // add any accounts from database accounts that arent already in accounts (so there are no duplicates)
     if (databaseAccounts) {
       const uniqueAccounts = databaseAccounts.filter(
         (account) => !accounts.some((a) => a.id === account.id)
@@ -95,6 +80,7 @@ export default function ConfigureGraph({
    * @param {Account} account index of account to delete
    */
   const deleteAccount = (account: Account) => {
+    // Remove the account from the list of accounts
     setAccounts(accounts.filter((a) => a !== account));
   };
 
@@ -114,6 +100,7 @@ export default function ConfigureGraph({
       (c) => c.id === selectedOption.value
     );
 
+    // Add the category to the list of categories if it doesn't already exist
     if (category) {
       if (!categories.some((c) => c.id === category.id)) {
         setCategories([...categories, category]);
@@ -140,6 +127,7 @@ export default function ConfigureGraph({
    * @param {number} category index of category to delete
    */
   const deleteCategory = (category: Category) => {
+    // Remove the category from the list of categories
     setCategories(categories.filter((c) => c !== category));
   };
 
@@ -163,6 +151,7 @@ export default function ConfigureGraph({
     setEndDate(newDate);
   };
 
+  // TODO: Jake this needs to be fixed so it actually handles a month correctly
   /**
    * Function to set the date range to a specific number of days
    *
@@ -183,6 +172,8 @@ export default function ConfigureGraph({
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleAllTransactionsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // Get the date range popup container and the dynamic update popup container
+    // TODO: This could probably be changed to use refs instead of getElementById
     const dateRangePopupContainer: HTMLDivElement = document.getElementById(
       "dateRangePopupContainer"
     ) as HTMLDivElement;
@@ -191,6 +182,7 @@ export default function ConfigureGraph({
         "dynamicUpdatePopupContainer"
       ) as HTMLLabelElement;
 
+    // If the checkbox is ticked, disable the date range and dynamic update options and vice versa
     if (e.target.checked) {
       setAllTransactions(true);
       dateRangePopupContainer.style.display = "none";
@@ -208,6 +200,8 @@ export default function ConfigureGraph({
    * @param {ChangeEvent<HTMLInputElement>} e Change event for when a tickbox is ticked
    */
   const handleDynamicUpdateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // Get the date range popup container and the all transactions popup container
+    // TODO: This could probably be changed to use refs instead of getElementById
     const dateRangePopupContainer: HTMLDivElement = document.getElementById(
       "dateRangePopupContainer"
     ) as HTMLDivElement;
@@ -220,6 +214,7 @@ export default function ConfigureGraph({
         "dynamicUpdateConfigurationContainer"
       ) as HTMLLabelElement;
 
+    // If the checkbox is ticked, disable the date range and all transactions options and vice versa
     if (e.target.checked) {
       setDynamicUpdate(true);
       dateRangePopupContainer.style.display = "none";
@@ -237,6 +232,8 @@ export default function ConfigureGraph({
    * Function to handle changes to either options for the Graph Configuration when the graph should update automatically
    */
   const handleDynamicUpdateConfiguration = () => {
+    // Get the length and unit elements
+    // TODO: This could probably be changed to use refs instead of getElementById
     const lengthElement: HTMLInputElement = document.getElementById(
       "dynamicUpdateConfiguration"
     ) as HTMLInputElement;
@@ -244,11 +241,14 @@ export default function ConfigureGraph({
       "dynamicUpdateConfigurationSelect"
     ) as HTMLSelectElement;
 
+    // Get the length and unit values
     const length: number = parseInt(lengthElement.value);
     const unit: string = unitElement.options[unitElement.selectedIndex].value;
 
     setLengthValue(length);
 
+    // Set the length of days based on the unit
+    // TODO: Jake this needs to be changed to handle months correctly
     if (unit === "day") {
       setLengthOfDays(length);
     } else if (unit === "week") {
@@ -269,6 +269,15 @@ export default function ConfigureGraph({
       // If the value is less than 1 or not a valid number, set it to 1
       setLengthValue(1);
     }
+  };
+
+  /**
+   * Handle changes to the group by select
+   *
+   * @param e ChangeEvent for when the group by select is changed
+   */
+  const handleGroupByChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setGroupBy(e.target.value);
   };
 
   /**
@@ -329,15 +338,14 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories.map((category) => category.id),
+      categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: false,
       update: dynamicUpdate,
-      allTransactions: allTransactions
+      allTransactions: allTransactions,
+      groupBy: groupBy
     };
-
-    console.log(graphConfig);
 
     addGraphConfig(graphConfig);
     handleClose();
@@ -346,8 +354,6 @@ export default function ConfigureGraph({
   return (
     <div>
       <h1>Configure {type} Graph</h1>
-      {/* TODO: have an automatically updating graph */}
-      <canvas id="configureGraph"></canvas>
 
       {/* Account Selection */}
       <div id="accountPopupContainer">
@@ -516,8 +522,27 @@ export default function ConfigureGraph({
         </label>
       </div>
 
+      {type === "line" || type === "bar" ? (
+        <div>
+          <label htmlFor="grouped">
+            Group by
+            <select onChange={handleGroupByChange} id="grouped">
+              {type === "line" ? (
+                <option value="day">Day</option>
+              ) : (
+                <option value="none">None</option>
+              )}
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+              <option value="year">Year</option>
+            </select>
+          </label>
+        </div>
+      ) : null}
+
       {/* Add graph */}
       <button onClick={createGraphConfig}>Add Graph</button>
+      <button onClick={handleClose}>Cancel</button>
     </div>
   );
 }

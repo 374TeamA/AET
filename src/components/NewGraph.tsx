@@ -10,28 +10,47 @@ interface NewGraphProps {
   index: number;
   handleDeleteGraph: (index: number) => void;
   handleFavourite: (index: number) => void;
-  // props
 }
 
+/**
+ * New Graph Component which has a graph
+ *
+ * @export NewGraph component
+ * @param {NewGraphProps} {
+ *   handleDeleteGraph,
+ *   graphConfig,
+ *   index,
+ *   handleFavourite
+ * }
+ */
 export default function NewGraph({
   handleDeleteGraph,
   graphConfig,
   index,
   handleFavourite
 }: NewGraphProps) {
+  // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart | null>(null);
+
+  /**
+   * When the component mounts, fetch all transactions and generate the graph
+   */
   useEffect(() => {
+    // Create an empty array of transactions
     let transactions: Transaction[] = [];
-    // all transactions regradless of date via account
+
     // Create an array of Promises for all accounts
-    console.log();
-    let transactionPromises;
+    let transactionPromises: Promise<Transaction[]>[];
+
+    // Create the needed promises for the number of transaction database calls needed
     if (graphConfig.allTransactions) {
+      // Get all transactions regardless of date for all specified accounts
       transactionPromises = graphConfig.accounts.map((account) =>
         getAllTransactions(account)
       );
     } else if (graphConfig.update) {
+      // Get all transactions from the last specified number of days for all specified accounts
       const today: Date = new Date();
       const cutOffDate: Date = new Date(today.getDate() - graphConfig.length);
 
@@ -39,6 +58,7 @@ export default function NewGraph({
         getTransactions(account, cutOffDate, today)
       );
     } else {
+      // Get all transactions between start and end date for all specified accounts
       transactionPromises = graphConfig.accounts.map((account) =>
         getTransactions(account, graphConfig.startDate, graphConfig.endDate)
       );
@@ -47,16 +67,11 @@ export default function NewGraph({
     // Use Promise.all to wait for all transactions to load
     Promise.all(transactionPromises)
       .then((allTransactions) => {
-        console.log(allTransactions);
-
         // Concatenate all the transactions from different accounts
         transactions = allTransactions.reduce(
           (acc, accountTransactions) => acc.concat(accountTransactions),
           []
         );
-
-        console.log("All Transactions: " + transactions.length);
-        console.log(transactions);
 
         // sort transactions by date (index 0 is oldest, index length-1 is newest)
         transactions.sort((a, b) => {
@@ -65,12 +80,9 @@ export default function NewGraph({
 
         const flattenedTransactions: FlattenedTransaction[] = [];
 
+        // Convert every Transaction object into a FlattendedTransaction object
         transactions.forEach((transaction) => {
-          console.log("transaction");
-
           transaction.details.forEach((detail) => {
-            console.log("detail");
-
             // Create a FlattenedTransaction for each TransactionDetail
             const flattenedTransaction: FlattenedTransaction = {
               date: transaction.date,
@@ -79,21 +91,19 @@ export default function NewGraph({
               category: detail.category
             };
 
-            console.log(flattenedTransaction);
-
             flattenedTransactions.push(flattenedTransaction);
           });
         });
 
-        console.log("Flattened Transactions: " + flattenedTransactions.length);
+        // Get the Chart.js configuration object using the specified graph config and list of transactions
+        const recieved = generateGraph(flattenedTransactions, graphConfig);
 
-        const recieved = generateGraph(flattenedTransactions, graphConfig.type);
-
+        // If the canvas exists, create a new chart instance
         if (canvasRef.current) {
           const canvasEl = canvasRef?.current?.getContext("2d");
 
-          if (Chart.getChart("canvas" + 1) != undefined) {
-            Chart.getChart("canvas" + 1)?.destroy();
+          if (Chart.getChart("canvas" + index) != undefined) {
+            Chart.getChart("canvas" + index)?.destroy();
           }
 
           if (chartInstance.current) {
@@ -106,6 +116,7 @@ export default function NewGraph({
         }
       })
       .catch((error) => {
+        // Log the error
         console.error("Error fetching transactions: " + error);
       });
   }, [graphConfig, index, handleDeleteGraph]);
@@ -113,7 +124,11 @@ export default function NewGraph({
   return (
     <div className="canvasContainer">
       <h1>New Graph</h1>
-      <canvas ref={canvasRef}></canvas>
+
+      {/* Graph */}
+      <canvas id={`canvas${index}`} ref={canvasRef}></canvas>
+
+      {/* Delete Graph Button */}
       <button
         onClick={() => {
           handleDeleteGraph(index);
@@ -121,6 +136,8 @@ export default function NewGraph({
       >
         Delete Graph
       </button>
+
+      {/* Favourite Graph Button */}
       <button
         onClick={() => {
           handleFavourite(index);
