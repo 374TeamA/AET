@@ -48,7 +48,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // TODO: Get favourite graphs from database
     getFavouriteGraphs().then((graphs) => {
       setFavouriteGraphs(graphs);
     });
@@ -93,20 +92,23 @@ export default function Dashboard() {
                   <p>{account.name}</p>
                 </div>
                 <div
+                  className="image-container"
                   style={{
                     width: "45%",
                     height: "100%",
                     position: "relative",
-                    overflow: "hidden"
+                    overflow: "hidden",
+                    display: "inline-block"
                   }}
                 >
                   <img
+                    className="dashboard-image"
                     style={{
-                      width: "100%",
+                      width: "20dvw",
                       display: "block",
                       aspectRatio: "1/1",
                       objectFit: "cover",
-                      opacity: "0.1"
+                      opacity: "0.5"
                     }}
                     src="https://uxwing.com/wp-content/themes/uxwing/download/business-professional-services/credit-card-swipe-icon.png"
                   ></img>
