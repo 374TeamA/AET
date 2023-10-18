@@ -122,6 +122,38 @@ export default function NewGraph({
       });
   }, [graphConfig, index, handleDeleteGraph]);
 
+  /**
+   * Download the graph as a png
+   */
+  const handleDownload = () => {
+    // Get the canvas element
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+
+    if (canvas && context) {
+      // Get the image data url
+      context.save();
+      context.globalCompositeOperation = "destination-over";
+      context.fillStyle = "white";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.restore();
+
+      const image = canvas.toDataURL("image/png", 1.0);
+
+      // Create a link element
+      const link = document.createElement("a");
+
+      // Set the link element's href to the image data url
+      link.href = image;
+
+      // Set the link element's download attribute to the graph name
+      link.download = "graph.png";
+
+      // Click the link element
+      link.click();
+    }
+  };
+
   return (
     <div>
       {/* <h1>New Graph</h1> */}
@@ -150,6 +182,8 @@ export default function NewGraph({
       >
         {graphConfig.favourite ? "Un-Favourtie" : "Favourtie"}
       </CustomButton>
+
+      <CustomButton onClick={handleDownload}>Download Graph</CustomButton>
     </div>
   );
 }
