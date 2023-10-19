@@ -6,6 +6,17 @@ interface ColumnProps {
   updateTransactions: (transaction: Transaction) => void;
 }
 
+/**
+ * A column holds a list of transactions
+ *
+ * @export
+ * @param {ColumnProps} {
+ *   title,
+ *   items,
+ *   updateTransactions
+ * }
+ * @return {*}
+ */
 export default function Column({
   title,
   items,
