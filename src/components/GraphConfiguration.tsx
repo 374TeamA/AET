@@ -56,10 +56,6 @@ export default function ConfigureGraph({
    * Function to add a selected account to the list of accounts
    */
   const addAccount = () => {
-    // const selectElement: HTMLSelectElement = document.getElementById(
-    //   "addAccount"
-    // ) as HTMLSelectElement;
-
     // // Get the selected option
     // const selectedOption = selectElement.options[selectElement.selectedIndex];
     if (!selectedAccount) return;
@@ -99,13 +95,6 @@ export default function ConfigureGraph({
    * Function to add a selected category to the list of categories
    */
   const addCategory = () => {
-    // const selectElement: HTMLSelectElement = document.getElementById(
-    //   "addCategories"
-    // ) as HTMLSelectElement;
-
-    // // Get the selected option
-    // const selectedOption = selectElement.options[selectElement.selectedIndex];
-
     // Get the value of the selected option
     const category: Category | undefined = selectedCategory;
 
@@ -160,7 +149,7 @@ export default function ConfigureGraph({
     setEndDate(newDate);
   };
 
-  // TODO: Jake this needs to be fixed so it actually handles a month correctly
+  // TODO: This needs to be fixed so it actually handles a month correctly
   /**
    * Function to set the date range to a specific number of days
    *
@@ -347,7 +336,7 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories,
+      categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: 0,
@@ -433,7 +422,7 @@ export default function ConfigureGraph({
             }}
           >
             {databaseCategories.map((category: Category, index: number) => (
-              <MenuItem value={category.id} key={index}>
+              <MenuItem value={category.name} key={index}>
                 {category.name}
               </MenuItem>
             ))}
