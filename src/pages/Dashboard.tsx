@@ -11,9 +11,14 @@ import { Grid, Typography } from "@mui/material";
 import { GraphConfig } from "../types/graph";
 import { getFavouriteGraphs } from "../database/graphs";
 import FavouriteGraph from "../components/FavouriteGraph";
-
+// import {
+//   SnackbarContextValue,
+//   SnackbarContext
+// } from "../context/SnackbarContext";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
+
 export default function Dashboard() {
+  // const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
   const accounts = useContext(AccountContext);
   const [isPopupOpen, setPopupOpen] = useState<boolean>(
     accounts == null ? false : accounts.length > 0 ? false : true
@@ -48,7 +53,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // TODO: Get favourite graphs from database
     getFavouriteGraphs().then((graphs) => {
       setFavouriteGraphs(graphs);
     });
@@ -93,20 +97,23 @@ export default function Dashboard() {
                   <p>{account.name}</p>
                 </div>
                 <div
+                  className="image-container"
                   style={{
                     width: "45%",
                     height: "100%",
                     position: "relative",
-                    overflow: "hidden"
+                    overflow: "hidden",
+                    display: "inline-block"
                   }}
                 >
                   <img
+                    className="dashboard-image"
                     style={{
-                      width: "100%",
+                      width: "20dvw",
                       display: "block",
                       aspectRatio: "1/1",
                       objectFit: "cover",
-                      opacity: "0.1"
+                      opacity: "0.5"
                     }}
                     src="https://uxwing.com/wp-content/themes/uxwing/download/business-professional-services/credit-card-swipe-icon.png"
                   ></img>
@@ -149,7 +156,6 @@ export default function Dashboard() {
             component for other parts of the app?
           </p>
         </HelpDialog> */}
-
         {/* Display favourite graphs */}
         <div id="favouriteGraphs" style={{ display: "flex", flexWrap: "wrap" }}>
           {favouriteGraphs.map((graph, index) => (

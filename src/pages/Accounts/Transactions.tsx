@@ -110,6 +110,7 @@ export default function Transactions() {
         });
       });
     });
+    console.log(flatTransactions);
     setFlatTransactions(flatTransactions);
   }, [transactions]);
   return (
@@ -128,9 +129,8 @@ const CategorySelector: React.FC<{
   defaultValue: string;
   updateTransaction: (row: GridRowModel) => void;
 }> = ({ rowData, defaultValue, updateTransaction }) => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-    defaultValue
-  );
+  const [selectedCategoryId, setSelectedCategoryId] =
+    useState<string>(defaultValue);
   const categories = useContext(CategoryContext);
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
@@ -141,7 +141,7 @@ const CategorySelector: React.FC<{
     // Call your update function here with the updated data
     updateTransaction(rowData);
   };
-  
+
   console.log(selectedCategoryId);
   console.log(defaultValue);
 
@@ -154,7 +154,10 @@ const CategorySelector: React.FC<{
         value={selectedCategoryId}
         onChange={handleSelectChange}
         style={{
-          backgroundColor: `${categories.find(cat=>cat.id == selectedCategoryId)?.color || "white"}`,
+          backgroundColor: `${
+            categories.find((cat) => cat.name == selectedCategoryId)?.color ||
+            "white"
+          }`,
           color: "black",
           width: "100%"
         }}
@@ -164,7 +167,7 @@ const CategorySelector: React.FC<{
             <MenuItem
               key={index}
               style={{ backgroundColor: `${category.color}` }}
-              value={category.id}
+              value={category.name}
             >
               {category.name}
             </MenuItem>

@@ -180,7 +180,7 @@ export default function NewGraph({
           handleFavourite(index);
         }}
       >
-        {graphConfig.favourite ? "Un-Favourtie" : "Favourtie"}
+        {graphConfig.favourite ? "Un-Favourite" : "Favourite"}
       </CustomButton>
 
       <CustomButton onClick={handleDownload}>Download Graph</CustomButton>
