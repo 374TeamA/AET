@@ -7,18 +7,18 @@ import "../styles/dashboard.css";
 import { Account } from "../types/account";
 import EditAccounts from "./Settings/EditAccounts";
 import EditCategories from "./Settings/EditCategories";
-import { Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { GraphConfig } from "../types/graph";
 import { getFavouriteGraphs } from "../database/graphs";
 import FavouriteGraph from "../components/FavouriteGraph";
-import {
-  SnackbarContextValue,
-  SnackbarContext
-} from "../context/SnackbarContext";
+// import {
+//   SnackbarContextValue,
+//   SnackbarContext
+// } from "../context/SnackbarContext";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
 
 export default function Dashboard() {
-  const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
+  // const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
   const accounts = useContext(AccountContext);
   const [isPopupOpen, setPopupOpen] = useState<boolean>(
     accounts == null ? false : accounts.length > 0 ? false : true
