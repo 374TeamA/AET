@@ -132,10 +132,12 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
     updateTransactions(transaction, !isSplit);
   };
 
-  const handleClose = (transaction: Transaction) => {
-    saveTransaction(transaction);
-    setItemTransaction(transaction);
-    updateTransactions(transaction);
+  const handleClose = (transaction?: Transaction) => {
+    if (transaction) {
+      saveTransaction(transaction);
+      setItemTransaction(transaction);
+      updateTransactions(transaction);
+    }
     setSplitMenuOpen(false);
   };
 
