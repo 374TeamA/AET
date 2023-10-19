@@ -111,6 +111,13 @@ function CategoryPicker(props: {
   );
 }
 
+/**
+ * An item is a transaction in a column
+ * It displays the date, merchant, and category, and allows for changing the category
+ * @export
+ * @param {ItemProps} { transaction, updateTransactions }
+ * @return {*}
+ */
 export default function Item({ transaction, updateTransactions }: ItemProps) {
   //const categories = React.useContext(CategoryContext);
   const [splitMenuOpen, setSplitMenuOpen] = useState(false);
@@ -121,26 +128,21 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
     index: number,
     isSplit?: boolean
   ) => {
-    console.log(
-      "change",
-      e.target.value,
-      transaction.details[index].category,
-      index
-    );
-    // Store the update in the database.
     transaction.details[index].category = e.target.value as string;
     updateTransactions(transaction, !isSplit);
   };
 
-  const handleClose = (transaction: Transaction) => {
-    saveTransaction(transaction);
-    setItemTransaction(transaction);
-    updateTransactions(transaction);
+  const handleClose = (transaction?: Transaction) => {
+    if (transaction) {
+      saveTransaction(transaction);
+      setItemTransaction(transaction);
+      updateTransactions(transaction);
+    }
     setSplitMenuOpen(false);
   };
 
   const handleOpen = () => {
-    console.log("open");
+    //console.log("open");
     setSplitMenuOpen(true);
   };
 

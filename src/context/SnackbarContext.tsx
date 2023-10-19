@@ -33,7 +33,6 @@ export default function SnackbarProvider({ children }: SnackbarProviderProps) {
   });
 
   const showSnackbar = (type: string, content: string) => {
-    console.log("showSnackbar");
     setSnackbarMessage({ type, content });
     setSnackbarOpen(true);
   };

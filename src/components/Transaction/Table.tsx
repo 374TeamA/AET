@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Transaction } from "../../types/transaction";
 import "./Table.css";
 import Column from "./Column";
@@ -8,6 +8,14 @@ import { saveMerchant } from "../../database/merchants";
 interface TableProps {
   transactions: Transaction[] | undefined;
 }
+
+/**
+ * Table component, displays the transactions in two columns, categorised and uncategorised
+ *
+ * @export
+ * @param {TableProps} { transactions }
+ * @return {*}
+ */
 export default function Table({ transactions }: TableProps) {
   const [categorised, setCategorised] = useState<Transaction[]>(
     transactions?.filter((transaction) =>
@@ -30,24 +38,14 @@ export default function Table({ transactions }: TableProps) {
     ) ?? []
   );
 
-  useEffect(() => {
-    //save the import to the database
-    console.log("Saving import to database");
-    if (transactions) {
-      for (const transaction of transactions) {
-        saveTransaction(transaction);
-      }
-    }
-    if (categorised) {
-      for (const transaction of categorised) {
-        saveTransaction(transaction);
-      }
-    }
-  }, [categorised, transactions]);
-
+  /**
+   * Updates a transaction in the table & database
+   * if Auto is true, will also save the category and merchant combo in the database for auto categorization later
+   * @param {Transaction} transaction transaction to save/change
+   * @param {boolean} [auto] if true, will save the category and merchant combo in the database for auto categorization later
+   */
   const updateTransactions = (transaction: Transaction, auto?: boolean) => {
-    //remove transaction from uncategorized and add it to categorized
-    console.log(`Updating transaction ${transaction.id}`);
+    saveTransaction(transaction);
     const newUncategorized = [...uncategorised];
     const newCategorized = [...categorised];
     if (transaction.details.length == 1 && auto) {
@@ -75,9 +73,6 @@ export default function Table({ transactions }: TableProps) {
       }
     }
   };
-  useEffect(() => {
-    //console.log(importData);
-  }, []);
 
   return (
     <div className="display-flex">

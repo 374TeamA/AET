@@ -1,8 +1,14 @@
-import { useState } from 'react';
-import { clearDatabase, importFromJson } from '../../database/backup_restore';
-import { connectToDatabase } from '../../database/initialisation';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { ConfirmationButton } from '../../components/ConfirmationButton';
+import { useState } from "react";
+import { clearDatabase, importFromJson } from "../../database/backup_restore";
+import { connectToDatabase } from "../../database/initialisation";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@mui/material";
+import { ConfirmationButton } from "../../components/ConfirmationButton";
 
 // Credit: https://chat.openai.com/share/981949f1-bb2a-4eec-bc21-e1445e543e39
 
@@ -18,8 +24,10 @@ export function RestoreButton() {
     setOpen(false);
   };
 
-  const handleFileChange:React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    if(event.target.files == null) return;
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    if (event.target.files == null) return;
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
   };
@@ -29,20 +37,20 @@ export function RestoreButton() {
     if (file) {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        if(e.target == null) return;
-        if(e.target.result == null) return;
-        if(typeof(e.target.result) != "string") {
-            console.log("error, invalid format")
-            // TODO make some dialog for this
-            return;
+        if (e.target == null) return;
+        if (e.target.result == null) return;
+        if (typeof e.target.result != "string") {
+          //console.log("error, invalid format")
+          // TODO make some dialog for this
+          return;
         }
         const jsonData = JSON.parse(e.target.result);
         // Import the JSON Data
-        console.log("Importing")
-        console.log(jsonData);
+        //console.log("Importing")
+        //console.log(jsonData);
         const db = await connectToDatabase();
         await clearDatabase(db);
-        await importFromJson(db,jsonData);
+        await importFromJson(db, jsonData);
         // Do a full page reload
         window.location.reload();
       };
@@ -56,13 +64,15 @@ export function RestoreButton() {
 
   return (
     <div>
-      <ConfirmationButton 
-      dialogTitle='Restore Data' 
-      dialogText='Restoring from a backup will overwrite ALL data in AET. Are you sure you want to do this?'
-      confirmText='Yes, I understand'
-      cancelText='Cancel'
-      onConfirm={handleOpen}
-      >Restore data</ConfirmationButton>
+      <ConfirmationButton
+        dialogTitle="Restore Data"
+        dialogText="Restoring from a backup will overwrite ALL data in AET. Are you sure you want to do this?"
+        confirmText="Yes, I understand"
+        cancelText="Cancel"
+        onConfirm={handleOpen}
+      >
+        Restore data
+      </ConfirmationButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Upload Backup file</DialogTitle>
         <DialogContent>
@@ -70,15 +80,11 @@ export function RestoreButton() {
             type="file"
             accept=".json"
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             id="json-upload-input"
           />
           <label htmlFor="json-upload-input">
-            <Button
-              variant="outlined"
-              color="primary"
-              component="span"
-            >
+            <Button variant="outlined" color="primary" component="span">
               Choose File
             </Button>
           </label>

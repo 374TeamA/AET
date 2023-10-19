@@ -52,7 +52,7 @@ export function generateGraph(
     options: options as ChartOptions
   };
 
-  console.log(graphConfig);
+  //console.log(graphConfig);
 
   return config;
 }

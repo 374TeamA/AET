@@ -27,6 +27,7 @@ interface FlatTransaction {
   amount: number;
   category: string;
   import: string;
+  isSplit: boolean;
 }
 
 export default function Transactions() {
@@ -63,6 +64,14 @@ export default function Transactions() {
           updateTransaction={updateTransaction}
         />
       )
+    },
+    {
+      field: "isSplit",
+      headerName: "Split",
+      width: 50,
+      renderCell: (params: GridCellParams) => (
+        <p>{(params.value as boolean) ? "Yes" : "No"}</p>
+      )
     }
   ];
   const formatDate = (date: string) => {
@@ -77,7 +86,7 @@ export default function Transactions() {
 
   const updateTransaction = (updatedRow: GridRowModel) => {
     // Implement your update logic here, e.g., make an API request to update the data
-    console.log("Row updated:", updatedRow);
+    //console.log("Row updated:", updatedRow);
     //find the transaction with the same ID
     const transaction = transactions.find(
       (transaction) => transaction.id === updatedRow.transactionID
@@ -97,6 +106,7 @@ export default function Transactions() {
     //flatten into flat transactions
     const flatTransactions: FlatTransaction[] = [];
     transactions.forEach((transaction) => {
+      const isSplit = transaction.details.length > 1;
       transaction.details.forEach((detail, index) => {
         flatTransactions.push({
           id: transaction.id + index,
@@ -106,11 +116,11 @@ export default function Transactions() {
           merchant: transaction.merchant,
           amount: detail.amount,
           category: detail.category,
-          import: transaction.import
+          import: transaction.import,
+          isSplit: isSplit
         });
       });
     });
-    console.log(flatTransactions);
     setFlatTransactions(flatTransactions);
   }, [transactions]);
   return (
@@ -141,10 +151,6 @@ const CategorySelector: React.FC<{
     // Call your update function here with the updated data
     updateTransaction(rowData);
   };
-
-  console.log(selectedCategoryId);
-  console.log(defaultValue);
-
   if (categories.length === 0) {
     return <p>Loading...</p>;
   }

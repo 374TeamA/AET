@@ -7,6 +7,8 @@ import { getAllTransactions } from "../../database/transactions";
 import { useParams } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
+import CustomPopup from "../../components/Popup";
+import CustomButton from "../../components/CustomButton";
 interface ImportTotals {
   id: string;
   earliestTransaction: Date;
@@ -20,7 +22,8 @@ export default function History() {
   const accountId: string | undefined = params.id;
   const [imports, setImports] = useState<Import[]>([]);
   const [importTotals, setImportTotals] = useState<ImportTotals[]>([]);
-
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [importID, setImportID] = useState<string>("");
   const deleteDBImport = (importId: string) => {
     deleteImport(importId).then(() => {
       const importTotalsCopy = [...importTotals];
@@ -29,7 +32,7 @@ export default function History() {
       );
       if (index > -1) {
         importTotalsCopy.splice(index, 1);
-        setImportTotals(importTotalsCopy);
+        //setImportTotals(importTotalsCopy);
       }
     });
   };
@@ -75,6 +78,7 @@ export default function History() {
         setImportTotals(newImpTotals);
       });
   }, [accountId, imports]);
+
   const columns: GridColDef[] = [
     {
       field: "delete",
@@ -83,8 +87,10 @@ export default function History() {
       renderCell: (params: GridCellParams) => (
         <Button
           onClick={() => {
-            console.log(params.row.id);
-            deleteDBImport(params.row.id as string);
+            setImportID(params.row.id as string);
+            setPopupOpen(true);
+            // //console.log(params.row.id);
+            // deleteDBImport(params.row.id as string);
           }}
         >
           X
@@ -119,6 +125,38 @@ export default function History() {
   ];
   return (
     <Box style={{ height: "100%", width: "86dvw" }}>
+      <CustomPopup
+        isOpen={popupOpen}
+        onClose={() => {
+          setPopupOpen(false);
+        }}
+      >
+        <h1 style={{ borderBottom: "1px solid lightgrey" }}>Confirmation</h1>
+        <div style={{ padding: "1rem" }}>
+          <p>Are you sure you want to remove this import? </p>
+          <p>All transactions from it will also be removed</p>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+          <CustomButton
+            onClick={() => {
+              deleteDBImport(importID);
+              setPopupOpen(false);
+              setImportID("");
+              // //console.log("clicked");
+            }}
+          >
+            Confirm
+          </CustomButton>
+          <CustomButton
+            onClick={() => {
+              setPopupOpen(false);
+              setImportID("");
+            }}
+          >
+            Cancel
+          </CustomButton>
+        </div>
+      </CustomPopup>
       <DataGrid columns={columns} rows={importTotals} />
     </Box>
   );

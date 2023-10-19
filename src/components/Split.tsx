@@ -6,10 +6,10 @@ import { CategoryContext } from "../context/CategoryContext";
 
 export default function Split({
   transaction,
-  onClose,
+  onClose
 }: {
   transaction: Transaction;
-  onClose: (transaction: Transaction) => void;
+  onClose: (transaction?: Transaction) => void;
 }) {
   const categories = useContext(CategoryContext);
   const [isOpen, setIsOpen] = useState(true);
@@ -20,12 +20,18 @@ export default function Split({
       0 // Initial value
     )
   );
+  const originalTransaction = { ...transaction };
   const [splits, setSplits] = useState<TransactionDetail[]>([]);
-  const [currentCategoryId, setCurrentCategoryId] = useState<string>("Un-Categorised");
+  const [currentCategoryId, setCurrentCategoryId] =
+    useState<string>("Un-Categorised");
   const [amount, setAmount] = useState<number>(total);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const handleClose = () => {
-    onClose(transaction);
+    if (JSON.stringify(originalTransaction) != JSON.stringify(transaction)) {
+      onClose(transaction);
+    } else {
+      onClose();
+    }
     setIsOpen(false);
   };
   const handleChangeValue = (total: number) => {
@@ -83,7 +89,10 @@ export default function Split({
               margin: "2px",
               //make the background colour the selected item's colour
 
-              backgroundColor: `${categories.find(cat=>cat.id == currentCategoryId)?.color || "white"}`,
+              backgroundColor: `${
+                categories.find((cat) => cat.name == currentCategoryId)
+                  ?.color || "white"
+              }`
             }}
             onChange={(e) => {
               setCurrentCategoryId(e.target.value);
@@ -93,11 +102,14 @@ export default function Split({
           >
             <MenuItem
               style={{
-                backgroundColor: `${categories.find(cat=>cat.id == currentCategoryId)?.color || "white"}`,
+                backgroundColor: `${
+                  categories.find((cat) => cat.name == currentCategoryId)
+                    ?.color || "white"
+                }`
               }}
               value={currentCategoryId}
             >
-              {categories.find(cat=>cat.id == currentCategoryId)?.name}
+              {categories.find((cat) => cat.name == currentCategoryId)?.name}
             </MenuItem>
             {categories.map((category, index) => {
               if (category.id !== currentCategoryId) {
@@ -105,7 +117,7 @@ export default function Split({
                   <MenuItem
                     key={index}
                     style={{ backgroundColor: `${category.color}` }}
-                    value={category.id}
+                    value={category.name}
                   >
                     {category.name}
                   </MenuItem>
@@ -132,9 +144,10 @@ export default function Split({
           </Button>
         </div>
         <div style={{ width: "100%" }}>
-          <table style={{ width: "100%" }}>
+          <table style={{ width: "100%", marginBottom: "1rem" }}>
             <thead>
               <tr style={{ border: "1px solid lightgrey" }}>
+                <th style={{ padding: "0px", width: "1rem" }}></th>
                 <th style={{ padding: "0.5rem" }}>Amount</th>
                 <th>Category</th>
               </tr>
@@ -143,36 +156,67 @@ export default function Split({
               {splits.map((split, index) => {
                 return (
                   <tr key={index}>
+                    <td>
+                      <Button
+                        style={{ width: "2rem", padding: "0px" }}
+                        onClick={() => {
+                          setTotal(total + splits[index].amount);
+                          setAmount(total + splits[index].amount);
+                          handleChangeValue(total + splits[index].amount);
+                          splits.splice(index, 1);
+                          setSplits([...splits]);
+                        }}
+                      >
+                        X
+                      </Button>
+                    </td>
                     <td style={{ padding: "0.5rem" }}>
                       ${(split.amount / 100).toFixed(2)}
                     </td>
-                    <td>{categories.find(cat=>cat.id==split.category)?.name}</td>
+                    <td
+                      style={{
+                        backgroundColor: `${
+                          categories.find((cat) => cat.name == split.category)
+                            ?.color || "white"
+                        }`
+                      }}
+                    >
+                      {
+                        categories.find((cat) => cat.name == split.category)
+                          ?.name
+                      }
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
-        {splits.length > 0 && (
-          <Button
-            variant={splits.length > 1 ? "contained" : "outlined"}
-            disabled={splits.length == 0}
-            onClick={() => {
-              //Save the new transaction with the new details menu, if any balance is remaining int he total then make a new default detail item with the remaining balance
-              const newTransaction = { ...transaction };
-              newTransaction.details = splits;
-              if (total > 0) {
-                newTransaction.details.push({
-                  amount: total,
-                  category: "Un-Categorised"
-                });
-              }
-              onClose(newTransaction);
-            }}
-          >
-            Save
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          {splits.length > 0 && (
+            <Button
+              variant={splits.length > 1 ? "contained" : "outlined"}
+              disabled={splits.length == 0}
+              onClick={() => {
+                //Save the new transaction with the new details menu, if any balance is remaining int he total then make a new default detail item with the remaining balance
+                const newTransaction = { ...transaction };
+                newTransaction.details = splits;
+                if (total > 0) {
+                  newTransaction.details.push({
+                    amount: total,
+                    category: "Un-Categorised"
+                  });
+                }
+                onClose(newTransaction);
+              }}
+            >
+              Save
+            </Button>
+          )}
+          <Button style={{ color: "red" }} onClick={handleClose}>
+            Cancel
           </Button>
-        )}
+        </div>
       </div>
     </CustomPopup>
   );

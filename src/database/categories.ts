@@ -36,7 +36,7 @@ export async function saveCategory(c: Category): Promise<boolean> {
     const tos = dbt.objectStore("Categories");
     const req = tos.put(c);
     req.onsuccess = () => {
-      console.log("Category added", req.result);
+      //console.log("Category added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -59,7 +59,7 @@ export async function deleteCategory(id: string): Promise<boolean> {
     const tos = dbt.objectStore("Categories");
     const req = tos.delete(id);
     req.onsuccess = () => {
-      console.log("Category deleted", req.result);
+      //console.log("Category deleted", req.result);
       resolve(true);
     };
     req.onerror = () => {

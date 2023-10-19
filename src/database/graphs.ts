@@ -59,7 +59,7 @@ export async function saveGraph(g: GraphConfig): Promise<boolean> {
     const tos = dbt.objectStore("Graphs");
     const req = tos.put(g);
     req.onsuccess = () => {
-      console.log("Graph added", req.result);
+      //console.log("Graph added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -82,7 +82,7 @@ export async function deleteGraph(id: string): Promise<boolean> {
     const tos = dbt.objectStore("Graphs");
     const req = tos.delete(id);
     req.onsuccess = () => {
-      console.log("Graph deleted", req.result);
+      //console.log("Graph deleted", req.result);
       resolve(true);
     };
     req.onerror = () => {

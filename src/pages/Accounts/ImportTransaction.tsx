@@ -28,11 +28,11 @@ export default function ImportTransaction() {
           accountId,
           false
         );
-        console.log(importWithDupeIndexes);
+        //console.log(importWithDupeIndexes);
 
-        //console.log(importWithDupeIndexes.import);
+        ////console.log(importWithDupeIndexes.import);
         setTransactions(importWithDupeIndexes.transactions);
-        // console.log(importWithDupeIndexes.dupeIndexes);
+        // //console.log(importWithDupeIndexes.dupeIndexes);
         // Save import object to database
         saveImport(importWithDupeIndexes.import);
         // transactions get saved in Table.tsx
