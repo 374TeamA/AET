@@ -46,7 +46,14 @@ export default function ConfigureGraph({
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [lengthOfDays, setLengthOfDays] = useState<number>(-1);
   const [groupBy, setGroupBy] = useState<string>("day");
-  const databaseAccounts = useContext(AccountContext);
+  const databaseAccounts = [
+    ...useContext(AccountContext),
+    // while the CASH account is not stored in the context, we still need to be able to generate reports from it.
+    {
+      id: "CASH",
+      name: "Manual Transactions",
+    }
+  ];
   const databaseCategories = useContext(CategoryContext);
   const [lengthValue, setLengthValue] = useState(1);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(
@@ -56,6 +63,9 @@ export default function ConfigureGraph({
     databaseCategories[0]
   );
   const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
+  
+  
+
 
   /**
    * Function to add a selected account to the list of accounts
