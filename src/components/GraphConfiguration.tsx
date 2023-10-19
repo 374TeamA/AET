@@ -347,7 +347,7 @@ export default function ConfigureGraph({
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories.map((category) => category.id),
+      categories: categories,
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: 0,

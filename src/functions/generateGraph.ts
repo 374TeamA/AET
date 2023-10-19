@@ -52,6 +52,8 @@ export function generateGraph(
     options: options as ChartOptions
   };
 
+  console.log(config);
+
   return config;
 }
 
@@ -71,22 +73,28 @@ function getDataByCategory(
   const categories: string[] = [];
   const values: number[] = [];
   const filteredData: FlattenedTransaction[] = [];
+  const categoriesID = graphConfig.categories.map((category) => category.id);
+  const categoriesName = graphConfig.categories.map(
+    (category) => category.name
+  );
 
   // Get all categories
   for (let i = 0; i < rawData.length; i++) {
-    const category: string = rawData[i].category;
+    const categoryID: string = rawData[i].category;
 
     // If the category is in the list of categories, add it to the filtered data
-    if (graphConfig.categories.includes(category)) {
+    if (categoriesID.includes(categoryID)) {
+      const categoryIndex: number = categoriesID.indexOf(categoryID);
+
       // If the category is not in the list of categories, add it to the list of categories and initialize its value to 0
-      if (!categories.includes(category)) {
-        categories.push(category);
+      if (!categories.includes(categoriesName[categoryIndex])) {
+        categories.push(categoriesName[categoryIndex]);
         values.push(0);
       }
 
       // Add the transaction to the filtered data
       filteredData.push(rawData[i]);
-      const index: number = categories.indexOf(category);
+      const index: number = categories.indexOf(categoriesName[categoryIndex]);
       values[index] += rawData[i].amount;
     }
   }
@@ -121,9 +129,9 @@ function getDataByCategory(
     }
 
     // Create a dataset for each category
-    for (let i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categoriesID.length; i++) {
       // Get the category
-      const category = categories[i];
+      const category = categoriesID[i];
       const categoryValues = [];
 
       // Get the total amount for each date range (week, month, year)
@@ -141,9 +149,11 @@ function getDataByCategory(
         categoryValues.push(total);
       }
 
+      const indexName = categoriesID.indexOf(category);
+
       // Add the dataset to the datasets array
       datasets.push({
-        label: category,
+        label: categoriesName[indexName],
         data: categoryValues,
         pointStyle: false
       });
@@ -211,14 +221,20 @@ function getDataByDate(
   const filteredData: FlattenedTransaction[] = [];
   const startDate: Date = rawData[0].date;
   const endDate: Date = rawData[rawData.length - 1].date;
+  const categoriesID = graphConfig.categories.map((category) => category.id);
+  const categoriesName = graphConfig.categories.map(
+    (category) => category.name
+  );
 
   // Get all categories
   for (let i = 0; i < rawData.length; i++) {
-    if (graphConfig.categories.includes(rawData[i].category)) {
+    if (categoriesID.includes(rawData[i].category)) {
       filteredData.push(rawData[i]);
 
-      if (!categories.includes(rawData[i].category)) {
-        categories.push(rawData[i].category);
+      const index: number = categoriesID.indexOf(rawData[i].category);
+
+      if (!categories.includes(categoriesName[index])) {
+        categories.push(categoriesName[index]);
       }
     }
   }
@@ -247,9 +263,9 @@ function getDataByDate(
     }
 
     // Create a dataset for each category
-    for (let i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categoriesID.length; i++) {
       // Get the category
-      const category = categories[i];
+      const category = categoriesID[i];
       const categoryValues = [];
 
       // Get the total amount for each date range (week, month, year)
@@ -263,9 +279,11 @@ function getDataByDate(
         categoryValues.push(total);
       }
 
+      const indexName = categoriesID.indexOf(category);
+
       // Add the dataset to the datasets array
       datasets.push({
-        label: category,
+        label: categoriesName[indexName],
         data: categoryValues,
         pointStyle: false
       });
@@ -324,9 +342,9 @@ function getDataByDate(
   // create a dataset for each category
   const datasets = [];
 
-  for (let i = 0; i < categories.length; i++) {
+  for (let i = 0; i < categoriesID.length; i++) {
     // get the category
-    const category = categories[i];
+    const category = categoriesID[i];
     const categoryValues = [];
 
     // get the total amount for each date
@@ -349,9 +367,10 @@ function getDataByDate(
       categoryValues.push(total);
     }
 
+    const indexName = categoriesID.indexOf(category);
     // add the dataset to the datasets array
     datasets.push({
-      label: category,
+      label: categoriesName[indexName],
       data: categoryValues,
       pointStyle: false
     });
