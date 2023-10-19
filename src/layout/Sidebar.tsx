@@ -27,7 +27,7 @@ export default function Sidebar() {
     };
   }, []);
   useEffect(() => {
-    console.log("sidebar " + location.pathname);
+    //console.log("sidebar " + location.pathname);
   }, [location]);
 
   const toggleIfMobile = () => {

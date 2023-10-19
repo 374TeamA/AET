@@ -61,7 +61,7 @@ export async function saveImport(i: Import): Promise<boolean> {
     const tos = dbt.objectStore("Imports");
     const req = tos.put(i);
     req.onsuccess = () => {
-      console.log("Import added", req.result);
+      //console.log("Import added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -84,7 +84,7 @@ export async function deleteImport(id: string): Promise<boolean> {
     const tos = dbt.objectStore("Imports");
     const req = tos.delete(id);
     req.onsuccess = async () => {
-      console.log("Import deleted", req.result);
+      //console.log("Import deleted", req.result);
 
       const transList: Transaction[] = await getTransactionsByImport(id);
       for (const t of transList) {

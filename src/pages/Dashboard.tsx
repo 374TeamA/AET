@@ -11,6 +11,8 @@ import { Grid, Typography } from "@mui/material";
 import { GraphConfig } from "../types/graph";
 import { getFavouriteGraphs } from "../database/graphs";
 import FavouriteGraph from "../components/FavouriteGraph";
+import HelpDialog from "../components/HelpDialog";
+import CustomButton from "../components/CustomButton";
 // import {
 //   SnackbarContextValue,
 //   SnackbarContext
@@ -131,10 +133,29 @@ export default function Dashboard() {
         }}
       >
         {accounts != null && accounts.length == 0 && (
-          <button onClick={handleOpenPopup}>Open Popup</button>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <CustomButton onClick={handleOpenPopup}>
+              Add an Account
+            </CustomButton>
+          </div>
         )}
         <CustomPopup isOpen={isPopupOpen} onClose={handleClosePopup}>
           <Typography variant="h5"> Welcome to AET!</Typography>
+          <HelpDialog title="Adding Accounts">
+            <p>To get started you need to add an account.</p>
+            <p>
+              On this screen you can add/remove accounts and categories, some
+              defaults have been provided but you can change these
+            </p>
+          </HelpDialog>
           <Typography sx={{ p: 2 }}>
             Let's get started - add a bank account and choose how you want to
             categorise your expenses.

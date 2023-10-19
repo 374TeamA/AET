@@ -95,7 +95,7 @@ export async function saveTransaction(t: Transaction): Promise<boolean> {
     const tos = dbt.objectStore("Transactions");
     const req = tos.put(t);
     req.onsuccess = () => {
-      console.log("Transaction added", req.result);
+      //console.log("Transaction added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -119,7 +119,7 @@ export async function deleteTransaction(id: string): Promise<boolean> {
     const tos = dbt.objectStore("Transactions");
     const req = tos.delete(id);
     req.onsuccess = () => {
-      console.log("Transaction deleted", req.result);
+      //console.log("Transaction deleted", req.result);
       resolve(true);
     };
     req.onerror = () => {

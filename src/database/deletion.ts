@@ -7,7 +7,7 @@ export function deleteDatabase(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.deleteDatabase("AET");
     req.onsuccess = () => {
-      console.log("Database deleted", req.result);
+      //console.log("Database deleted", req.result);
       resolve(true);
     };
     req.onerror = () => {

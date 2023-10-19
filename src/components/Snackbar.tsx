@@ -13,7 +13,7 @@ export default function SnackbarConsumer() {
   const { snackbarOpen, snackbarMessage, hideSnackbar } =
     useContext(SnackbarContext);
   useEffect(() => {
-    console.log(snackbarMessage);
+    //console.log(snackbarMessage);
     switch (snackbarMessage?.type) {
       case "success":
         setAlert(

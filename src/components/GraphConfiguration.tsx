@@ -13,6 +13,7 @@ import {
   SnackbarContext,
   SnackbarContextValue
 } from "../context/SnackbarContext";
+import HelpDialog from "./HelpDialog";
 
 function capitalizeFirstLetter(str: string) {
   if (str.length === 0) return str; // Handle empty string
@@ -364,8 +365,43 @@ export default function ConfigureGraph({
 
   return (
     <div>
-      <div className="popupHeader">
-        <h1 className="font-1-5-rem">
+      <div
+        className="popupHeader"
+        style={{
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <HelpDialog title="Help">
+          <p>
+            <br />
+            Select accounts: Select the accounts you want to include in the
+            graph (Minimum One)
+          </p>
+          <p>
+            <br />
+            Select categories: Select the categories you want to include in the
+            graph (Minimum One)
+          </p>
+          <p>
+            <br />
+            Select date range: Select the date range you want to include in the
+            graph (Minimum One Day)
+          </p>
+          <p>
+            <br />
+            All transactions: Use all transactions for all date ranges, usefull
+            for if you want to have comparative graphs
+          </p>
+          <p>
+            <br />
+            Update graphs automatically as time passes: When selecting a date
+            range, the graph will update each time it loads with a new date
+            range of the given selection (7, 14, 31)
+          </p>
+        </HelpDialog>
+        <h1 className="font-1-5-rem" style={{ marginLeft: "1rem" }}>
           Configure {capitalizeFirstLetter(type)} Graph
         </h1>
       </div>
@@ -515,7 +551,7 @@ export default function ConfigureGraph({
               handleDays(31);
             }}
           >
-            1 month
+            31 Days
           </CustomButton>
         </div>
       </div>

@@ -37,7 +37,7 @@ export async function saveAccount(acc: Account): Promise<boolean> {
     const tos = dbt.objectStore("Accounts");
     const req = tos.put(acc);
     req.onsuccess = () => {
-      console.log("Account added", req.result);
+      //console.log("Account added", req.result);
       resolve(true);
     };
     req.onerror = () => {
@@ -60,7 +60,7 @@ export async function deleteAccount(id: string): Promise<boolean> {
     const tos = dbt.objectStore("Accounts");
     const req = tos.delete(id);
     req.onsuccess = async () => {
-      console.log("Account deleted", req.result);
+      //console.log("Account deleted", req.result);
 
       const impList: Import[] = await getImportsByAccount(id);
       for (const imp of impList) {

@@ -121,12 +121,12 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
     index: number,
     isSplit?: boolean
   ) => {
-    console.log(
-      "change",
-      e.target.value,
-      transaction.details[index].category,
-      index
-    );
+    //console.log(
+    //   "change",
+    //   e.target.value,
+    //   transaction.details[index].category,
+    //   index
+    // );
     // Store the update in the database.
     transaction.details[index].category = e.target.value as string;
     updateTransactions(transaction, !isSplit);
@@ -142,7 +142,7 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
   };
 
   const handleOpen = () => {
-    console.log("open");
+    //console.log("open");
     setSplitMenuOpen(true);
   };
 

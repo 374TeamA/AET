@@ -89,7 +89,7 @@ export default function History() {
           onClick={() => {
             setImportID(params.row.id as string);
             setPopupOpen(true);
-            // console.log(params.row.id);
+            // //console.log(params.row.id);
             // deleteDBImport(params.row.id as string);
           }}
         >
@@ -142,7 +142,7 @@ export default function History() {
               deleteDBImport(importID);
               setPopupOpen(false);
               setImportID("");
-              // console.log("clicked");
+              // //console.log("clicked");
             }}
           >
             Confirm

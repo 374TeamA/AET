@@ -32,7 +32,7 @@ export default function Table({ transactions }: TableProps) {
 
   useEffect(() => {
     //save the import to the database
-    console.log("Saving import to database");
+    //console.log("Saving import to database");
     if (transactions) {
       for (const transaction of transactions) {
         saveTransaction(transaction);
@@ -47,7 +47,7 @@ export default function Table({ transactions }: TableProps) {
 
   const updateTransactions = (transaction: Transaction, auto?: boolean) => {
     //remove transaction from uncategorized and add it to categorized
-    console.log(`Updating transaction ${transaction.id}`);
+    //console.log(`Updating transaction ${transaction.id}`);
     const newUncategorized = [...uncategorised];
     const newCategorized = [...categorised];
     if (transaction.details.length == 1 && auto) {
@@ -76,7 +76,7 @@ export default function Table({ transactions }: TableProps) {
     }
   };
   useEffect(() => {
-    //console.log(importData);
+    ////console.log(importData);
   }, []);
 
   return (

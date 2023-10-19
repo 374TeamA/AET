@@ -17,6 +17,7 @@ import { GraphConfig } from "../types/graph";
 import { deleteGraph, getGraphs, saveGraph } from "../database/graphs";
 import NewGraph from "../components/NewGraph";
 import Tooltip from "@mui/material/Tooltip";
+import HelpDialog from "../components/HelpDialog";
 
 /**
  * Report component. Includes all reporting/exporting aspects
@@ -166,36 +167,44 @@ export default function Reports() {
       )}
       {/*TODO: Jake to fix UI*/}
       <div>
-        <h1 className="font-1-5-rem">Add a new graph</h1>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <HelpDialog title="Help">
+            <p>Click on a graph below to open up more options</p>
+            <p></p>
+          </HelpDialog>
+          <h1 className="font-1-5-rem" style={{ marginLeft: "1rem" }}>
+            Add a new graph
+          </h1>
+        </div>
         <div
           id="newGraphSelector"
           className="canvasContainer"
-          style={{ height: "80rem" }}
+          style={{ height: "20rem" }}
         >
           <Tooltip title="Click to add a bar graph">
             <canvas
-              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              style={{ maxWidth: "25dvh", maxHeight: "25dvh" }}
               onClick={handleOpenPopup}
               id="bar"
             ></canvas>
           </Tooltip>
           <Tooltip title="Click to add a line graph">
             <canvas
-              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              style={{ maxWidth: "25dvh", maxHeight: "25dvh" }}
               onClick={handleOpenPopup}
               id="line"
             ></canvas>
           </Tooltip>
           <Tooltip title="Click to add a pie graph">
             <canvas
-              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              style={{ maxWidth: "25dvh", maxHeight: "25dvh" }}
               onClick={handleOpenPopup}
               id="pie"
             ></canvas>
           </Tooltip>
           <Tooltip title="Click to add a polar area graph">
             <canvas
-              style={{ maxWidth: "13%", maxHeight: "13%" }}
+              style={{ maxWidth: "25dvh", maxHeight: "25dvh" }}
               onClick={handleOpenPopup}
               id="polarArea"
             ></canvas>
