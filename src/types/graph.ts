@@ -1,5 +1,4 @@
 import { ChartType } from "chart.js";
-import { Category } from "./category";
 
 // Graph config type
 export type GraphConfig = {
@@ -7,7 +6,7 @@ export type GraphConfig = {
   startDate: Date;
   endDate: Date;
   length: number;
-  categories: Category[];
+  categories: string[];
   accounts: string[];
   type: ChartType;
   favourite: number;

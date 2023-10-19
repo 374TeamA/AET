@@ -9,6 +9,10 @@ import { AccountContext } from "../context/AccountsContext";
 import { CategoryContext } from "../context/CategoryContext";
 import CustomButton from "./CustomButton";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  SnackbarContext,
+  SnackbarContextValue
+} from "../context/SnackbarContext";
 
 function capitalizeFirstLetter(str: string) {
   if (str.length === 0) return str; // Handle empty string
@@ -44,22 +48,18 @@ export default function ConfigureGraph({
   const databaseAccounts = useContext(AccountContext);
   const databaseCategories = useContext(CategoryContext);
   const [lengthValue, setLengthValue] = useState(1);
-
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(
     databaseAccounts && databaseAccounts[0]
   );
   const [selectedCategory, setSelectedCategory] = useState<Category>(
     databaseCategories[0]
   );
+  const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
 
   /**
    * Function to add a selected account to the list of accounts
    */
   const addAccount = () => {
-    // const selectElement: HTMLSelectElement = document.getElementById(
-    //   "addAccount"
-    // ) as HTMLSelectElement;
-
     // // Get the selected option
     // const selectedOption = selectElement.options[selectElement.selectedIndex];
     if (!selectedAccount) return;
@@ -99,13 +99,6 @@ export default function ConfigureGraph({
    * Function to add a selected category to the list of categories
    */
   const addCategory = () => {
-    // const selectElement: HTMLSelectElement = document.getElementById(
-    //   "addCategories"
-    // ) as HTMLSelectElement;
-
-    // // Get the selected option
-    // const selectedOption = selectElement.options[selectElement.selectedIndex];
-
     // Get the value of the selected option
     const category: Category | undefined = selectedCategory;
 
@@ -160,7 +153,7 @@ export default function ConfigureGraph({
     setEndDate(newDate);
   };
 
-  // TODO: Jake this needs to be fixed so it actually handles a month correctly
+  // TODO: This needs to be fixed so it actually handles a month correctly
   /**
    * Function to set the date range to a specific number of days
    *
@@ -298,6 +291,22 @@ export default function ConfigureGraph({
     let dateStart: Date;
     let dateEnd: Date;
 
+    if (accounts.length === 0) {
+      showSnackbar(
+        "error",
+        "No account specified. Please add at least one account"
+      );
+      return;
+    }
+
+    if (categories.length === 0) {
+      showSnackbar(
+        "error",
+        "No category specified. Please add at least one category"
+      );
+      return;
+    }
+
     if (allTransactions) {
       daysDifference = -1;
       dateStart = new Date();
@@ -308,14 +317,18 @@ export default function ConfigureGraph({
       dateEnd = new Date();
     } else {
       if (!startDate || !endDate) {
-        // TODO: Add error handling message for user
-        console.log("Error: Missing start or end date");
+        showSnackbar(
+          "error",
+          "Missing start or end date. Please enter both a start and end date, or select 'All Transactions' or 'Update graphs automatically'"
+        );
         return;
       }
 
       if (startDate > endDate) {
-        // TODO: Add error handling message for user
-        console.log("Error: Invalid date range");
+        showSnackbar(
+          "error",
+          "Invalid date range. Please select a valid date range, or select 'All Transactions' or 'Update graphs automatically'"
+        );
         return;
       }
 
@@ -329,25 +342,13 @@ export default function ConfigureGraph({
       daysDifference = timeDifference / (1000 * 3600 * 24);
     }
 
-    if (categories.length === 0) {
-      // TODO: Add error handling message for user
-      console.log("Error: No category specified");
-      return;
-    }
-
-    if (accounts.length === 0) {
-      // TODO: Add error handling message for user
-      console.log("Error: No account specified");
-      return;
-    }
-
     // New GraphConfig object
     const graphConfig: GraphConfig = {
       id: uuidv4(),
       startDate: dateStart,
       endDate: dateEnd,
       length: daysDifference,
-      categories: categories,
+      categories: categories.map((category) => category.name),
       accounts: accounts.map((account) => account.id),
       type: type as ChartType,
       favourite: 0,
@@ -358,6 +359,7 @@ export default function ConfigureGraph({
 
     addGraphConfig(graphConfig);
     handleClose();
+    showSnackbar("success", "Graph added successfully");
   };
 
   return (
@@ -433,7 +435,7 @@ export default function ConfigureGraph({
             }}
           >
             {databaseCategories.map((category: Category, index: number) => (
-              <MenuItem value={category.id} key={index}>
+              <MenuItem value={category.name} key={index}>
                 {category.name}
               </MenuItem>
             ))}
