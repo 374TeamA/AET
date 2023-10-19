@@ -12,7 +12,7 @@ export default function Cash(){
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState("");
     const [date,setDate] = useState(new Date().toISOString().split("T")[0]);
-    const [category,setCategory] = useState("Default");
+    const [category,setCategory] = useState("Un-Categorised");
     const [id,setId] = useState(uuidv4); // this is used to force the transactions to re-render (and re-fetch everything from the db). Not the best, but works for the interim. TODO: make it better - (prop drilling?)
 
     const handleSave = ()=>{
@@ -34,7 +34,7 @@ export default function Cash(){
         setDescription("");
         setAmount("");
         setDate(new Date().toISOString().split("T")[0]);
-        setCategory("Default");
+        setCategory("Un-Categorised");
         setId(uuidv4());
     }
 
@@ -65,7 +65,6 @@ export default function Cash(){
                 </Grid>
                 <Grid item xs={12} md={2}>
                     <Select value={category} onChange={(e) => setCategory(e?.target.value)} sx={{width:"100%"}}>
-                        <MenuItem value="Default">Default</MenuItem>
                         {categories.map((category) => (
                         <MenuItem key={category.id} value={category.name}>{category.name}</MenuItem>
                         ))}

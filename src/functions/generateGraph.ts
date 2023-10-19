@@ -183,7 +183,7 @@ function getDataByCategory(
   }
 
   const data: ChartData = {
-    labels: categories,
+    labels: categories, // TODO: This needs to map the category ID to category name - it's getting a list of category IDs
     datasets: [
       {
         label: "Total",

@@ -30,9 +30,7 @@ function CategoryPicker(props: {
   const [currentCategoryId, setCurrentCategoryId] = useState<string>(
     props.transactionDetail.category
   );
-  const [auto, setAuto] = useState<boolean>(
-    currentCategoryId != "Un-Categorised"
-  );
+  const [auto, setAuto] = useState<boolean>(true);
   return (
     <div
       style={{
@@ -54,8 +52,8 @@ function CategoryPicker(props: {
               margin: "2px",
               //make the background colour the selected item's colour
               backgroundColor: `${
-                categories.find((cat) => cat.id == currentCategoryId)?.color ||
-                "white"
+                categories.find((cat) => cat.name == currentCategoryId)
+                  ?.color || "white"
               }`
             }}
             onChange={(e) => {
@@ -78,15 +76,15 @@ function CategoryPicker(props: {
               }}
               value={currentCategoryId}
             >
-              {categories.find((cat) => cat.id == currentCategoryId)?.name}
+              {categories.find((cat) => cat.name == currentCategoryId)?.name}
             </MenuItem>
             {categories.map((category, index) => {
-              if (category.id !== currentCategoryId) {
+              if (category.name !== currentCategoryId) {
                 return (
                   <MenuItem
                     key={index}
                     style={{ backgroundColor: `${category.color}` }}
-                    value={category.id}
+                    value={category.name}
                   >
                     {category.name}
                   </MenuItem>
@@ -131,7 +129,7 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
     );
     // Store the update in the database.
     transaction.details[index].category = e.target.value as string;
-    updateTransactions(transaction, isSplit);
+    updateTransactions(transaction, !isSplit);
   };
 
   const handleClose = (transaction: Transaction) => {
