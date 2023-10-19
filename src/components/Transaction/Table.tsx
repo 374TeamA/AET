@@ -31,23 +31,24 @@ export default function Table({ transactions }: TableProps) {
   );
 
   useEffect(() => {
-    //save the import to the database
-    //console.log("Saving import to database");
-    if (transactions) {
-      for (const transaction of transactions) {
-        saveTransaction(transaction);
-      }
-    }
-    if (categorised) {
-      for (const transaction of categorised) {
-        saveTransaction(transaction);
-      }
-    }
+    // //save the import to the database
+    // //console.log("Saving import to database");
+    // if (transactions) {
+    //   for (const transaction of transactions) {
+    //     saveTransaction(transaction);
+    //   }
+    // }
+    // if (categorised) {
+    //   for (const transaction of categorised) {
+    //     saveTransaction(transaction);
+    //   }
+    // }
   }, [categorised, transactions]);
 
   const updateTransactions = (transaction: Transaction, auto?: boolean) => {
     //remove transaction from uncategorized and add it to categorized
     //console.log(`Updating transaction ${transaction.id}`);
+    saveTransaction(transaction);
     const newUncategorized = [...uncategorised];
     const newCategorized = [...categorised];
     if (transaction.details.length == 1 && auto) {
