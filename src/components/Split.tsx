@@ -157,7 +157,16 @@ export default function Split({
                 return (
                   <tr key={index}>
                     <td>
-                      <Button style={{ width: "2rem", padding: "0px" }}>
+                      <Button
+                        style={{ width: "2rem", padding: "0px" }}
+                        onClick={() => {
+                          setTotal(total + splits[index].amount);
+                          setAmount(total + splits[index].amount);
+                          handleChangeValue(total + splits[index].amount);
+                          splits.splice(index, 1);
+                          setSplits([...splits]);
+                        }}
+                      >
                         X
                       </Button>
                     </td>
