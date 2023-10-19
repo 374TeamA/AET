@@ -30,9 +30,7 @@ function CategoryPicker(props: {
   const [currentCategoryId, setCurrentCategoryId] = useState<string>(
     props.transactionDetail.category
   );
-  const [auto, setAuto] = useState<boolean>(
-    currentCategoryId != "Un-Categorised"
-  );
+  const [auto, setAuto] = useState<boolean>(true);
   return (
     <div
       style={{
@@ -131,7 +129,7 @@ export default function Item({ transaction, updateTransactions }: ItemProps) {
     );
     // Store the update in the database.
     transaction.details[index].category = e.target.value as string;
-    updateTransactions(transaction, isSplit);
+    updateTransactions(transaction, !isSplit);
   };
 
   const handleClose = (transaction: Transaction) => {
