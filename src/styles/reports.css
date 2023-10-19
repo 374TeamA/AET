@@ -106,24 +106,4 @@
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
 }
 
-/* Style the button */
-#reports-container button {
-  padding: 10px 20px; /* Adjust the padding as needed */
-  background-color: #007bff; /* Change this color to your preference */
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
 
-/* Style the button when it's hovered over */
-#reports-container button:hover {
-  background-color: #0056b3; /* Change this color to your preference */
-}
-
-/* Style the button when it's focused */
-#reports-container button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Change this shadow as needed */
-}

@@ -25,7 +25,6 @@ const HelpDialog = (props: { children: ReactNode; title: string }) => {
     <>
       <Tooltip title={"Help: " + props.title}>
         <IconButton
-          color="inherit"
           onClick={handleDialogOpen}
           aria-owns={open ? "help-dialog" : undefined}
           aria-haspopup="true"
