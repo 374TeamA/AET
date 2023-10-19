@@ -134,7 +134,10 @@ export default function EditAccounts() {
           >
             Cancel
           </Button>
-          <Button onClick={updateSelectedAccount}>Save</Button>
+          <Button 
+            disabled={(newAccountName.length === 0)}
+            onClick={updateSelectedAccount}
+            >Save</Button>
         </Box>
       </Dialog>
       <Dialog open={removeDialogOpen} sx={{ p: 2 }}>

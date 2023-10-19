@@ -144,7 +144,10 @@ export default function EditCategories() {
           >
             Cancel
           </Button>
-          <Button onClick={updateSelectedCategory}>Save</Button>
+          <Button 
+            disabled={(newCategoryName.length === 0)}
+            onClick={updateSelectedCategory}
+            >Save</Button>
         </Box>
       </Dialog>
       <Dialog open={removeDialog} sx={{ p: 5 }}>
