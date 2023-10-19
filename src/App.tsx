@@ -5,6 +5,8 @@ import Root from "./layout/Root.tsx";
 import "./styles/main.css";
 //import { BrowserRouter as Router } from "react-router-dom";
 import Routers from "./Routes.tsx";
+import SnackbarProvider from "./context/SnackbarContext.tsx";
+import SnackbarConsumer from "./components/Snackbar.tsx";
 //import { Account } from "./types/account.ts";
 function App() {
   /* 
@@ -18,13 +20,16 @@ function App() {
   */
 
   return (
-    <AccountsProvider>
-      <CategoryProvider>
-        <Root>
-          <Routers />
-        </Root>
-      </CategoryProvider>
-    </AccountsProvider>
+    <SnackbarProvider>
+      <AccountsProvider>
+        <CategoryProvider>
+          <Root>
+            <Routers />
+          </Root>
+        </CategoryProvider>
+      </AccountsProvider>
+      <SnackbarConsumer />
+    </SnackbarProvider>
   );
 }
 

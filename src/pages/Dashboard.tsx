@@ -7,13 +7,18 @@ import "../styles/dashboard.css";
 import { Account } from "../types/account";
 import EditAccounts from "./Settings/EditAccounts";
 import EditCategories from "./Settings/EditCategories";
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { GraphConfig } from "../types/graph";
 import { getFavouriteGraphs } from "../database/graphs";
 import FavouriteGraph from "../components/FavouriteGraph";
-
+import {
+  SnackbarContextValue,
+  SnackbarContext
+} from "../context/SnackbarContext";
 //TODO: Set it up so if there is no accounts the dashboard prompts to create a new account
+
 export default function Dashboard() {
+  const { showSnackbar } = useContext<SnackbarContextValue>(SnackbarContext);
   const accounts = useContext(AccountContext);
   const [isPopupOpen, setPopupOpen] = useState<boolean>(
     accounts == null ? false : accounts.length > 0 ? false : true
@@ -151,7 +156,6 @@ export default function Dashboard() {
             component for other parts of the app?
           </p>
         </HelpDialog> */}
-
         {/* Display favourite graphs */}
         <div id="favouriteGraphs" style={{ display: "flex", flexWrap: "wrap" }}>
           {favouriteGraphs.map((graph, index) => (
